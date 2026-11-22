@@ -1266,8 +1266,22 @@ async function initSync() {
 /* ============================== kapabiliteter ============================== */
 const WEBAPP = !!window.MK_WEBAPP;
 const APPURL = WEBAPP ? location.origin + "/" : "https://claude.ai/artifact/87euqhuMEw6PK3QF8TCziv";
+// Eier-modus i webappen: Morten åpner /?eier=<hemmelig kode> én gang per enhet (bare hashen ligger i koden).
+const EIERHASH = "14dacdf1dfad279c87050573c72e318f1e76380331d1001b17bf2cb412833379";
+if (WEBAPP) {
+  const qs = new URLSearchParams(location.search), tok = qs.get("eier");
+  if (tok && window.crypto && crypto.subtle) {
+    crypto.subtle.digest("SHA-256", new TextEncoder().encode(tok)).then((b) => {
+      const hex = [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
+      try { if (hex === EIERHASH) { localStorage.setItem("mk-eier", EIERHASH); localStorage.setItem("kokebok-velkommen", "1"); } } catch (e) {}
+      location.replace(location.pathname + "#app");
+    });
+  } else if (qs.get("eier") === null && qs.get("gjest") !== null) { try { localStorage.removeItem("mk-eier"); } catch (e) {} }
+}
+const WEBOWNER = (() => { try { return WEBAPP && localStorage.getItem("mk-eier") === EIERHASH; } catch (e) { return false; } })();
 if (WEBAPP) { const fa = document.getElementById("footAbout"); if (fa) fa.textContent = "Om appen"; }
 const CAP = { tts: null, sample: null, dict: null, dl: null, assets: null, db: null, user: null, artifact: null, canEdit: false, imgAI: false };
+if (WEBOWNER) CAP.isOwner = true;
 function updateEditUi() { updatePubUi(); if (view.kind === "recipe") refreshRecipe(); }
 async function initCaps() {
   if (!window.claude || !window.claude.use) return;
