@@ -1278,6 +1278,27 @@ if (WEBAPP) {
     });
   } else if (qs.get("eier") === null && qs.get("gjest") !== null) { try { localStorage.removeItem("mk-eier"); } catch (e) {} }
 }
+async function eierUnlock(tok) {
+  tok = String(tok || "").trim(); if (!tok || !(window.crypto && crypto.subtle)) return false;
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(tok));
+  const hex = [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
+  if (hex !== EIERHASH) return false;
+  try { localStorage.setItem("mk-eier", EIERHASH); localStorage.setItem("kokebok-velkommen", "1"); } catch (e) {}
+  return true;
+}
+if (WEBAPP) {
+  // Skjult: trykk 5 ganger på «Mortens Kokebok» nederst på siden for å skrive inn eierkoden (virker også i hjemskjerm-appen).
+  let taps = 0, tt = null;
+  document.addEventListener("click", async (e) => {
+    if (!e.target.closest || !e.target.closest("#foot")) return;
+    taps++; clearTimeout(tt); tt = setTimeout(() => (taps = 0), 2500);
+    if (taps < 5) return; taps = 0;
+    const cur = (() => { try { return localStorage.getItem("mk-eier") === EIERHASH; } catch (x) { return false; } })();
+    if (cur) { if (confirm("Du er i eier-modus. Vil du gå tilbake til gjestevisning på denne enheten?")) { try { localStorage.removeItem("mk-eier"); } catch (x) {} location.reload(); } return; }
+    const code = prompt("Eierkode"); if (!code) return;
+    if (await eierUnlock(code)) location.reload(); else alert("Feil kode");
+  });
+}
 const WEBOWNER = (() => { try { return WEBAPP && localStorage.getItem("mk-eier") === EIERHASH; } catch (e) { return false; } })();
 if (WEBAPP) { const fa = document.getElementById("footAbout"); if (fa) fa.textContent = "Om appen"; }
 const CAP = { tts: null, sample: null, dict: null, dl: null, assets: null, db: null, user: null, artifact: null, canEdit: false, imgAI: false };
