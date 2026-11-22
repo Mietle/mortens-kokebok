@@ -519,6 +519,7 @@ footer.foot { margin-top: 60px; color: var(--faint); font-size: 12px; text-align
 .chef-fab::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1px solid rgba(234, 165, 96, .45); opacity: 0; pointer-events: none; }
 .chef-fab .tip { position: absolute; right: 80px; white-space: nowrap; font: 600 13px/1 var(--sans); padding: 10px 14px; border-radius: 999px; background: rgba(28, 19, 15, .9); border: 1px solid var(--line-strong); opacity: 0; transform: translateX(6px); transition: .25s; pointer-events: none; }
 .chef-fab:hover .tip, .chef-fab:focus-visible .tip { opacity: 1; transform: none; }
+html.webapp .chef-fab { bottom: calc(74px + env(safe-area-inset-bottom, 0px)); }
 body.chef-on .chef-fab, body.cooking .chef-fab { opacity: 0; pointer-events: none; transform: scale(.8); }
 @media (prefers-reduced-motion: no-preference) {
   .chef-fab::before { animation: fabring 4.5s ease-out infinite; }

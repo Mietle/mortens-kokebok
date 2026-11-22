@@ -1,5 +1,5 @@
 // Mortens Kokebok – offline-støtte. Sider og data hentes ferskt når du er på nett, bilder lagres lokalt.
-const V = "mk-20261122192045";
+const V = "mk-20261122192131";
 const CORE = ["/", "/index.html", "/recipes.json", "/wines.json", "/vinregister.json", "/webapp.js", "/manifest.webmanifest", "/icons/icon-192.png"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(V).then((c) => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== V).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
