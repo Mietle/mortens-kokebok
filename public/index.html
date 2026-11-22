@@ -180,6 +180,11 @@ body.page-cellar .kpis, body.page-cellar #shelves, body.page-cellar .filterbar, 
 .atab { width: 100%; border-collapse: collapse; font-size: 13.5px; border-radius: 14px; overflow: hidden; }
 .atab th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ember); font-weight: 600; text-align: center; padding: 8px 6px; background: rgba(234, 165, 96, .08); }
 .whint { margin: 4px auto 14px; max-width: 420px; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(234,165,96,.35); background: rgba(234,165,96,.08); display: grid; gap: 4px; font-size: 13.5px; text-align: left; } .whint b { color: var(--ember); } .wbox [data-install] { margin: 14px auto 0; display: flex; }
+.inbox { display: grid; gap: 14px; } .inb { display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 14px; padding: 14px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.03); }
+.inb > img { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; } .inb:not(:has(> img)) { grid-template-columns: minmax(0,1fr); }
+.inb h4 { margin: 0 0 4px; font-size: 17px; } .inb p { margin: 0 0 8px; font-size: 13px; } .inb details { margin: 4px 0 10px; font-size: 13.5px; } .inb summary { cursor: pointer; color: var(--ember); }
+.inb h5 { margin: 10px 0 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); } .inb ul, .inb ol { margin: 0; padding-left: 18px; } .inb li.h { list-style: none; margin-left: -18px; font-weight: 700; margin-top: 6px; }
+.inb-l { display: grid; gap: 4px; font-size: 12.5px; margin-bottom: 10px; }
 .afeat { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; font-size: 14px; } .afeat li { display: flex; gap: 10px; align-items: baseline; } .afeat .ok { color: var(--ember); }
 .atab td { padding: 9px 8px; border-top: 1px solid var(--line); vertical-align: top; } .atab td + td { text-align: center; white-space: nowrap; font-size: 12.5px; color: var(--muted); }
 .atab .ok { color: #9bbd8f; font-weight: 700; font-size: 15px; } .atab .no { color: var(--faint); }
@@ -904,7 +909,7 @@ async function deleteMine(id) {
 const VINKJELLER = "https://claude.ai/artifact/JPpknRhADzmTmY36roB4Eb";
 const PH = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><defs><radialGradient id="g" cx="30%" cy="30%" r="90%"><stop offset="0" stop-color="#5a2a1c"/><stop offset="1" stop-color="#1a110d"/></radialGradient></defs><rect width="160" height="100" fill="url(#g)"/><g fill="none" stroke="#eaa560" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"><path d="M66 32v14a6 6 0 0 0 12 0V32M72 32v40"/><path d="M92 32c-5 4-6 12-6 18h6v22"/></g></svg>');
 const fpos = (r) => (r && r.fp ? `object-position:${r.fp[0]}% ${r.fp[1]}%` : "");
-const imgSrc = (r) => !r || !r.img ? PH : /^(\/_blob\/|https?:|blob:|data:)/.test(r.img) ? r.img : "img/" + r.img;
+const imgSrc = (r) => !r || !r.img ? PH : /^(\/|https?:|blob:|data:)/.test(r.img) ? r.img : "img/" + r.img;
 const pairs = (a) => (a || []).map((x) => Array.isArray(x) ? x : [x.k, x.t]);
 function fromDoc(o) {
   const x = {};
@@ -1097,7 +1102,7 @@ function wineSection(r) {
   const mw = winesFor(r, 3, WINES, owner ? "Du" : "Morten") || [];
   const own = owner ? [] : (winesFor(r, 3, myWines(), "Du") || []);
   const head = owner ? "Vin fra kjelleren din" : "Vin til retten";
-  return `<div class="wines"><div class="wines-h"><h3>${head}</h3>${owner ? `<a href="${VINKJELLER}" target="_blank" rel="noopener">Åpne vinkjelleren ↗</a>` : `<button type="button" data-page="cellar" style="color:#e68aa0;font-weight:600;font-size:13px">Min vinkjeller →</button>`}</div>
+  return `<div class="wines"><div class="wines-h"><h3>${head}</h3>${owner && WEBAPP ? "" : owner ? `<a href="${VINKJELLER}" target="_blank" rel="noopener">Åpne vinkjelleren ↗</a>` : `<button type="button" data-page="cellar" style="color:#e68aa0;font-weight:600;font-size:13px">Min vinkjeller →</button>`}</div>
     ${own.length ? `<div class="wsub-h">Fra din kjeller</div><div class="wgrid">${own.map(({ w, why }) => wineCard(w, why, { mine: true })).join("")}</div>` : ""}
     ${!owner ? `<div class="wsub-h">Mortens anbefaling</div>` : ""}
     ${mw.length ? `<div class="wgrid">${mw.map(({ w, why }) => wineCard(w, why)).join("")}</div>` : `<p class="muted" style="margin:0">Ingen av vinene i kjelleren er merket for denne typen mat. Spør Morten om et forslag.</p>`}
@@ -1274,7 +1279,7 @@ if (WEBAPP) {
   if (tok && window.crypto && crypto.subtle) {
     crypto.subtle.digest("SHA-256", new TextEncoder().encode(tok)).then((b) => {
       const hex = [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
-      try { if (hex === EIERHASH) { localStorage.setItem("mk-eier", EIERHASH); localStorage.setItem("kokebok-velkommen", "1"); } } catch (e) {}
+      try { if (hex === EIERHASH) { localStorage.setItem("mk-eier-tok", tok); localStorage.setItem("mk-eier", EIERHASH); localStorage.setItem("kokebok-velkommen", "1"); } } catch (e) {}
       location.replace(location.pathname + "#app");
     });
   } else if (qs.get("eier") === null && qs.get("gjest") !== null) { try { localStorage.removeItem("mk-eier"); } catch (e) {} }
@@ -1284,7 +1289,7 @@ async function eierUnlock(tok) {
   const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(tok));
   const hex = [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
   if (hex !== EIERHASH) return false;
-  try { localStorage.setItem("mk-eier", EIERHASH); localStorage.setItem("kokebok-velkommen", "1"); } catch (e) {}
+  try { localStorage.setItem("mk-eier-tok", tok); localStorage.setItem("mk-eier", EIERHASH); localStorage.setItem("kokebok-velkommen", "1"); } catch (e) {}
   return true;
 }
 if (WEBAPP) {
@@ -1295,7 +1300,7 @@ if (WEBAPP) {
     taps++; clearTimeout(tt); tt = setTimeout(() => (taps = 0), 2500);
     if (taps < 5) return; taps = 0;
     const cur = (() => { try { return localStorage.getItem("mk-eier") === EIERHASH; } catch (x) { return false; } })();
-    if (cur) { if (confirm("Du er i eier-modus. Vil du gå tilbake til gjestevisning på denne enheten?")) { try { localStorage.removeItem("mk-eier"); } catch (x) {} location.reload(); } return; }
+    if (cur) { if (confirm("Du er i eier-modus. Vil du gå tilbake til gjestevisning på denne enheten?")) { try { localStorage.removeItem("mk-eier"); localStorage.removeItem("mk-eier-tok"); } catch (x) {} location.reload(); } return; }
     const code = prompt("Eierkode"); if (!code) return;
     if (await eierUnlock(code)) location.reload(); else alert("Feil kode");
   });
@@ -1304,6 +1309,39 @@ const WEBOWNER = (() => { try { return WEBAPP && localStorage.getItem("mk-eier")
 if (WEBAPP) { const fa = document.getElementById("footAbout"); if (fa) fa.textContent = "Om appen"; }
 const CAP = { tts: null, sample: null, dict: null, dl: null, assets: null, db: null, user: null, artifact: null, canEdit: false, imgAI: false };
 if (WEBOWNER) CAP.isOwner = true;
+/* ---------- webappen: felles oppskrifter og innboks (Netlify) ---------- */
+const EIERTOK = () => { try { return localStorage.getItem("mk-eier-tok") || ""; } catch (e) { return ""; } };
+async function webApi(action, extra) {
+  if (WEBOWNER && action !== "submit" && !EIERTOK()) { const c = prompt("Skriv inn eierkoden din én gang til"); if (!c || !(await eierUnlock(c))) throw Object.assign(new Error("kode"), { text: "Feil eller manglende eierkode" }); }
+  const r = await fetch("/api/recipes", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action, token: EIERTOK(), ...extra }) });
+  let j = null; try { j = await r.json(); } catch (e) {}
+  if (!r.ok) throw Object.assign(new Error((j && j.message) || "Noe gikk galt"), { code: r.status, text: j && j.message });
+  return j || {};
+}
+const INBOX = { items: [], loaded: false, busy: "" };
+async function webSync() {
+  if (!WEBAPP) return;
+  try {
+    const r = await fetch("/api/recipes", { cache: "no-store" }); if (!r.ok) return;
+    const j = await r.json(); const next = {};
+    Object.entries(j.docs || {}).forEach(([id, d]) => { next[id] = { ...d, id }; });
+    if (JSON.stringify(next) !== JSON.stringify(CUSTOM)) { CUSTOM = next; rebuild(); renderAll(); }
+  } catch (e) {}
+  if (WEBOWNER) loadInbox();
+}
+async function loadInbox() {
+  try { const j = await webApi("inbox"); INBOX.items = j.items || []; INBOX.loaded = true; } catch (e) { INBOX.loaded = true; }
+  const b = document.getElementById("inboxBadge"); if (b) { b.textContent = INBOX.items.length; b.dataset.n = INBOX.items.length; }
+  if (view.drawer === "inbox") renderInbox();
+}
+if (WEBOWNER) {
+  CAP.canEdit = true;
+  CAP.db = { collection: () => ({ doc: (id) => ({
+    set: async (doc) => { const j = await webApi("set", { id, doc }); if (j.doc) setTimeout(() => { CUSTOM[id] = { ...j.doc, id }; rebuild(); }, 0); return j; },
+    delete: async () => webApi("delete", { id }),
+  }) }) };
+}
+if (WEBAPP) document.addEventListener("visibilitychange", () => { if (!document.hidden) webSync(); });
 function updateEditUi() { updatePubUi(); if (view.kind === "recipe") refreshRecipe(); }
 async function initCaps() {
   if (!window.claude || !window.claude.use) return;
@@ -1884,9 +1922,9 @@ async function compressImg(file, max = 1800) {
 }
 async function uploadImg(file) {
   const st = $("#ed_imgstat");
-  if (edit.mine) {
+  if (edit.mine || WEBAPP) {
     try {
-      const blob = await compressImg(file, 900);
+      const blob = await compressImg(file, edit.mine ? 900 : 1400);
       const url = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); });
       edit.img = url; st.className = "status"; st.textContent = "";
       const box = $("#ed_imgbox"); box.querySelector("img")?.remove(); box.insertAdjacentHTML("afterbegin", `<img src="${url}" alt="">`); box.querySelector(".ov").textContent = "Bytt bilde";
@@ -1945,7 +1983,7 @@ async function saveEditor() {
     tips: $("#ed_tips").value.split(/\n+/).map((x) => x.trim()).filter(Boolean), img: edit.img || "", updatedAt: new Date().toISOString(), custom: !r || !!r.custom };
   if (doc.custom) doc.createdAt = (CUSTOM[id] && CUSTOM[id].createdAt) || new Date().toISOString();
   try { st.className = "status"; st.textContent = "Lagrer …"; await CAP.db.collection("recipes").doc(id).set(doc);
-    CUSTOM[id] = { ...doc, id }; rebuild(); renderAll(); closeDrawer(); openRecipe(id); toast((r ? "Endringene er lagret" : "Oppskriften er lagt til") + (CAP.artifact ? " – trykk «Publiser for alle» når du vil dele" : ""));
+    CUSTOM[id] = { ...doc, id }; rebuild(); renderAll(); closeDrawer(); openRecipe(id); toast((r ? "Endringene er lagret" : "Oppskriften er lagt til") + (WEBAPP ? " – nå synlig for alle" : CAP.artifact ? " – trykk «Publiser for alle» når du vil dele" : ""));
   } catch (e) { st.className = "status err"; st.textContent = "Kunne ikke lagre" + (e && e.code ? ` (${e.code})` : "") + "."; }
 }
 async function removeRecipe(reset) {
@@ -2195,7 +2233,7 @@ function renderCellar() {
   el.innerHTML = `<div class="cel-head">
       <div><div class="k">${owner ? "Fra vinkjeller-appen din" : "Bygg din egen samling"}</div><h2>${owner ? "Mortens" : "Min"} <em>vinkjeller</em></h2>
       <p class="muted">${st.n ? `${st.n} ${st.n === 1 ? "vin" : "viner"} · ${st.bottles} ${st.bottles === 1 ? "flaske" : "flasker"}${st.value ? ` · verdi ${Math.round(st.value).toLocaleString("nb-NO")} kr` : ""}` : "Ingen viner ennå"}</p></div>
-      <div class="row">${owner ? `<a class="btn" href="${VINKJELLER}" target="_blank" rel="noopener">${icon("wine", 16)}Åpne vinkjeller-appen ↗</a>` : `<button class="btn primary" type="button" data-addvin="kjeller">${icon("plus", 16)}Legg til vin</button>${CAP.sample && CAP.imgAI ? `<label class="btn">Les kvittering<input type="file" accept="image/*" id="rcptFile" hidden></label>` : ""}<button class="btn" type="button" data-backup="1">Sikkerhetskopi</button><label class="btn">Hent kopi<input type="file" accept="application/json,.json" id="restoreFile" hidden></label>`}</div>
+      <div class="row">${owner && WEBAPP ? "" : owner ? `<a class="btn" href="${VINKJELLER}" target="_blank" rel="noopener">${icon("wine", 16)}Åpne vinkjeller-appen ↗</a>` : `<button class="btn primary" type="button" data-addvin="kjeller">${icon("plus", 16)}Legg til vin</button>${CAP.sample && CAP.imgAI ? `<label class="btn">Les kvittering<input type="file" accept="image/*" id="rcptFile" hidden></label>` : ""}<button class="btn" type="button" data-backup="1">Sikkerhetskopi</button><label class="btn">Hent kopi<input type="file" accept="application/json,.json" id="restoreFile" hidden></label>`}</div>
     </div>
     <div class="seg cel-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" data-ctab="${k}" aria-pressed="${cv.tab === k}">${l}</button>`).join("")}</div>
     <div id="celBody"></div>`;
@@ -2518,10 +2556,45 @@ function shareText(r) {
   return out.join("\n");
 }
 function sendText() { const r = BY[send.id]; return r ? `Hei Morten! Her er en oppskrift til kokeboka di:\n\n${shareText(r)}` : ""; }
+function renderInbox() {
+  const d = $("#drawerBody"); if (!d) return;
+  if (!INBOX.loaded) { d.innerHTML = `<p class="muted">Henter innboksen …</p>`; return; }
+  if (!INBOX.items.length) { d.innerHTML = `<div class="empty"><h3>Innboksen er tom</h3><p>Når venner trykker «Send til Morten» på en egen oppskrift, dukker den opp her. Du velger selv om den skal inn i kokeboka.</p></div>`; return; }
+  const opts = (sel) => BOOK.sections.map((x) => `<option value="${x.id}" ${x.id === sel ? "selected" : ""}>${esc(x.name)}</option>`).join("");
+  const li = (arr, k) => (arr || []).map((x) => (Array.isArray(x) ? { k: x[0], t: x[1] } : x)).map((x) => (x.k === "H" ? `<li class="h">${esc(x.t)}</li>` : `<li>${esc(x.t)}</li>`)).join("");
+  d.innerHTML = `<div class="inbox">${INBOX.items.map((it) => { const r = it.recipe || {}; const busy = INBOX.busy === it.id;
+    return `<article class="inb">${r.img ? `<img src="${esc(r.img)}" alt="">` : ""}<div class="inb-b"><h4>${esc(r.title || "Uten tittel")}</h4>
+      <p class="muted">Fra ${esc(it.from || "en venn")} · ${esc(new Date(it.at).toLocaleDateString("nb-NO", { day: "numeric", month: "short" }))}${r.porsjoner ? " · " + esc(r.porsjoner) + " pers." : ""}${r.tid ? " · " + esc(r.tid) : ""}</p>
+      <details><summary>Se oppskriften</summary><h5>Ingredienser</h5><ul>${li(r.ingredients)}</ul><h5>Slik gjør du</h5><ol>${li(r.steps)}</ol>${(r.tips || []).length ? `<h5>Tips</h5><ul>${r.tips.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}</details>
+      <label class="muted inb-l">Kapittel <select class="input" id="inch_${esc(it.id)}">${opts(r.chapterId)}</select></label>
+      <div class="row"><button class="btn small primary" type="button" data-inok="${esc(it.id)}" ${busy ? "disabled" : ""}>${icon("check", 15)}${busy ? "Legger inn …" : "Legg i kokeboka"}</button><button class="btn small" type="button" data-inno="${esc(it.id)}" ${busy ? "disabled" : ""}>Avvis</button></div></div></article>`; }).join("")}</div>`;
+}
+async function inboxApprove(id) {
+  const sel = document.getElementById("inch_" + id); INBOX.busy = id; renderInbox();
+  try { const j = await webApi("approve", { id, chapterId: sel ? sel.value : "" }); CUSTOM[j.id] = { ...j.doc, id: j.id }; rebuild(); renderAll(); INBOX.items = INBOX.items.filter((x) => x.id !== id); toast("Lagt i kokeboka – nå synlig for alle 🎉"); }
+  catch (e) { toast((e && e.text) || "Kunne ikke legge den inn"); }
+  INBOX.busy = ""; renderInbox(); const b = document.getElementById("inboxBadge"); if (b) { b.textContent = INBOX.items.length; b.dataset.n = INBOX.items.length; }
+}
+async function inboxReject(id) {
+  if (!confirm("Avvise denne oppskriften? Den slettes fra innboksen.")) return;
+  try { await webApi("reject", { id }); INBOX.items = INBOX.items.filter((x) => x.id !== id); toast("Avvist"); } catch (e) { toast("Kunne ikke avvise"); }
+  renderInbox(); const b = document.getElementById("inboxBadge"); if (b) { b.textContent = INBOX.items.length; b.dataset.n = INBOX.items.length; }
+}
+async function sendDirect() {
+  const r = BY[send.id]; const st = $("#sdstat"); if (!r || !st) return;
+  const from = ($("#sfrom") && $("#sfrom").value.trim()) || ""; try { localStorage.setItem("mk-navn", from); } catch (e) {}
+  st.className = "status"; st.textContent = "Sender …";
+  try {
+    await webApi("submit", { from, recipe: { title: r.title, chapterId: r.chapterId, porsjoner: r.porsjoner, tid: r.tid, ingredients: r.ingredients, steps: r.steps, tips: r.tips, img: r.img || "" } });
+    st.textContent = "Sendt! Morten har fått oppskriften i innboksen sin 🎉"; toast("Sendt til Morten");
+  } catch (e) { st.className = "status err"; st.textContent = (e && e.text) || "Kunne ikke sende. Prøv igjen, eller send på SMS under."; }
+}
 function renderSend() {
   const r = BY[send.id]; if (!r) return;
   const t = sendText();
-  $("#drawerBody").innerHTML = `<div class="form"><p class="muted" style="margin:0">Send oppskriften til Morten på SMS eller e-post. Han kan legge den inn i kokeboka og dele den med alle.${r.img ? " Bildet er ikke med i teksten. Legg det gjerne ved selv." : ""}</p>
+  const nm = (() => { try { return localStorage.getItem("mk-navn") || ""; } catch (e) { return ""; } })();
+  const direct = WEBAPP ? `<div class="aibox"><h4>Send rett til Morten</h4><p>Oppskriften${r.img ? " og bildet" : ""} havner i innboksen hans. Liker han den, legger han den i kokeboka for alle.</p><div class="row"><input class="input" id="sfrom" placeholder="Navnet ditt" value="${esc(nm)}" maxlength="60" style="flex:1;min-width:0"><button class="btn small primary" type="button" data-sdirect="1">${icon("right", 15)}Send</button></div><p class="status" id="sdstat"></p></div><p class="muted" style="margin:6px 0 0">Eller send den selv på SMS eller e-post:</p>` : "";
+  $("#drawerBody").innerHTML = `<div class="form">${direct}<p class="muted" style="margin:0">Send oppskriften til Morten på SMS eller e-post. Han kan legge den inn i kokeboka og dele den med alle.${r.img ? " Bildet er ikke med i teksten. Legg det gjerne ved selv." : ""}</p>
     <textarea class="note sendtxt" id="sendtxt" readonly>${esc(t)}</textarea></div>`;
   const body = encodeURIComponent(t), subj = encodeURIComponent("Oppskrift: " + r.title);
   $("#smail").href = `mailto:?subject=${subj}&body=${body}`;
@@ -2590,16 +2663,17 @@ async function deleteComment(key) {
 function openDrawer(kind) {
   closeDrawer(true);
   view.drawer = kind;
-  const titles = { list: "Handleliste", week: "Ukemeny", chef: "Spør Morten", edit: edit.id ? "Rediger oppskrift" : edit.mine ? "Ny oppskrift – bare for meg" : "Ny oppskrift", send: "Send til Morten", wine: "Vinen", vin: "Vinen din", rcpt: "Les kvittering", om: "Om appen", meny: "Lag menykort", addvin: cv.add.mode === "onske" ? "Legg til ønske" : "Legg til vin" };
+  const titles = { list: "Handleliste", week: "Ukemeny", chef: "Spør Morten", edit: edit.id ? "Rediger oppskrift" : edit.mine ? "Ny oppskrift – bare for meg" : "Ny oppskrift", send: "Send til Morten", wine: "Vinen", vin: "Vinen din", rcpt: "Les kvittering", om: "Om appen", inbox: "Innboks", meny: "Lag menykort", addvin: cv.add.mode === "onske" ? "Legg til ønske" : "Legg til vin" };
   const foot = kind === "list" ? `<button class="btn small" type="button" data-lcopy="1">Kopier</button><button class="btn small" type="button" data-ldl="1" ${CAP.dl ? "" : "hidden"}>Last ned</button><button class="btn small" type="button" data-lclean="1">Fjern avkryssede</button><button class="btn small" type="button" data-lclear="1">Tøm listen</button>`
     : kind === "week" ? `<button class="btn small primary" type="button" data-week2list="1">${icon("cart", 15)}Legg uka i handlelisten</button><button class="btn small" type="button" data-wrand="1">${icon("dice", 15)}Fyll tomme dager</button><button class="btn small" type="button" data-wclear="1">Tøm uka</button>`
     : kind === "edit" ? `<button class="btn small primary" type="button" data-esave="1">${icon("check", 15)}Lagre</button><button class="btn small" type="button" data-dclose="1">Avbryt</button>${edit.id && BY[edit.id] && BY[edit.id].edited ? `<button class="btn small" type="button" data-ereset="1">Angre endringene</button>` : ""}${edit.id && BY[edit.id] ? `<button class="btn small danger" type="button" data-edel="1">Slett oppskriften</button>` : ""}`
     : kind === "rcpt" ? `<button class="btn small primary" type="button" data-rcsave="1">${icon("check", 15)}Legg i kjelleren</button><button class="btn small" type="button" data-dclose="1">Avbryt</button>`
     : kind === "om" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button>`
+    : kind === "inbox" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button><button class="btn small" type="button" data-inreload="1">Oppdater</button>`
     : kind === "meny" ? `<button class="btn small primary" type="button" data-mkprev="1">${icon("check", 15)}Se menykortet</button><button class="btn small" type="button" data-mkreset="1">Start på nytt</button>`
     : kind === "vin" ? `<a class="btn small primary" id="wvmp" href="https://www.vinmonopolet.no" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a><button class="btn small danger" type="button" data-vdel="1">Fjern fra kjelleren</button>`
     : kind === "addvin" ? (cv.add.manual ? `<button class="btn small primary" type="button" data-vsave="1">${icon("check", 15)}Lagre</button><button class="btn small" type="button" data-vback="1">Tilbake til søket</button>` : `<button class="btn small" type="button" data-dclose="1">Ferdig</button>`)
-    : kind === "wine" ? `<a class="btn small primary" id="wvmp" href="https://www.vinmonopolet.no" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner ? `<a class="btn small" href="${VINKJELLER}" target="_blank" rel="noopener">Åpne vinkjelleren ↗</a>` : ""}`
+    : kind === "wine" ? `<a class="btn small primary" id="wvmp" href="https://www.vinmonopolet.no" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner && !WEBAPP ? `<a class="btn small" href="${VINKJELLER}" target="_blank" rel="noopener">Åpne vinkjelleren ↗</a>` : ""}`
     : kind === "send" ? `${navigator.share ? `<button class="btn small primary" type="button" data-sshare="1">${icon("right", 15)}Del …</button>` : ""}<button class="btn small ${navigator.share ? "" : "primary"}" type="button" data-scopy="1">Kopier</button><a class="btn small" id="smail" href="#" target="_blank" rel="noopener">E-post</a><a class="btn small" id="ssms" href="#" target="_blank" rel="noopener">SMS</a>`
     : !CAP.sample ? `<button class="btn small" type="button" data-dclose="1">Lukk</button>`
     : `<form class="addrow" style="margin:0;flex:1" id="chefForm"><input class="input" id="chefq" placeholder="Spør om mat, erstatninger, tilbehør …" autocomplete="off" aria-label="Spørsmål til Morten"><button class="btn small icon" type="button" data-chefmic="1" ${CAP.dict ? "" : "hidden"} aria-label="Snakk">${icon("mic", 16)}</button><button class="btn small primary" type="submit">Spør</button></form>`;
@@ -2608,7 +2682,7 @@ function openDrawer(kind) {
   layer.insertAdjacentHTML("beforeend", `<div class="overlay ${isChef ? "clear" : ""}" data-dclose="1" style="z-index:49"></div><aside class="drawer ${isChef ? "chefpanel" : ""}" id="drawer" role="dialog" aria-modal="true" aria-label="${titles[kind]}"><div class="d-head">${head}<button class="xbtn" type="button" data-dclose="1" aria-label="Lukk">${icon("x", 18)}</button></div><div class="d-body" id="drawerBody"></div><div class="d-foot">${foot}</div></aside>`);
   document.body.classList.toggle("chef-on", isChef);
   lock(true);
-  if (kind === "list") renderList(); else if (kind === "week") renderWeek(); else if (kind === "edit") renderEditor(); else if (kind === "send") renderSend(); else if (kind === "wine") renderWine(); else if (kind === "vin") renderMyWine(); else if (kind === "rcpt") renderReceipt(); else if (kind === "om") renderAbout(); else if (kind === "meny") renderMeny(); else if (kind === "addvin") renderAddVin(); else { renderChef(); setTimeout(() => $("#chefq")?.focus(), 50); }
+  if (kind === "list") renderList(); else if (kind === "week") renderWeek(); else if (kind === "edit") renderEditor(); else if (kind === "send") renderSend(); else if (kind === "wine") renderWine(); else if (kind === "vin") renderMyWine(); else if (kind === "rcpt") renderReceipt(); else if (kind === "om") renderAbout(); else if (kind === "inbox") renderInbox(); else if (kind === "meny") renderMeny(); else if (kind === "addvin") renderAddVin(); else { renderChef(); setTimeout(() => $("#chefq")?.focus(), 50); }
 }
 function closeDrawer(silent) {
   document.querySelectorAll("#drawer, .overlay[data-dclose]").forEach((e) => e.remove());
@@ -2902,6 +2976,10 @@ document.addEventListener("click", (ev) => {
   if (d.wine) { wine.id = d.wine; openDrawer("wine"); return; }
   if (d.sendm) { send.id = d.sendm; openDrawer("send"); return; }
   if (d.scopy) { copySend(); return; }
+  if (d.sdirect) { sendDirect(); return; }
+  if (d.inok) { inboxApprove(d.inok); return; }
+  if (d.inno) { inboxReject(d.inno); return; }
+  if (d.inreload) { INBOX.loaded = false; renderInbox(); loadInbox(); return; }
   if (d.sshare) { shareSend(); return; }
   if (d.cpost) { postComment(d.cpost); return; }
   if (d.cdel) { if (t.dataset.armed) deleteComment(d.cdel); else { t.dataset.armed = "1"; t.textContent = "Slett?"; t.style.fontSize = "12px"; } return; }
@@ -3091,6 +3169,7 @@ window.addEventListener("pointermove", (e) => { FACE.gx = ((e.clientX / innerWid
 Promise.all([fetch("recipes.json").then((r) => r.json()), fetch("wines.json").then((r) => r.json()).catch(() => ({ wines: [] }))]).then(([b, w]) => {
   BASE = pickBase(b); WINES = w.wines || []; WINES_AT = w.at || "";
   rebuild(); renderCover(); renderAll(); route();
+  if (WEBAPP) { webSync(); if (WEBOWNER) { const bn = document.getElementById("btnNew"); if (bn) bn.insertAdjacentHTML("afterend", `<button class="btn" id="btnInbox" type="button">${icon("list", 18)}Innboks <span class="badge" id="inboxBadge" data-n="0">0</span></button>`); const bi = document.getElementById("btnInbox"); if (bi) bi.onclick = () => { openDrawer("inbox"); loadInbox(); }; } }
   initSync(); initCaps(); startSteam(); greet(); (() => { const t0 = Date.now(); const tick = () => { if (sync.live || !sync.ref || Date.now() - t0 > 5000) maybeWelcome(); else setTimeout(tick, 300); }; setTimeout(tick, 2200); })();
 }).catch(() => { $("#results").innerHTML = `<div class="empty"><h3>Fant ikke oppskriftene</h3><p>Last siden på nytt.</p></div>`; });
 })();
