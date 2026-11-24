@@ -524,6 +524,29 @@ footer.foot { margin-top: 60px; color: var(--faint); font-size: 12px; text-align
 .chef-fab::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1px solid rgba(234, 165, 96, .45); opacity: 0; pointer-events: none; }
 .chef-fab .tip { position: absolute; right: 80px; white-space: nowrap; font: 600 13px/1 var(--sans); padding: 10px 14px; border-radius: 999px; background: rgba(28, 19, 15, .9); border: 1px solid var(--line-strong); opacity: 0; transform: translateX(6px); transition: .25s; pointer-events: none; }
 .chef-fab:hover .tip, .chef-fab:focus-visible .tip { opacity: 1; transform: none; }
+/* ---------- bunnmeny på mobil (Morten i midten, alltid innen rekkevidde) ---------- */
+.botnav { display: none; }
+@media (max-width: 760px) {
+  .botnav { display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; position: fixed; z-index: 46; left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); height: 62px; padding: 0 6px; border-radius: 24px;
+    background: rgba(28, 18, 14, .72); -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); border: 1px solid rgba(234,165,96,.22); box-shadow: 0 14px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06); }
+  html.webapp .botnav { bottom: calc(env(safe-area-inset-bottom, 0px) + 44px); }
+  .botnav > button { height: 62px; display: grid; place-items: center; align-content: center; gap: 3px; color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: .01em; background: none; border: 0; padding: 0; }
+  .botnav > button svg { width: 22px; height: 22px; }
+  .botnav > button[aria-pressed="true"] { color: var(--ember); }
+  .botnav .bn-chef { position: relative; }
+  .botnav .bn-chef .bn-face { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 50% 35%, #4a2c1e, #1a0f0a); border: 2px solid rgba(234,165,96,.75); box-shadow: 0 0 0 5px rgba(28,18,14,.85), 0 10px 26px rgba(0,0,0,.55), 0 0 26px rgba(234,165,96,.35); }
+  .botnav .bn-chef .bn-clip { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); width: 60px; height: 60px; clip-path: inset(-60px -6px 0 -6px round 0 0 30px 30px); pointer-events: none; }
+  .botnav .bn-chef .bn-clip img { position: absolute; left: 50%; bottom: -6px; width: 58px; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 4px 10px rgba(0,0,0,.45)); }
+  .botnav .bn-chef span.bn-l { align-self: end; margin-bottom: 9px; color: var(--ember); }
+  .botnav .bn-chef { align-content: end; }
+  .botnav .bn-n { position: absolute; top: 9px; right: calc(50% - 20px); min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--ember); color: #1a0f0a; font-size: 10px; line-height: 16px; } .botnav .bn-n[data-n="0"] { display: none; }
+  .botnav > button { position: relative; }
+  .chef-fab, html.webapp .chef-fab { display: none !important; }
+  .pagetabs { display: none !important; }
+  body { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px); } html.webapp body { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 130px); }
+  .sheet { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 110px) !important; } html.webapp .sheet { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 144px) !important; }
+  body.chef-on .botnav, body.cooking .botnav { opacity: 0; pointer-events: none; }
+}
 html.webapp .chef-fab { bottom: calc(74px + env(safe-area-inset-bottom, 0px)); }
 body.chef-on .chef-fab, body.cooking .chef-fab { opacity: 0; pointer-events: none; transform: scale(.8); }
 @media (prefers-reduced-motion: no-preference) {
@@ -747,6 +770,7 @@ button.kpi:hover .go, button.kpi[aria-pressed="true"] .go { opacity: 1; color: v
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 11v5.5M12 7.6v.2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
   <symbol id="i-plate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
@@ -840,6 +864,7 @@ button.kpi:hover .go, button.kpi[aria-pressed="true"] .go { opacity: 1; color: v
 </main>
 
 <div id="layer"></div>
+<nav class="botnav" aria-label="Meny"><button type="button" data-page="book" aria-pressed="true"><svg><use href="#i-plate"/></svg><span>Oppskrifter</span></button><button type="button" data-page="cellar" aria-pressed="false"><svg><use href="#i-wine"/></svg><span>Vinkjeller</span></button><button type="button" class="bn-chef" data-bnchef="1" aria-label="Spør Morten"><span class="bn-face"></span><span class="bn-clip"><img src="img/kokk.webp" alt=""></span><span class="bn-l">Morten</span></button><button type="button" data-bnlist="1"><svg><use href="#i-cart"/></svg><span>Handleliste</span><span class="bn-n" id="bnListN" data-n="0">0</span></button><button type="button" data-about="1"><svg><use href="#i-info"/></svg><span>Om</span></button></nav>
 <button class="chef-fab" id="chefFab" type="button" aria-label="Spør Morten"><svg class="hat" viewBox="0 0 64 64" aria-hidden="true"><defs>
   <linearGradient id="hatG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#f6eee4"/><stop offset="1" stop-color="#d9c8b5"/></linearGradient>
   <radialGradient id="hatH" cx="35%" cy="25%" r="60%"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
@@ -1307,6 +1332,7 @@ if (WEBAPP) {
 }
 const WEBOWNER = (() => { try { return WEBAPP && localStorage.getItem("mk-eier") === EIERHASH; } catch (e) { return false; } })();
 if (WEBAPP) { const fa = document.getElementById("footAbout"); if (fa) fa.textContent = "Om appen"; }
+(() => { const src = document.getElementById("listBadge"), dst = document.getElementById("bnListN"); if (!src || !dst) return; const sync = () => { dst.textContent = src.textContent; dst.dataset.n = src.dataset.n || src.textContent; }; sync(); new MutationObserver(sync).observe(src, { childList: true, characterData: true, subtree: true, attributes: true }); })();
 const CAP = { tts: null, sample: null, dict: null, dl: null, assets: null, db: null, user: null, artifact: null, canEdit: false, imgAI: false };
 if (WEBOWNER) CAP.isOwner = true;
 /* ---------- webappen: felles oppskrifter og innboks (Netlify) ---------- */
@@ -2975,6 +3001,8 @@ document.addEventListener("click", (ev) => {
   if (d.wishdel) { celDel("wish", d.wishdel).then(() => renderCellar()); return; }
   if (d.wine) { wine.id = d.wine; openDrawer("wine"); return; }
   if (d.sendm) { send.id = d.sendm; openDrawer("send"); return; }
+  if (d.bnchef) { $("#chefFab").click(); return; }
+  if (d.bnlist) { $("#btnList").click(); return; }
   if (d.scopy) { copySend(); return; }
   if (d.sdirect) { sendDirect(); return; }
   if (d.inok) { inboxApprove(d.inok); return; }
