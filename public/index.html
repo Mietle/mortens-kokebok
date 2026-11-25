@@ -230,8 +230,8 @@ body.page-cellar .kpis, body.page-cellar #shelves, body.page-cellar .filterbar, 
 .st-top li::before { content: counter(st); color: var(--ember); font-weight: 700; font-size: 12.5px; } .st-top button { text-align: left; background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .st-top span { color: var(--muted); font-size: 13px; }
 .st-note { font-size: 12.5px; margin-top: 14px; }
 .news .wbox h2 { text-align: center; } .newsl { list-style: none; margin: 12px 0 16px; padding: 0; display: grid; gap: 8px; text-align: left; }
-.newsl li { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 10px; align-items: start; padding: 10px 12px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
-.newsl .ni { font-size: 20px; line-height: 1.25; text-align: center; } .newsl b { display: block; font-size: 14.5px; margin-bottom: 1px; color: var(--text, #f6ece2); } .newsl li span:last-child { font-size: 13px; color: var(--muted); line-height: 1.35; }
+.newsl li { display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 12px; align-items: center; padding: 10px 12px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+.newsl .ni { width: 42px; height: 42px; border-radius: 13px; } .newsl .ni .ill { width: 28px; height: 28px; } .newsl b { display: block; font-size: 14.5px; margin-bottom: 1px; color: var(--text, #f6ece2); } .newsl li span:last-child { font-size: 13px; color: var(--muted); line-height: 1.35; }
 .news .wbox { padding: 20px 18px 18px; } .news .wbox h2 { margin: 6px 0 0; font-size: 26px; }
 .news .nclose { display: flex; margin: 0 auto; min-width: 140px; justify-content: center; }
 .afeat { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; font-size: 14px; } .afeat li { display: flex; gap: 10px; align-items: baseline; } .afeat .ok { color: var(--ember); }
@@ -796,12 +796,17 @@ a.btn { color: inherit; text-decoration: none; }
 @keyframes plateFloat { to { transform: translateY(-60%) rotate(.4deg); } }
 @media (prefers-reduced-motion: reduce) { .cover.lowres .cover-plate { animation: none; } }
 
+.ill { flex: none; vertical-align: -3px; filter: drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
+.btn .ill, .chip .ill, .pill .ill { margin-right: 2px; }
+.tile-ill { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; position: relative; flex: none; background: linear-gradient(160deg, rgba(255,226,190,.16), rgba(255,255,255,.03) 60%); border: 1px solid rgba(234,165,96,.35); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 8px 26px rgba(234,165,96,.22); }
+.tile-ill::after { content: ""; position: absolute; inset: 1px 1px 50% 1px; border-radius: 14px 14px 40% 40%; background: linear-gradient(rgba(255,255,255,.14), transparent); pointer-events: none; }
+.tile-ill .ill { filter: drop-shadow(0 0 6px rgba(234,165,96,.45)); }
 /* ---------- serveres som ---------- */
 .servmode { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 2px 0 10px; } .servmode > span { font-size: 12px; color: var(--muted); margin-right: 2px; }
 .servmode .chip { padding: 5px 12px; font-size: 13px; }
 /* ---------- menykort ---------- */
 .apsug { display: grid; gap: 6px; }
-.apsug .aprow { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 10px; align-items: center; padding: 10px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.03); color: inherit; font: inherit; text-align: left; cursor: pointer; width: 100%; box-sizing: border-box; }
+.apsug .aprow { display: grid; grid-template-columns: 32px minmax(0,1fr); gap: 10px; align-items: center; padding: 10px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.03); color: inherit; font: inherit; text-align: left; cursor: pointer; width: 100%; box-sizing: border-box; }
 .apsug .aprow:hover { border-color: rgba(234,165,96,.5); }
 .apsug .aprow .ic { font-size: 20px; text-align: center; }
 .apsug .aprow b { display: block; font-family: Fraunces, Georgia, serif; font-weight: 400; font-size: 15.5px; line-height: 1.2; } .apsug .aprow small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
@@ -848,6 +853,49 @@ button.kpi:hover .go, button.kpi[aria-pressed="true"] .go { opacity: 1; color: v
 
 <div class="ambient" aria-hidden="true"><span class="glow g1"></span><span class="glow g2"></span><span class="glow g3"></span><canvas class="sparks" id="sparks"></canvas></div>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="ig-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe3a3"/><stop offset=".55" stop-color="#e9b04f"/><stop offset="1" stop-color="#b8782a"/></linearGradient>
+<linearGradient id="ig-champ" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe6a2"/><stop offset="1" stop-color="#d9a640"/></linearGradient>
+<linearGradient id="ig-glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".6"/><stop offset=".45" stop-color="#fff" stop-opacity=".12"/><stop offset="1" stop-color="#fff" stop-opacity=".38"/></linearGradient>
+<linearGradient id="ig-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f1ec"/><stop offset=".5" stop-color="#b9b3ab"/><stop offset="1" stop-color="#7d766e"/></linearGradient>
+<linearGradient id="ig-steelV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbfaf7"/><stop offset=".6" stop-color="#cfc9c1"/><stop offset="1" stop-color="#8d867e"/></linearGradient>
+<linearGradient id="ig-bottleG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0f3b25"/><stop offset=".35" stop-color="#2f7a4e"/><stop offset=".6" stop-color="#14502f"/><stop offset="1" stop-color="#082416"/></linearGradient>
+<linearGradient id="ig-steak" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0606a"/><stop offset=".6" stop-color="#b32a3a"/><stop offset="1" stop-color="#7c1424"/></linearGradient>
+<linearGradient id="ig-fishG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fb3c9"/><stop offset=".55" stop-color="#d9e6ee"/><stop offset="1" stop-color="#f4f7f8"/></linearGradient>
+<linearGradient id="ig-cheeseG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe58a"/><stop offset="1" stop-color="#e8b63c"/></linearGradient>
+<radialGradient id="ig-brocG" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#8fd16a"/><stop offset=".6" stop-color="#3f9a3a"/><stop offset="1" stop-color="#1f5e22"/></radialGradient>
+<linearGradient id="ig-breadG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0b061"/><stop offset=".6" stop-color="#c97a2f"/><stop offset="1" stop-color="#8f4f1a"/></linearGradient>
+<linearGradient id="ig-ice" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9f8ff"/><stop offset="1" stop-color="#7fc3e8"/></linearGradient>
+<linearGradient id="ig-lime" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9f7c2"/><stop offset="1" stop-color="#9ccc5a"/></linearGradient>
+<linearGradient id="ig-paper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf3e6"/><stop offset="1" stop-color="#dccbb0"/></linearGradient>
+<linearGradient id="ig-wineG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c2465f"/><stop offset="1" stop-color="#6e1428"/></linearGradient>
+<linearGradient id="ig-bookG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c890"/><stop offset="1" stop-color="#c8743a"/></linearGradient>
+</defs><symbol id="ic-fridge" viewBox="0 0 32 32"><rect x="8" y="2.5" width="16" height="27" rx="3" fill="url(#ig-steel)"/><rect x="8" y="2.5" width="16" height="27" rx="3" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width=".7"/><path d="M8 12h16" stroke="#6f6961" stroke-width="1"/><rect x="10.5" y="5.5" width="2" height="4.5" rx="1" fill="url(#ig-gold)"/><rect x="10.5" y="14.5" width="2" height="7" rx="1" fill="url(#ig-gold)"/><path d="M9.6 4.2v6.6" stroke="#fff" stroke-opacity=".7" stroke-width="1.1" stroke-linecap="round"/><rect x="10" y="29.2" width="2.6" height="1.6" rx=".6" fill="#5c564f"/><rect x="19.4" y="29.2" width="2.6" height="1.6" rx=".6" fill="#5c564f"/></symbol>
+<symbol id="ic-flutes" viewBox="0 0 32 32"><path d="M6.5 3h6.2l-.9 9.6a2.2 2.2 0 0 1-4.4 0z" fill="url(#ig-glass)" stroke="#fff" stroke-opacity=".55" stroke-width=".6"/><path d="M6.9 7h5.4l-.6 5.5a2.1 2.1 0 0 1-4.2 0z" fill="url(#ig-champ)"/><path d="M9.6 14.8V26M6.6 26.6h6" stroke="#f4eee6" stroke-width="1.2" stroke-linecap="round"/><path d="M19.3 3h6.2l-.9 9.6a2.2 2.2 0 0 1-4.4 0z" fill="url(#ig-glass)" stroke="#fff" stroke-opacity=".55" stroke-width=".6"/><path d="M19.7 7h5.4l-.6 5.5a2.1 2.1 0 0 1-4.2 0z" fill="url(#ig-champ)"/><path d="M22.4 14.8V26M19.4 26.6h6" stroke="#f4eee6" stroke-width="1.2" stroke-linecap="round"/><circle cx="9.2" cy="10" r=".55" fill="#fff"/><circle cx="10.3" cy="8.4" r=".4" fill="#fff"/><circle cx="22" cy="10.3" r=".55" fill="#fff"/><path d="M7.7 4.2l-.3 4" stroke="#fff" stroke-opacity=".8" stroke-width=".8" stroke-linecap="round"/><path d="M20.5 4.2l-.3 4" stroke="#fff" stroke-opacity=".8" stroke-width=".8" stroke-linecap="round"/></symbol>
+<symbol id="ic-cloche" viewBox="0 0 32 32"><ellipse cx="16" cy="24.5" rx="13" ry="2.6" fill="url(#ig-steel)"/><path d="M5 22.6a11 11 0 0 1 22 0z" fill="url(#ig-steelV)"/><path d="M5 22.6h22" stroke="#857e76" stroke-width=".9"/><circle cx="16" cy="9.6" r="1.9" fill="url(#ig-gold)"/><path d="M9 18.5a7.5 7.5 0 0 1 4.4-5.6" stroke="#fff" stroke-opacity=".9" stroke-width="1.4" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="ic-sparkle" viewBox="0 0 32 32"><path d="M14 3l2.3 7.2L23.5 12.5l-7.2 2.3L14 22l-2.3-7.2L4.5 12.5l7.2-2.3z" fill="url(#ig-gold)"/><path d="M14 6l1 4.6" stroke="#fff" stroke-opacity=".8" stroke-width=".9" stroke-linecap="round"/><path d="M24 18.5l1.1 3.2 3.2 1.1-3.2 1.1L24 27.1l-1.1-3.2-3.2-1.1 3.2-1.1z" fill="url(#ig-gold)"/><circle cx="7" cy="25" r="1.3" fill="#ffe3a3"/></symbol>
+<symbol id="ic-bubbles" viewBox="0 0 32 32"><path d="M8 8h16l-2 19a2.4 2.4 0 0 1-2.4 2.1h-7.2A2.4 2.4 0 0 1 10 27z" fill="url(#ig-glass)" stroke="#fff" stroke-opacity=".55" stroke-width=".7"/><path d="M8.7 13.5h14.6L21.8 27a2 2 0 0 1-2 1.8h-7.6a2 2 0 0 1-2-1.8z" fill="url(#ig-lime)" fill-opacity=".85"/><circle cx="13.5" cy="20" r="1.1" fill="#fff" fill-opacity=".9"/><circle cx="17.6" cy="17" r=".8" fill="#fff" fill-opacity=".9"/><circle cx="16.4" cy="23.8" r=".7" fill="#fff" fill-opacity=".9"/><path d="M21 4.5a4 4 0 0 1 4.5 4.5L21 8.6z" fill="#f6e27a" stroke="#d1b23d" stroke-width=".6"/><path d="M18.6 8l2.6-6" stroke="#e9e3d8" stroke-width="1.2" stroke-linecap="round"/><path d="M10 9.5l.5 6" stroke="#fff" stroke-opacity=".8" stroke-width=".9" stroke-linecap="round"/></symbol>
+<symbol id="ic-bottle" viewBox="0 0 32 32"><path d="M13.3 2.5h5.4v5c0 1.6 4.3 3.4 4.3 8v12.5a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V15.5c0-4.6 4.3-6.4 4.3-8z" fill="url(#ig-bottleG)"/><path d="M13 2h6v6.6c-.6.9-5.4.9-6 0z" fill="url(#ig-gold)"/><rect x="9" y="17" width="14" height="7.5" fill="url(#ig-paper)"/><path d="M11.5 20h9M13 22.2h6" stroke="#8a6b3e" stroke-width=".8" stroke-linecap="round"/><path d="M11.2 14v13" stroke="#fff" stroke-opacity=".45" stroke-width="1.2" stroke-linecap="round"/></symbol>
+<symbol id="ic-toast" viewBox="0 0 32 32"><g transform="rotate(-16 10 16)"><path d="M6.5 4h6.2l-.9 9.6a2.2 2.2 0 0 1-4.4 0z" fill="url(#ig-glass)" stroke="#fff" stroke-opacity=".55" stroke-width=".6"/><path d="M6.9 7.6h5.4l-.6 5.5a2.1 2.1 0 0 1-4.2 0z" fill="url(#ig-champ)"/><path d="M9.6 15.8V26M6.6 26.6h6" stroke="#f4eee6" stroke-width="1.2" stroke-linecap="round"/></g><g transform="rotate(16 22 16)"><path d="M19.3 4h6.2l-.9 9.6a2.2 2.2 0 0 1-4.4 0z" fill="url(#ig-glass)" stroke="#fff" stroke-opacity=".55" stroke-width=".6"/><path d="M19.7 7.6h5.4l-.6 5.5a2.1 2.1 0 0 1-4.2 0z" fill="url(#ig-champ)"/><path d="M22.4 15.8V26M19.4 26.6h6" stroke="#f4eee6" stroke-width="1.2" stroke-linecap="round"/></g><path d="M16 1.5v2.6M13.4 2.4l1 1.8M18.6 2.4l-1 1.8" stroke="#ffe3a3" stroke-width="1.1" stroke-linecap="round"/></symbol>
+<symbol id="ic-star" viewBox="0 0 32 32"><path d="M16 3l3.9 8 8.8 1.2-6.4 6.1 1.6 8.7L16 22.8 8.1 27l1.6-8.7-6.4-6.1 8.8-1.2z" fill="url(#ig-gold)"/><path d="M16 3l3.9 8 8.8 1.2-6.4 6.1 1.6 8.7L16 22.8z" fill="#000" fill-opacity=".12"/><path d="M14.4 8.4l-1.3 2.8" stroke="#fff" stroke-opacity=".85" stroke-width="1.1" stroke-linecap="round"/></symbol>
+<symbol id="ic-meat" viewBox="0 0 32 32"><path d="M18.5 4c5.4 0 9.5 3.8 9.5 8.6 0 6.3-6.3 12.4-13.6 12.4-6.6 0-10.4-3.6-10.4-8.3C4 10 11 4 18.5 4z" fill="#f6e6d6"/><path d="M18.5 5.8c4.4 0 7.7 3 7.7 7 0 5.2-5.3 10.3-11.6 10.3-5.4 0-8.7-2.9-8.7-6.7 0-5.4 5.9-10.6 12.6-10.6z" fill="url(#ig-steak)"/><path d="M10 15c3-1 4.5-4 8-4.5M12 19c2.5-.3 5-2.4 8.4-2.2M17.5 8.2c1.6 1.2 4.4 1.2 6 3" stroke="#f3c2c2" stroke-opacity=".7" stroke-width=".8" fill="none" stroke-linecap="round"/><ellipse cx="19.6" cy="14" rx="2.4" ry="1.9" fill="#f6e6d6"/><path d="M11 9.2c1.6-1.4 3.5-2.4 5.6-2.8" stroke="#fff" stroke-opacity=".55" stroke-width="1.1" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="ic-fish" viewBox="0 0 32 32"><path d="M3 16c3.6-5.6 11-7.6 16.6-4.2L27 7.6l-1.8 8.4L27 24.4l-7.4-4.2C14 23.6 6.6 21.6 3 16z" fill="url(#ig-fishG)"/><path d="M19.6 11.8L27 7.6l-1.8 8.4L27 24.4l-7.4-4.2" fill="#7aa3bd"/><path d="M7 13.8c4-2.6 9-3 12.4-1" stroke="#5f8aa6" stroke-width="1" fill="none" stroke-linecap="round"/><circle cx="8.4" cy="15" r="1.3" fill="#1d2b36"/><circle cx="8" cy="14.6" r=".45" fill="#fff"/><path d="M12.6 12.6c.9 2.2.9 4.6 0 6.8" stroke="#8fb3c9" stroke-width=".9" fill="none"/></symbol>
+<symbol id="ic-cheese" viewBox="0 0 32 32"><path d="M3 20L20 7l9 6v11H3z" fill="url(#ig-cheeseG)"/><path d="M3 20h26v4H3z" fill="#d79f2c"/><path d="M3 20L20 7l9 6H3z" fill="#fff1b3" fill-opacity=".55"/><ellipse cx="10" cy="22.2" rx="1.4" ry=".9" fill="#b9821f"/><ellipse cx="22" cy="16" rx="1.7" ry="1.2" fill="#d79f2c"/><ellipse cx="16" cy="17.8" rx=".9" ry=".7" fill="#d79f2c"/><ellipse cx="25.5" cy="22" rx="1" ry=".7" fill="#b9821f"/></symbol>
+<symbol id="ic-veg" viewBox="0 0 32 32"><path d="M14 18h4l1.4 11h-6.8z" fill="#8cc26a"/><path d="M15.2 19.5l-.4 8.5" stroke="#c8e6a9" stroke-width=".9" stroke-linecap="round"/><circle cx="10" cy="13" r="5" fill="url(#ig-brocG)"/><circle cx="22" cy="13" r="5" fill="url(#ig-brocG)"/><circle cx="16" cy="9" r="6" fill="url(#ig-brocG)"/><circle cx="16" cy="15.5" r="4.6" fill="url(#ig-brocG)"/><circle cx="14" cy="7" r="1.2" fill="#b7e693" fill-opacity=".8"/><circle cx="8.6" cy="11.6" r=".9" fill="#b7e693" fill-opacity=".7"/><circle cx="20.6" cy="11.4" r=".9" fill="#b7e693" fill-opacity=".7"/></symbol>
+<symbol id="ic-bread" viewBox="0 0 32 32"><path d="M4 16c0-6.4 5.4-10 12-10s12 3.6 12 10v8a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z" fill="url(#ig-breadG)"/><path d="M9 11.5l3 3M14.5 9.5l3 3M20 10.5l2.6 2.6" stroke="#f7d9a6" stroke-width="1.4" stroke-linecap="round"/><path d="M6.4 14c.6-3.4 3.6-5.6 7.4-6.2" stroke="#fff" stroke-opacity=".5" stroke-width="1.2" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="ic-frozen" viewBox="0 0 32 32"><g stroke="url(#ig-ice)" stroke-width="2.2" stroke-linecap="round"><path d="M16 3v26M4.7 9.5l22.6 13M4.7 22.5l22.6-13"/><path d="M12.6 5.2L16 8.4l3.4-3.2M12.6 26.8L16 23.6l3.4 3.2M4.4 13.4l4.5 1.2-1.2 4.5M27.6 18.6l-4.5-1.2 1.2-4.5M7.7 4.9l1.2 4.5-4.5 1.2M24.3 27.1l-1.2-4.5 4.5-1.2"/></g><circle cx="16" cy="16" r="2.2" fill="#fff"/></symbol>
+<symbol id="ic-speaker" viewBox="0 0 32 32"><path d="M5 12h5l7-6v20l-7-6H5a1.5 1.5 0 0 1-1.5-1.5v-5A1.5 1.5 0 0 1 5 12z" fill="url(#ig-gold)"/><path d="M21 11a6.5 6.5 0 0 1 0 10M24.5 7.5a11.5 11.5 0 0 1 0 17" stroke="url(#ig-gold)" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M6 13.5v2" stroke="#fff" stroke-opacity=".8" stroke-width="1" stroke-linecap="round"/></symbol>
+<symbol id="ic-send" viewBox="0 0 32 32"><rect x="3" y="7" width="26" height="18" rx="2.5" fill="url(#ig-paper)"/><path d="M3.6 8.2L16 17.5l12.4-9.3" stroke="#bca684" stroke-width="1.2" fill="none"/><path d="M3.6 24.2l9.2-8.4M28.4 24.2l-9.2-8.4" stroke="#cdb995" stroke-width="1" fill="none"/><circle cx="16" cy="17.5" r="3.4" fill="url(#ig-wineG)"/><path d="M14.6 16.4h2.8" stroke="#f2b3c0" stroke-width=".9" stroke-linecap="round"/></symbol>
+<symbol id="ic-book" viewBox="0 0 32 32"><path d="M6 6.5c0-1.4 1.1-2.5 2.5-2.5H26v20H8.5C7.1 24 6 25.1 6 26.5z" fill="url(#ig-bookG)"/><path d="M8.5 24H26v5H8.5a2.5 2.5 0 0 1 0-5z" fill="#efe1cc"/><path d="M10.5 9.5h11M10.5 13h8" stroke="#6b3a18" stroke-opacity=".55" stroke-width="1.3" stroke-linecap="round"/><path d="M22 4v8l2-1.4 2 1.4V4" fill="#c2465f"/></symbol>
+<symbol id="ic-wineglass" viewBox="0 0 32 32"><path d="M9 3.5h14c.4 5.7-.3 10.6-7 11.6-6.7-1-7.4-5.9-7-11.6z" fill="url(#ig-glass)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/><path d="M9.6 8.4h12.8c-.6 3.8-2.6 6-6.4 6.5-3.8-.5-5.8-2.7-6.4-6.5z" fill="url(#ig-wineG)"/><path d="M11 5c-.2 2.4.3 4.6 1.4 6" stroke="#fff" stroke-opacity=".7" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M16 15.2v10" stroke="#f4eee6" stroke-width="1.2"/><ellipse cx="16" cy="26.6" rx="6" ry="1.5" fill="url(#ig-glass)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/></symbol>
+<symbol id="ic-chefhat" viewBox="0 0 32 32"><path d="M9 20c-3.6-.4-6-3-6-6.2C3 10.4 5.8 8 9.2 8.2 10.4 5.2 13 3.5 16 3.5s5.6 1.7 6.8 4.7C26.2 8 29 10.4 29 13.8c0 3.2-2.4 5.8-6 6.2z" fill="url(#ig-steelV)"/><path d="M9 20h14v6.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 9 26.5z" fill="#f4f1ec"/><path d="M9 22.5h14" stroke="#cfc9c1" stroke-width="1"/><path d="M7 11.5c.6-1.6 1.8-2.6 3.4-3" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="ic-search" viewBox="0 0 32 32"><circle cx="13.5" cy="13.5" r="8.5" fill="url(#ig-glass)" stroke="url(#ig-gold)" stroke-width="2.6"/><path d="M20 20l7.5 7.5" stroke="url(#ig-gold)" stroke-width="3.6" stroke-linecap="round"/><path d="M9.5 10.5a5 5 0 0 1 3.5-2.8" stroke="#fff" stroke-opacity=".85" stroke-width="1.3" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="ic-cart" viewBox="0 0 32 32"><path d="M3 5h3.4l3 14.6c.2 1 1 1.6 2 1.6h11.8c1 0 1.8-.6 2-1.5L28.5 10H8" fill="none" stroke="url(#ig-gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 10.5h18.8l-2.3 8.7H10.8z" fill="url(#ig-gold)" fill-opacity=".35"/><path d="M14 10.5l1 8.7M19 10.5l.4 8.7M23.5 10.5l-.5 8.7" stroke="url(#ig-gold)" stroke-width="1.2"/><circle cx="12.5" cy="26" r="2.2" fill="#f3d2a8"/><circle cx="23.5" cy="26" r="2.2" fill="#f3d2a8"/></symbol>
+<symbol id="ic-can" viewBox="0 0 32 32"><path d="M8 7h16v19a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2z" fill="url(#ig-steel)"/><ellipse cx="16" cy="7" rx="8" ry="2.2" fill="#e9e5df" stroke="#a39c93" stroke-width=".7"/><rect x="8" y="12" width="16" height="10" fill="url(#ig-wineG)"/><path d="M11 15.5h10M12.5 18.5h7" stroke="#f2c6cf" stroke-width="1" stroke-linecap="round"/><path d="M10 9v16" stroke="#fff" stroke-opacity=".55" stroke-width="1.2" stroke-linecap="round"/></symbol>
+<symbol id="ic-basket" viewBox="0 0 32 32"><path d="M10 13l4-8M22 13l-4-8" stroke="#8f4f1a" stroke-width="2" stroke-linecap="round"/><path d="M3 12.5h26l-2.5 13.2a2.5 2.5 0 0 1-2.5 2H8a2.5 2.5 0 0 1-2.5-2z" fill="url(#ig-breadG)"/><path d="M3 12.5h26v2.6H3z" fill="#a8622a"/><path d="M10 18v6M14 18v6M18 18v6M22 18v6" stroke="#f0c486" stroke-opacity=".75" stroke-width="1.3" stroke-linecap="round"/></symbol>
+<symbol id="ic-poultry" viewBox="0 0 32 32"><path d="M19.5 4.5c4.8 0 8 3.4 8 7.6 0 5.6-5.6 9.4-11.2 9.4l-3.8 3.8-2.4-2.4 3.8-3.8C13.9 13.5 14 4.5 19.5 4.5z" fill="url(#ig-breadG)"/><path d="M12.5 22l-4.3 4.3" stroke="#f4ede2" stroke-width="2.6" stroke-linecap="round"/><circle cx="7" cy="27.5" r="1.8" fill="#f4ede2"/><circle cx="5.5" cy="26" r="1.6" fill="#f4ede2"/><path d="M17.6 8.2c1.6-1.4 3.8-1.8 5.6-1.2" stroke="#ffe3b5" stroke-opacity=".8" stroke-width="1.3" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="ic-pasta" viewBox="0 0 32 32"><path d="M3 16h26a13 9 0 0 1-26 0z" fill="#f4f1ec"/><path d="M3 16h26" stroke="#cfc9c1" stroke-width="1"/><path d="M7 15.5c2-4 5-6 9-6s7 2 9 6" fill="#f2cf7a"/><path d="M8.5 15c1.6-2.6 4-4 7.5-4M11 15c1.4-1.6 3-2.4 5-2.4s3.6.8 5 2.4M23.5 15c-1.4-2.2-3.6-3.6-6.4-3.9" stroke="#d9a640" stroke-width=".9" fill="none"/><circle cx="14" cy="11.8" r="1.7" fill="#c8402f"/><circle cx="19" cy="12.4" r="1.4" fill="#c8402f"/><path d="M16 9.5l1-4.5M20 11l3-4" stroke="#6aa84f" stroke-width="1.4" stroke-linecap="round"/></symbol>
+<symbol id="ic-dessert" viewBox="0 0 32 32"><path d="M7 25h18l-2.5-12h-13z" fill="url(#ig-cheeseG)"/><path d="M9.5 13h13l.7 3.4H8.8z" fill="#8f4f1a"/><ellipse cx="16" cy="12.6" rx="6.5" ry="1.6" fill="#a85a1f"/><path d="M4 26h24" stroke="url(#ig-steel)" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="9" r="2.3" fill="#c2465f"/><path d="M16 6.8c.4-1.8 1.4-2.8 2.6-3.2" stroke="#6aa84f" stroke-width="1.1" fill="none" stroke-linecap="round"/><path d="M10.6 17.5l-.8 5" stroke="#fff6d0" stroke-opacity=".8" stroke-width="1.1" stroke-linecap="round"/></symbol></svg>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 11v5.5M12 7.6v.2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
@@ -985,6 +1033,7 @@ const todayIdx = () => (new Date().getDay() + 6) % 7;
 const isoDate = (d = new Date()) => d.toISOString().slice(0, 10);
 const nbDate = (iso) => { const [y, m, d] = iso.split("-"); return `${+d}.${+m}.${y.slice(2)}`; };
 
+const ill = (n, sz = 18) => `<svg class="ill" width="${sz}" height="${sz}" aria-hidden="true"><use href="#ic-${n}"/></svg>`;
 let toastT;
 function toast(msg) {
   document.querySelectorAll(".toast").forEach((t) => t.remove());
@@ -1272,7 +1321,7 @@ function buyCard({ x, band, why }) {
   const hl = COVER_BUY && COVER_BUY.code === String(x[0]);
   const w = regToWine(x), wished = !!CEL.wish["onske_" + x[0]], where = [w.district || w.country, w.vintage].filter(Boolean).join(" ");
   const pic = x[10] >= 0 ? sprite(x[10], 112) : bottleSvg(w.type, 112);
-  return `<div class="wcard bcard2${hl ? " hl" : ""}" data-code="${esc(x[0])}"><span class="wbottle">${pic}</span><span class="wtxt">${hl ? `<span class="hlbadge">★ Dagens anbefaling</span>` : ""}<span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${w.style ? `<span class="wgr">${esc(w.style)}</span>` : ""}<span class="wwhy">${esc(band)}${why ? " · " + esc(why) : w.pairing.length ? " · passer til " + esc(w.pairing.slice(0, 2).join(" og ").toLowerCase()) : ""}</span><span class="wmeta"><span>${Math.round(w.price)} kr</span></span><span class="wmore blinks"><a href="${esc(w.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "✓ I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
+  return `<div class="wcard bcard2${hl ? " hl" : ""}" data-code="${esc(x[0])}"><span class="wbottle">${pic}</span><span class="wtxt">${hl ? `<span class="hlbadge">${ill("star", 13)} Dagens anbefaling</span>` : ""}<span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${w.style ? `<span class="wgr">${esc(w.style)}</span>` : ""}<span class="wwhy">${esc(band)}${why ? " · " + esc(why) : w.pairing.length ? " · passer til " + esc(w.pairing.slice(0, 2).join(" og ").toLowerCase()) : ""}</span><span class="wmeta"><span>${Math.round(w.price)} kr</span></span><span class="wmore blinks"><a href="${esc(w.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "✓ I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
 }
 function fillBuy(id) {
   loadReg().then(() => {
@@ -1367,7 +1416,7 @@ function splitQty(t, f) {
   const nice = (v) => {
     if (/^(g|gram)$/i.test(u)) return v >= 100 ? Math.round(v / 10) * 10 : v >= 20 ? Math.round(v / 5) * 5 : v;
     if (/^(ml)$/i.test(u)) return v >= 100 ? Math.round(v / 10) * 10 : v;
-    if (!u || /^(fedd|stk\.?|egg|eggeplommer?|eggehviter?|skiver?|blad|kvast(er)?|kvister?|stilker?|never?|bunt(er)?|pk|pakke(r)?|boks(er)?|ark|sjalottløk|løk|lime|sitron(er)?|appelsin(er)?|epler?|poteter?|gulrøtter?)$/i.test(u)) return Math.max(.5, Math.round(v * 2) / 2);
+    if (!u || !/^(g|gram|kg|dl|l|liter|ml|cl|ss|ts|krm|cm|mm|klype|neve|never|dråper?)$/i.test(u) || /^(fedd|stk\.?|egg|eggeplommer?|eggehviter?|skiver?|blad|kvast(er)?|kvister?|stilker?|never?|bunt(er)?|pk|pakke(r)?|boks(er)?|ark|sjalottløk|løk|lime|sitron(er)?|appelsin(er)?|epler?|poteter?|gulrøtter?)$/i.test(u)) return Math.max(.5, Math.round(v * 2) / 2);
     return v;
   };
   let q = (m[1] || "") + fmt(nice(num(m[2]) * f));
@@ -1575,23 +1624,23 @@ function renderStats() {
 }
 /* ---------- nyheter: vises én gang for dem som brukte appen fra før ---------- */
 const NEWS = [
-  ["👨‍🍳", "Jeg er alltid nederst på skjermen", "Trykk på meg når som helst – også midt i en oppskrift."],
-  ["🧊", "Hva har du i kjøleskapet?", "Trykk «Hva har jeg?» over oppskriftene, så finner jeg retter du kan lage."],
-  ["🍷", "Vin du kan kjøpe", "Hver oppskrift foreslår tre viner fra Vinmonopolet: rimelig, mellomklasse og til fest."],
-  ["🔎", "Søk i hele Vinmonopolet", "Jeg kan anbefale viner du ikke har – med pris og lenke."],
-  ["🥂", "Hva drikker vi i kveld?", "Ny fane i vinkjelleren som plukker en flaske til maten."],
-  ["👅", "Smak og gi karakter", "Gi egne viner smaksord og karakter, så husker jeg det til neste gang."],
-  ["🛒", "Handleliste som i butikken", "Sortert etter avdeling, og like varer slås sammen."],
-  ["🔊", "Jeg leser høyt mens du lager mat", "Slå på «Les høyt», og si «neste» eller «gjenta»."],
-  ["🎉", "Planlegg selskapet", "I «Selskap og menykort»: handleliste for alle gjestene og tidsplan for dagen."],
-  ...(WEBAPP ? [["⭐", "Ukens oppskrift", "Øverst på forsiden finner du ukens rett fra meg, med en liten hilsen."], ["📨", "Send oppskriften din rett til meg", "Liker jeg den, kommer den med i kokeboka for alle."]] : []),
+  ["chefhat", "Jeg er alltid nederst på skjermen", "Trykk på meg når som helst – også midt i en oppskrift."],
+  ["fridge", "Hva har du i kjøleskapet?", "Trykk «Hva har jeg?» over oppskriftene, så finner jeg retter du kan lage."],
+  ["wineglass", "Vin du kan kjøpe", "Hver oppskrift foreslår tre viner fra Vinmonopolet: rimelig, mellomklasse og til fest."],
+  ["search", "Søk i hele Vinmonopolet", "Jeg kan anbefale viner du ikke har – med pris og lenke."],
+  ["flutes", "Hva drikker vi i kveld?", "Ny fane i vinkjelleren som plukker en flaske til maten."],
+  ["sparkle", "Smak og gi karakter", "Gi egne viner smaksord og karakter, så husker jeg det til neste gang."],
+  ["cart", "Handleliste som i butikken", "Sortert etter avdeling, og like varer slås sammen."],
+  ["speaker", "Jeg leser høyt mens du lager mat", "Slå på «Les høyt», og si «neste» eller «gjenta»."],
+  ["toast", "Planlegg selskapet", "I «Selskap og menykort»: handleliste for alle gjestene og tidsplan for dagen."],
+  ...(WEBAPP ? [["star", "Ukens oppskrift", "Øverst på forsiden finner du ukens rett fra meg, med en liten hilsen."], ["send", "Send oppskriften din rett til meg", "Liker jeg den, kommer den med i kokeboka for alle."]] : []),
 ];
 function showNews(force) {
   let seen = ""; try { seen = localStorage.getItem("mk-nytt") || ""; } catch (e) {}
   if (!force && (seen === NEWS_ID || $(".welcome") || $("#drawer") || $("#cook"))) return;
   const el = document.createElement("div"); el.className = "welcome news"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Nytt i appen");
-  el.innerHTML = `<div class="wbox"><div style="display:grid;place-items:center">${faceSVG(70)}</div><h2>Nytt hos <em>Morten</em> 🎉</h2>
-    <ul class="newsl">${NEWS.map(([i, t, d]) => `<li><span class="ni">${i}</span><span><b>${esc(t)}</b>${esc(d)}</span></li>`).join("")}</ul>
+  el.innerHTML = `<div class="wbox"><div style="display:grid;place-items:center">${faceSVG(70)}</div><h2>Nytt hos <em>Morten</em> ${ill("toast", 30)}</h2>
+    <ul class="newsl">${NEWS.map(([i, t, d]) => `<li><span class="ni tile-ill">${ill(i, 30)}</span><span><b>${esc(t)}</b>${esc(d)}</span></li>`).join("")}</ul>
     <button class="btn primary nclose" type="button">Lukk</button></div>`;
   const close = () => { try { localStorage.setItem("mk-nytt", NEWS_ID); } catch (e) {} el.remove(); lock(!!$("#sheet") || !!$("#drawer")); };
   el.querySelector(".nclose").onclick = close; el.addEventListener("click", (e) => { if (e.target === el) close(); });
@@ -1713,8 +1762,8 @@ function renderChips() {
   const n = (id) => R.filter((r) => r.chapterId === id).length;
   const chip = (key, label, pressed, extra = "") => `<button class="chip" type="button" data-chip="${key}" aria-pressed="${pressed}">${label}${extra}</button>`;
   $("#chips").innerHTML =
-    `<button class="chip fr-chip" type="button" data-fridge="1">🧊 Hva har jeg?</button>` +
-    chip("forrett", "🥂 Forretter", F.forrett, `<span class="c">${R.filter((r) => r.forrett).length}</span>`) +
+    `<button class="chip fr-chip" type="button" data-fridge="1">${ill("fridge")}Hva har jeg?</button>` +
+    chip("forrett", ill("flutes") + "Forretter", F.forrett, `<span class="c">${R.filter((r) => r.forrett).length}</span>`) +
     chip("fav", icon("heart", 15) + "Favoritter", F.fav, `<span class="c">${S.favs.length}</span>`) +
     chip("quick", icon("bolt", 15) + "Raske (≤ 30 min)", F.quick) +
     chip("made", icon("check", 15) + "Har laget", F.made) +
@@ -1824,16 +1873,16 @@ function refreshRecipe() {
         ${r.tid ? `<span class="pill">${icon("clock", 15)}Tid <b>${esc(r.tid)}</b></span>` : ""}
         <span class="pill">${icon("plate", 15)}Oppskriften gir <b>${esc(r.porsjoner)}</b></span>
         ${log.length ? `<span class="pill">${icon("check", 15)}Laget <b>${log.length}×</b></span>` : ""}
-        ${r.forrett ? `<button class="pill" type="button" data-chip="forrett" style="cursor:pointer;font:inherit;color:inherit">🥂 Passer som forrett</button>` : ""}
+        ${r.forrett ? `<button class="pill" type="button" data-chip="forrett" style="cursor:pointer;font:inherit;color:inherit">${ill("flutes", 16)} Passer som forrett</button>` : ""}
         ${r.mine ? `<span class="edited minetag">Min oppskrift · bare for deg</span>` : r.custom ? `<span class="edited">Egen oppskrift</span>` : r.edited ? `<span class="edited">Redigert</span>` : ""}
       </div>
       <div class="r-actions">
         <button class="btn primary" type="button" data-cook="${r.id}">${icon("play", 16)}Start matlaging</button>
         <button class="btn" type="button" data-addlist="${r.id}">${icon("cart", 17)}${inList ? "Oppdater i handlelisten" : "Legg i handlelisten"}</button>
         <button class="btn" type="button" data-weektoggle="1">${icon("cal", 17)}Legg i ukemeny</button>
-        ${isCourse(r) ? `<button class="btn" type="button" data-mktoggle="1">🍽️ Legg i menykortet</button>` : ""}
+        ${isCourse(r) ? `<button class="btn" type="button" data-mktoggle="1">${ill("cloche")}Legg i menykortet</button>` : ""}
         <button class="btn" type="button" data-chefctx="${r.id}">${icon("chef", 17)}Spør Morten om denne</button>
-        ${WEBOWNER && !r.mine ? `<button class="btn" type="button" data-wkset="${r.id}">⭐ ${WEEKLY && WEEKLY.rid === r.id ? "Ukens oppskrift" : "Gjør til ukens oppskrift"}</button>` : ""}
+        ${WEBOWNER && !r.mine ? `<button class="btn" type="button" data-wkset="${r.id}">${ill("star")}${WEEKLY && WEEKLY.rid === r.id ? "Ukens oppskrift" : "Gjør til ukens oppskrift"}</button>` : ""}
         ${CAP.canEdit || r.mine ? `<button class="btn" type="button" data-edit="${r.id}">${icon("edit", 17)}Rediger</button>` : ""}
         ${r.mine && !CAP.isOwner ? `<button class="btn" type="button" data-sendm="${r.id}">${icon("right", 17)}Send til Morten</button>` : ""}
         <button class="btn" type="button" data-speakrecipe="1" ${canSpeak() ? "" : "hidden"}>${icon("speak", 17)}<span class="spk">Les opp</span></button>
@@ -2076,7 +2125,7 @@ function addToList(rid) {
 }
 function listText() {
   const out = ["Handleliste – Mortens Kokebok", ""];
-  if (listMode === "samlet") { const ml = mergedLines().filter((l) => !l.checked); AISLES.forEach(([name, a]) => { const g = ml.filter((l) => aisleOf(l.name || l.text) === a); if (g.length) { out.push(name.replace(/^\S+\s/, "").toUpperCase()); g.forEach((l) => out.push("☐ " + l.text)); out.push(""); } }); }
+  if (listMode === "samlet") { const ml = mergedLines().filter((l) => !l.checked); AISLES.forEach(([name, a]) => { const g = ml.filter((l) => aisleOf(l.name || l.text) === a); if (g.length) { out.push(name.toUpperCase()); g.forEach((l) => out.push("☐ " + l.text)); out.push(""); } }); }
   else L().list.forEach((it) => { const r = BY[it.rid]; out.push(`${r.title} (${fmt(it.v)} ${servInfo(r.porsjoner).label}${it.k && it.k < 1 ? (it.k > .4 ? ", som forrett" : ", som smårett") : ""})`); listLines().filter((l) => l.rid === it.rid && !l.checked).forEach((l) => out.push("  ☐ " + l.text)); out.push(""); });
   const ex = L().extra.filter((x) => !x.c); if (ex.length) { out.push("Annet"); ex.forEach((x) => out.push("  ☐ " + x.t)); }
   return out.join("\n");
@@ -2097,7 +2146,7 @@ function renderList() {
   if (listMode === "samlet") {
     const ml = mergedLines().map((l, i) => ({ ...l, i, a: aisleOf(l.name || l.text) }));
     body = AISLES.map(([name, a]) => { const g = ml.filter((l) => l.a === a); if (!g.length) return ""; g.sort((x, y) => Number(x.checked) - Number(y.checked));
-      return `<div class="aisle-h"><span>${name}</span><span>${g.filter((l) => !l.checked).length}</span></div><ul class="ing-list">${g.map((l) => `<li><label><input class="check" type="checkbox" data-merged="${l.i}" ${l.checked ? "checked" : ""}><span>${esc(l.text)}</span></label></li>`).join("")}</ul>`; }).join("");
+      return `<div class="aisle-h"><span>${ill(AISLE_IC[a], 17)} ${name}</span><span>${g.filter((l) => !l.checked).length}</span></div><ul class="ing-list">${g.map((l) => `<li><label><input class="check" type="checkbox" data-merged="${l.i}" ${l.checked ? "checked" : ""}><span>${esc(l.text)}</span></label></li>`).join("")}</ul>`; }).join("");
   } else {
     const lines = listLines();
     body = L().list.map((it) => { const r = BY[it.rid]; if (!r) return ""; const si = servInfo(r.porsjoner);
@@ -2152,8 +2201,9 @@ function renderFridge() {
 function addFridge(v) { String(v || "").split(/,|\bog\b/).map((x) => x.trim().toLowerCase()).filter((x) => x.length > 1).forEach((x) => { if (!FRIDGE.items.includes(x)) FRIDGE.items.push(x); }); fridgeSave(); renderFridge(); setTimeout(() => $("#fridgeIn")?.focus(), 30); }
 
 /* ============================== 2) handleliste etter butikkens avdelinger ============================== */
+const AISLE_IC = { 1: "veg", 2: "bread", 3: "meat", 4: "fish", 5: "cheese", 6: "can", 7: "frozen", 8: "wineglass", 9: "basket" };
 const AISLES = [
-  ["🥦 Frukt og grønt", 1], ["🍞 Brød og bakst", 2], ["🥩 Kjøtt", 3], ["🐟 Fisk og sjømat", 4], ["🧀 Meieri og egg", 5], ["🥫 Tørrvarer og krydder", 6], ["❄️ Frys", 7], ["🍷 Drikke", 8], ["🧺 Annet", 9],
+  ["Frukt og grønt", 1], ["Brød og bakst", 2], ["Kjøtt", 3], ["Fisk og sjømat", 4], ["Meieri og egg", 5], ["Tørrvarer og krydder", 6], ["Frys", 7], ["Drikke", 8], ["Annet", 9],
 ];
 const AISLE_RE = [
   [6, /buljong|fond\b|kraft\b|eddik|pulver|sirup|soyasaus|fiskesaus|ketchup|majones|sennep|tomatpuré|hermetisk|hakkede tomater|kokosmelk/],
@@ -2170,7 +2220,7 @@ function aisleOf(name) { const t = String(name || "").toLowerCase(); for (const 
 
 /* ============================== 5) hva drikker vi i kveld ============================== */
 const TONIGHT = { food: "", n: 0 };
-const T_FOOD = [["", "🍷 Bare vin"], ["kjott", "🥩 Kjøtt"], ["fugl", "🍗 Fugl"], ["fisk", "🐟 Fisk"], ["pasta", "🍝 Pasta og pizza"], ["ost", "🧀 Ost"], ["dessert", "🍮 Dessert"]];
+const T_FOOD = [["", "Bare vin", "wineglass"], ["kjott", "Kjøtt", "meat"], ["fugl", "Fugl", "poultry"], ["fisk", "Fisk", "fish"], ["pasta", "Pasta og pizza", "pasta"], ["ost", "Ost", "cheese"], ["dessert", "Dessert", "dessert"]];
 const T_MAP = { kjott: ["Storfe", "Lam og sau", "Storvilt", "Svin"], fugl: ["Lyst kjøtt", "Småvilt"], fisk: ["Fisk", "Skalldyr"], pasta: ["Lyst kjøtt", "Grønnsaker", "Svin", "Storfe"], ost: ["Ost"], dessert: ["Dessert"], "": ["Aperitiff"] };
 function drinkSoon(w) {
   const y = new Date().getFullYear(), age = w.vintage ? y - w.vintage : 0, st = String(w.storage || "").toLowerCase();
@@ -2204,7 +2254,7 @@ function tonightHtml(list) {
   const top = picks.length ? picks[TONIGHT.n % Math.min(picks.length, 6)].w : null;
   return `<div class="tonight">
     <h3 class="cel-h" style="margin-top:0">Hva drikker vi <em>i kveld?</em></h3>
-    <div class="chips noscroll">${T_FOOD.map(([k, l]) => `<button class="chip" type="button" data-tfood="${k}" aria-pressed="${TONIGHT.food === k}">${l}</button>`).join("")}</div>
+    <div class="chips noscroll">${T_FOOD.map(([k, l, ic]) => `<button class="chip" type="button" data-tfood="${k}" aria-pressed="${TONIGHT.food === k}">${ill(ic)}${l}</button>`).join("")}</div>
     ${top ? `<div class="tn-card"><span class="tn-b">${bottleOf(top, 150)}</span><div><div class="k">Fra kjelleren din</div><b>${esc(top.name)}</b><small>${esc([top.type, top.district || top.country, top.vintage].filter(Boolean).join(" · "))}</small><p>${esc(tonightWhy(top))}</p>
       <div class="row"><button class="btn small primary" type="button" data-tpick="${esc(top.id)}">${icon("wine", 15)}Vi tar den!</button><button class="btn small" type="button" data-tnext="1">Nytt forslag</button></div></div></div>` : `<p class="muted">Ingen viner i kjelleren passer til dette. Prøv et annet valg, eller se «Kjøp til denne retten» i oppskriftene.</p>`}
     ${soon.length ? `<div class="tn-soon"><span class="k">Bør drikkes snart</span>${soon.map((w) => `<span>${esc(w.name)}${w.vintage ? " " + w.vintage : ""}</span>`).join("")}</div>` : ""}
@@ -2225,7 +2275,7 @@ function renderWeekly() {
 const wk = { id: null };
 async function saveWeekly(clear) {
   const st = $("#wkStat"); if (st) { st.className = "status"; st.textContent = "Lagrer …"; }
-  try { const j = await webApi("weekly", clear ? { clear: true } : { rid: wk.id, msg: ($("#wkMsg") && $("#wkMsg").value.trim()) || "" }); WEEKLY = j.weekly || null; renderCover(); closeDrawer(); toast(clear ? "Ukens oppskrift er fjernet" : "Ukens oppskrift er lagt ut for alle 🎉"); }
+  try { const j = await webApi("weekly", clear ? { clear: true } : { rid: wk.id, msg: ($("#wkMsg") && $("#wkMsg").value.trim()) || "" }); WEEKLY = j.weekly || null; renderCover(); closeDrawer(); toast(clear ? "Ukens oppskrift er fjernet" : "Ukens oppskrift er lagt ut for alle"); }
   catch (e) { if (st) { st.className = "status err"; st.textContent = (e && e.text) || "Kunne ikke lagre."; } }
 }
 
@@ -2234,7 +2284,7 @@ const mkPlanBusy = { on: false, msg: "" };
 function partyHtml() {
   const g = mk.guests || "";
   const recs = mk.courses.filter((c) => c.rid && BY[c.rid]);
-  return `<div class="mkc party"><div class="mkc-h"><b>🎉 Planlegg selskapet</b><small>valgfritt</small></div>
+  return `<div class="mkc party"><div class="mkc-h"><b>${ill("toast")} Planlegg selskapet</b><small>valgfritt</small></div>
     <div class="two"><label class="fld"><span>Antall gjester</span><input class="input" inputmode="numeric" data-mkf="guests" value="${esc(g)}" placeholder="8"></label><label class="fld"><span>Gjestene kommer</span><input class="input" type="time" data-mkf="clock" value="${esc(mk.clock || "19:00")}"></label></div>
     <div class="row" style="flex-wrap:wrap"><button class="btn small" type="button" data-mkshop="1" ${recs.length ? "" : "disabled"}>${icon("cart", 15)}Handleliste${g ? " for " + esc(g) : ""}</button>${CAP.sample ? `<button class="btn small primary" type="button" data-mkplan="1" ${recs.length && !mkPlanBusy.on ? "" : "disabled"}>${icon("chef", 15)}${mkPlanBusy.on ? "Morten lager plan …" : mk.plan && mk.plan.length ? "Lag ny tidsplan" : "Lag tidsplan med Morten"}</button>` : ""}</div>
     ${!recs.length ? `<small class="muted">Velg retter fra kokeboka over først.</small>` : ""}
@@ -2376,7 +2426,7 @@ function renderEditor() {
       <label class="fld"><span>Kapittel</span><select id="ed_chap">${BOOK.sections.map((s) => `<option value="${s.id}" ${s.id === chap ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>
       <label class="fld"><span>Porsjoner</span><input id="ed_porsj" value="${esc(r ? r.porsjoner : "4")}" placeholder="4 eller ca. 20 stk"></label>
     </div>
-    <label class="fld" style="flex-direction:row;align-items:center;gap:10px"><input type="checkbox" id="ed_forrett" ${r && r.forrett ? "checked" : ""} style="width:20px;height:20px;accent-color:var(--ember)"><span style="margin:0">🥂 Passer som forrett</span></label>
+    <label class="fld" style="flex-direction:row;align-items:center;gap:10px"><input type="checkbox" id="ed_forrett" ${r && r.forrett ? "checked" : ""} style="width:20px;height:20px;accent-color:var(--ember)"><span style="margin:0">${ill("flutes")} Passer som forrett</span></label>
     <label class="fld"><span>Tid</span><input id="ed_tid" value="${esc(r ? r.tid : "")}" placeholder="F.eks. 45 min eller 1 t 30 min"></label>
     <label class="fld"><span>Ingredienser</span><textarea id="ed_ing" placeholder="400 g torskefilet&#10;SAUS:&#10;2 dl fløte">${esc(r ? toText(r.ingredients) : "")}</textarea><small>Én ingrediens per linje. En linje som slutter med kolon blir en mellomoverskrift, f.eks. «SAUS:».</small></label>
     <label class="fld"><span>Slik gjør du</span><textarea id="ed_steps" placeholder="Sett ovnen på 200 °C.&#10;Legg fisken i en ildfast form …">${esc(r ? toText(r.steps) : "")}</textarea><small>Ett steg per linje. Tider som «12 minutter» blir tidtakere automatisk.</small></label>
@@ -2615,7 +2665,7 @@ function maybeWelcome(force) {
     if (t.dataset.wcellar) {
       try { localStorage.setItem("kokebok-velkommen", "1"); if (!localStorage.getItem("kokebok-vinkjeller")) localStorage.setItem("kokebok-vinkjeller", JSON.stringify({ wines: {}, wish: {} })); } catch (x) {}
       close(); setPage("cellar"); const u = document.querySelector(".under"); if (u) window.scrollTo({ top: u.getBoundingClientRect().top + scrollY - 10, behavior: "smooth" });
-      toast("Ferdig! Kokeboka og vinkjelleren din er på plass 🍷");
+      toast("Ferdig! Kokeboka og vinkjelleren din er på plass");
     }
   });
 }
@@ -3019,7 +3069,7 @@ function renderAbout() {
     <p class="lead2">Mortens oppskrifter, en vinkjeller du bygger selv, og vinanbefalinger fra Mortens egen kjeller. Hjemmelaget – fra mitt kjøkken til ditt.</p>
     <h3>Dette får du</h3>
     <ul class="afeat">${feats.map((a) => `<li><span class="ok">✓</span>${esc(a)}</li>`).join("")}</ul>
-    <button class="btn small" type="button" data-news="1">🎉 Nytt i appen</button>
+    <button class="btn small" type="button" data-news="1">${ill("toast")}Nytt i appen</button>
     <h3>Kom i gang</h3>
     ${installSteps()}
     <p class="muted">Appen teller anonymt hvor mye den brukes (antall besøk og hvilke oppskrifter som åpnes), uten navn eller e-post. Det du lagrer selv (egne oppskrifter, vinkjeller, notater) ligger på denne enheten. Bruk <b>Sikkerhetskopi</b> i vinkjelleren for å ta vare på det, og <b>Hent kopi</b> på en ny telefon eller PC.</p>
@@ -3029,7 +3079,7 @@ function renderAbout() {
   d.innerHTML = `<div class="about">
     <p class="lead2">Mortens oppskrifter, en vinkjeller du bygger selv, og vinanbefalinger fra Mortens egen kjeller. Hjemmelaget – fra mitt kjøkken til ditt.</p>
     <table class="atab"><thead><tr><th></th><th>Uten konto</th><th>Med Claude-konto</th></tr></thead><tbody>${rows.map(([a, b, c]) => `<tr><td>${esc(a)}</td><td>${b}</td><td>${c}</td></tr>`).join("")}</tbody></table>
-    <button class="btn small" type="button" data-news="1">🎉 Nytt i appen</button>
+    <button class="btn small" type="button" data-news="1">${ill("toast")}Nytt i appen</button>
     <h3>Få alt med en gratis Claude-konto – tar 1 minutt</h3>
     ${setupSteps()}
     <p class="muted">AI-funksjonene bruker din egen Claude-konto. Det du lagrer selv (egne oppskrifter, vinkjeller, notater) ligger på enheten din. Bruk <b>Sikkerhetskopi</b> i vinkjelleren for å ta vare på det, og <b>Hent kopi</b> på en ny telefon eller PC.</p>
@@ -3062,7 +3112,7 @@ function renderInbox() {
 }
 async function inboxApprove(id) {
   const sel = document.getElementById("inch_" + id); INBOX.busy = id; renderInbox();
-  try { const j = await webApi("approve", { id, chapterId: sel ? sel.value : "" }); CUSTOM[j.id] = { ...j.doc, id: j.id }; rebuild(); renderAll(); INBOX.items = INBOX.items.filter((x) => x.id !== id); toast("Lagt i kokeboka – nå synlig for alle 🎉"); }
+  try { const j = await webApi("approve", { id, chapterId: sel ? sel.value : "" }); CUSTOM[j.id] = { ...j.doc, id: j.id }; rebuild(); renderAll(); INBOX.items = INBOX.items.filter((x) => x.id !== id); toast("Lagt i kokeboka – nå synlig for alle"); }
   catch (e) { toast((e && e.text) || "Kunne ikke legge den inn"); }
   INBOX.busy = ""; renderInbox(); const b = document.getElementById("inboxBadge"); if (b) { b.textContent = INBOX.items.length; b.dataset.n = INBOX.items.length; }
 }
@@ -3077,7 +3127,7 @@ async function sendDirect() {
   st.className = "status"; st.textContent = "Sender …";
   try {
     await webApi("submit", { from, recipe: { title: r.title, chapterId: r.chapterId, porsjoner: r.porsjoner, tid: r.tid, ingredients: r.ingredients, steps: r.steps, tips: r.tips, img: r.img || "" } });
-    st.textContent = "Sendt! Morten har fått oppskriften i innboksen sin 🎉"; toast("Sendt til Morten");
+    st.textContent = "Sendt! Morten har fått oppskriften i innboksen sin"; toast("Sendt til Morten");
   } catch (e) { st.className = "status err"; st.textContent = (e && e.text) || "Kunne ikke sende. Prøv igjen, eller send på SMS under."; }
 }
 function renderSend() {
@@ -3244,10 +3294,10 @@ function mkFindList() {
 }
 function mkFindHtml(i) {
   const c = mk.courses[i], pref = MK_CH[c.label] || [];
-  const chs = [["alle", "Alle"], ...(["Forrett", "Mellomrett"].includes(c.label) || R.some((r) => r.forrett) ? [["forrett", "🥂 Forretter"]] : []), ...BOOK.sections.filter((s) => R.some((r) => r.chapterId === s.id && isCourse(r))).sort((a, b) => { const x = pref.indexOf(a.id), y = pref.indexOf(b.id); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); }).map((s) => [s.id, s.name])];
+  const chs = [["alle", "Alle"], ...(["Forrett", "Mellomrett"].includes(c.label) || R.some((r) => r.forrett) ? [["forrett", "Forretter"]] : []), ...BOOK.sections.filter((s) => R.some((r) => r.chapterId === s.id && isCourse(r))).sort((a, b) => { const x = pref.indexOf(a.id), y = pref.indexOf(b.id); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); }).map((s) => [s.id, s.name])];
   return `<div class="mkfind">
     <input class="input" type="search" id="mkFindQ" placeholder="Søk etter rett, f.eks. lam, laks, suppe …" value="${esc(mkFind.q)}" autocomplete="off" enterkeyhint="search">
-    <div class="chips">${chs.map(([id, n]) => `<button class="chip" type="button" data-mkfch="${id}" aria-pressed="${mkFind.ch === id}">${esc(n)}</button>`).join("")}</div>
+    <div class="chips">${chs.map(([id, n]) => `<button class="chip" type="button" data-mkfch="${id}" aria-pressed="${mkFind.ch === id}">${id === "forrett" ? ill("flutes") : ""}${esc(n)}</button>`).join("")}</div>
     <div class="mkfind-list" id="mkFindList">${mkFindList()}</div>
     <button class="btn small" type="button" data-mkfclose="1">Lukk søket</button></div>`;
 }
@@ -3308,7 +3358,7 @@ function mkApScoreWine(w, mp) {
 function mkApSuggestions() {
   const mp = mkMenuProfile(), out = [], seed = hashStr(mk.courses.map((c) => c.rid).join("|") + todayKey());
   const cel = mkApCellar().map((w) => ({ w, s: mkApScoreWine(w, mp) })).sort((a, b) => b.s - a.s);
-  if (cel[0] && cel[0].s >= 3) { const w = cel[0].w; out.push({ src: "cel", ic: /Musserende|Champagne/.test(w.type || "") ? "🍾" : /Sider/.test(w.type || "") ? "🍏" : "🥂", name: w.name + (w.vintage ? " " + w.vintage : ""), desc: mkWineDesc(w), tag: CAP.isOwner ? "Fra kjelleren" : "Fra kjelleren din" }); }
+  if (cel[0] && cel[0].s >= 3) { const w = cel[0].w; out.push({ src: "cel", ic: /Musserende|Champagne/.test(w.type || "") ? "bottle" : /Sider/.test(w.type || "") ? "bottle" : "wineglass", name: w.name + (w.vintage ? " " + w.vintage : ""), desc: mkWineDesc(w), tag: CAP.isOwner ? "Fra kjelleren" : "Fra kjelleren din" }); }
   if (REGV) {
     const T = REGV.tabs, ap = T.p.indexOf("Aperitif"), basis = T.sel.indexOf("Basisutvalget"), tillegg = T.sel.indexOf("Tilleggsutvalget");
     const have = new Set([...(WINES || []).map((w) => String(w.id)), ...myWines().map((w) => String(w.code || ""))]);
@@ -3329,13 +3379,13 @@ function mkApSuggestions() {
     cand.forEach((c, i) => { c.sort((a, b) => b.sc - a.sc); const top = c.filter((y) => y.sc >= (c[0] ? c[0].sc : 0) - 2).slice(0, 8); if (!top.length) return; const x = top[(seed + i) % top.length].x, w = regToWine(x);
       const dry = (w.name.match(/\b(extra brut|brut nature|extra dry|brut|demi-sec|dry|sec)\b/i) || [])[0];
       const desc = [w.type === "Musserende" ? (/rosé|rose\b/i.test(w.name) ? "Rosé musserende" : "Musserende") : w.type, String(w.grapes || "").split(",")[0], [w.sub || w.district, w.country].filter(Boolean).join(", "), dry ? dry.toLowerCase() : w.style].filter(Boolean).join(" · ");
-      out.push({ src: "vmp", ic: /Musserende/.test(w.type) ? "🥂" : "🍷", name: w.name, desc, tag: `${bands[i][2]} · ${Math.round(w.price)} kr · Vinmonopolet`, url: w.url }); });
+      out.push({ src: "vmp", ic: /Musserende/.test(w.type) ? "flutes" : "wineglass", name: w.name, desc, tag: `${bands[i][2]} · ${Math.round(w.price)} kr · Vinmonopolet`, url: w.url }); });
   }
   const AF = mp.fish ? [["Alkoholfri musserende", "Tørr og frisk, gjerne Blanc de Blancs-stil · fås i dagligvare"], ["Sprudlende sitron og agurk", "Isvann med sitron, agurk og et dryss salt – hjemmelaget"]]
     : mp.spicy ? [["Alkoholfri Riesling", "Litt fruktsødme og frisk syre · fås i dagligvare"], ["Ingefær og lime med tonic", "Revet ingefær, lime og tonic – hjemmelaget"]]
     : mp.heavy ? [["Alkoholfri musserende", "Tørre bobler som vekker ganen · fås i dagligvare"], ["Tonic med rosmarin og grapefrukt", "Bitter og frisk – hjemmelaget"]]
     : [["Alkoholfri musserende", "Lett og frisk · fås i dagligvare"], ["Sprudlende eplemost", "Norsk eplemost med kullsyre og sitron"]];
-  const af = AF[seed % AF.length]; out.push({ src: "af", ic: "🫧", name: af[0], desc: af[1], tag: "Alkoholfritt" });
+  const af = AF[seed % AF.length]; out.push({ src: "af", ic: "bubbles", name: af[0], desc: af[1], tag: "Alkoholfritt" });
   return { why: mkApWhy(mp), list: out };
 }
 function mkApHtml() {
@@ -3345,10 +3395,10 @@ function mkApHtml() {
   if (mkAp.open) {
     if (mkAp.loading) sug = `<p class="aphint">Finner aperitiff som passer menyen …</p>`;
     else { const r = mkApSuggestions(); mkAp.last = r.list;
-      sug = `<p class="aphint">${esc(r.why)}. Trykk for å velge:</p><div class="apsug">${r.list.map((x, i) => `<button class="aprow" type="button" data-apset="${i}"><span class="ic">${x.ic}</span><span><em class="${x.src === "af" ? "af" : ""}">${esc(x.tag)}</em><b>${esc(x.name)}</b><small>${esc(x.desc)}</small></span></button>${x.url ? `<a class="vmp" href="${esc(x.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>` : ""}`).join("")}</div>`; }
+      sug = `<p class="aphint">${esc(r.why)}. Trykk for å velge:</p><div class="apsug">${r.list.map((x, i) => `<button class="aprow" type="button" data-apset="${i}"><span class="ic">${ill(x.ic, 28)}</span><span><em class="${x.src === "af" ? "af" : ""}">${esc(x.tag)}</em><b>${esc(x.name)}</b><small>${esc(x.desc)}</small></span></button>${x.url ? `<a class="vmp" href="${esc(x.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>` : ""}`).join("")}</div>`; }
   }
   return `${opts ? `<select class="select" data-apcel="1" aria-label="Velg aperitiff fra kjelleren"><option value="">Velg fra kjelleren …</option>${opts}</select>` : ""}
-      <button class="btn small" type="button" data-apsug="1">✨ ${mkAp.open ? "Skjul forslag" : "Foreslå aperitiff"}</button>${sug}`;
+      <button class="btn small" type="button" data-apsug="1">${ill("sparkle")}${mkAp.open ? "Skjul forslag" : "Foreslå aperitiff"}</button>${sug}`;
 }
 function openMeny() { if (!mk) { mk = mkDefault(); mkSave(); } openDrawer("meny"); }
 function renderMeny() {
@@ -3613,7 +3663,7 @@ document.addEventListener("click", (ev) => {
   if (d.fmic) { if (CAP.dict) { voice.target = "fridge"; voice.base = ""; CAP.dict.start().catch(() => {}); toast("Si hva du har …"); } return; }
   if (d.tfood !== undefined) { TONIGHT.food = d.tfood; TONIGHT.n = 0; renderCelBody(); return; }
   if (d.tnext) { TONIGHT.n++; renderCelBody(); return; }
-  if (d.tpick) { if (isOwnerCellar()) toast("Skål! 🍷 Husk å registrere flaska i vinkjeller-appen"); else { myv.id = d.tpick; vinQty(-1).then(() => renderCelBody()); } return; }
+  if (d.tpick) { if (isOwnerCellar()) toast("Skål! Husk å registrere flaska i vinkjeller-appen"); else { myv.id = d.tpick; vinQty(-1).then(() => renderCelBody()); } return; }
   if (d.mkshop) { mkShop(); return; }
   if (d.mkplan) { mkPlan(); return; }
   if (d.wkset) { wk.id = d.wkset; openDrawer("weekly"); return; }
