@@ -1251,9 +1251,9 @@ const WINE_RULES = [
   [/kalv|osso/, ["Lyst kjøtt", "Storfe"]],
   [/kylling|kalkun|høne/, ["Lyst kjøtt"]],
   [/andebryst|\band\b|rype|vilt|hjort|elg|rein/, ["Småvilt", "Storvilt"]],
-  [/svin|ribbe|skinke|nakke/, ["Svin"]],
+  [/\bsvin|ribbe|skinke|nakke|\bgris/, ["Svin"]],
   [/laks|ørret|torsk|kveite|fisk|sei\b|hyse|sjøørret/, ["Fisk"]],
-  [/scampi|reker|blåskjell|skalldyr|gambas|krabbe|hummer|kamskjell/, ["Skalldyr"]],
+  [/scampi|reker|blåskjell|skalldyr|gambas|krabbe|hummer|kamskjell|østers|kreps|sjøkreps|skagen/, ["Skalldyr"]],
   [/sopp/, ["Lyst kjøtt"]],
 ];
 const NO_WINE = ["Brød & bakst", "Sauser, dressinger & dipper", "Tilbehør"];
@@ -1273,7 +1273,7 @@ function dishProfile(r) {
     creamy: /fløte|hollandaise|krem|smørsaus|sandefjordsmør|béarnaise|bearnaise|frikassé|marry me|kremet/.test(t),
     tomato: /tomat|lasagne|osso buco|bolognese|pizza/.test(t),
     burgundy: /bourguignon|coq au vin/.test(t),
-    fish: /laks|ørret|torsk|kveite|fisk|scampi|reker|blåskjell|skalldyr|sjøørret|kamskjell/.test(t),
+    fish: /laks|ørret|torsk|kveite|fisk|scampi|reker|blåskjell|skalldyr|sjøørret|kamskjell|østers|krabbe|kreps|hummer|skagen/.test(t),
     smoked: /røke|gravet/.test(t),
     fruity: /bringebær|honning|eple|appelsin|calvados|mango|portvin|balsamico|plomme|kirsebær/.test(t),
     apple: /eple|calvados/.test(t),
