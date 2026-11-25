@@ -45,6 +45,7 @@ async function cleanRecipe(r, { stepsK = "S" } = {}) {
     title: str(r.title, 160).trim(), chapterId: str(r.chapterId, 20), porsjoner: str(r.porsjoner, 20), tid: str(r.tid, 40),
     ingredients: cleanList(r.ingredients, 80), steps, tips: (Array.isArray(r.tips) ? r.tips : []).slice(0, 20).map((t) => str(t, 600)).filter(Boolean),
     img: await keepImage(r.img),
+    ...(r.forrett ? { forrett: true } : {}),
   };
 }
 
