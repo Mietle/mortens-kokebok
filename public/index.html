@@ -1827,7 +1827,7 @@ function refreshRecipe() {
         <button class="btn primary" type="button" data-cook="${r.id}">${icon("play", 16)}Start matlaging</button>
         <button class="btn" type="button" data-addlist="${r.id}">${icon("cart", 17)}${inList ? "Oppdater i handlelisten" : "Legg i handlelisten"}</button>
         <button class="btn" type="button" data-weektoggle="1">${icon("cal", 17)}Legg i ukemeny</button>
-        <button class="btn" type="button" data-mktoggle="1">🍽️ Legg i menykortet</button>
+        ${isCourse(r) ? `<button class="btn" type="button" data-mktoggle="1">🍽️ Legg i menykortet</button>` : ""}
         <button class="btn" type="button" data-chefctx="${r.id}">${icon("chef", 17)}Spør Morten om denne</button>
         ${WEBOWNER && !r.mine ? `<button class="btn" type="button" data-wkset="${r.id}">⭐ ${WEEKLY && WEEKLY.rid === r.id ? "Ukens oppskrift" : "Gjør til ukens oppskrift"}</button>` : ""}
         ${CAP.canEdit || r.mine ? `<button class="btn" type="button" data-edit="${r.id}">${icon("edit", 17)}Rediger</button>` : ""}
@@ -3229,15 +3229,17 @@ const MK_CH = { Forrett: ["kat2", "kat4", "kat1"], Mellomrett: ["kat4", "kat2", 
 const mkFind = { i: -1, q: "", ch: "alle" };
 function mkLabelFor(r) { const c = r.chapterId; return c === "kat8" ? "Dessert" : c === "kat4" ? "Forrett" : c === "kat3" ? "Hovedrett" : (mk && mk.courses.some((x) => x.label === "Forrett" && !x.rid)) ? "Forrett" : "Hovedrett"; }
 function mkSetCourse(c, r) { c.rid = r.id; c.title = r.title; c.desc = mkAutoDesc(r); }
+// I menykortet: bare retter (middag, forrett, supper, desserter) – ikke sauser, dressinger, dipper, tilbehør, brød eller grunnoppskrifter.
+const isCourse = (r) => ["kat1", "kat2", "kat3", "kat4", "kat8"].includes(r.chapterId) && !["opp3", "opp4", "opp5"].includes(r.id);
 function mkFindList() {
   const q = mkFind.q.trim().toLowerCase(), cur = mk.courses[mkFind.i] || {};
-  let list = R.filter((r) => (mkFind.ch === "alle" || r.chapterId === mkFind.ch) && (!q || r.title.toLowerCase().includes(q) || (r.chapter || "").toLowerCase().includes(q)));
+  let list = R.filter((r) => isCourse(r) && (mkFind.ch === "alle" || r.chapterId === mkFind.ch) && (!q || r.title.toLowerCase().includes(q) || (r.chapter || "").toLowerCase().includes(q)));
   if (!list.length) return `<p class="muted" style="margin:4px 2px">Ingen retter heter «${esc(mkFind.q)}». Prøv et annet ord${mkFind.ch !== "alle" ? " eller velg «Alle»" : ""}.</p>`;
   return list.slice(0, 60).map((r) => `<button class="mkpick-row" type="button" data-mkchoose="${r.id}" aria-current="${cur.rid === r.id}"><img src="${imgSrc(r)}" style="${fpos(r)}" alt="" loading="lazy"><span><b>${esc(r.title)}</b><small>${esc(r.chapter || "")}${r.tid ? " · " + esc(r.tid) : ""}</small></span></button>`).join("");
 }
 function mkFindHtml(i) {
   const c = mk.courses[i], pref = MK_CH[c.label] || [];
-  const chs = [["alle", "Alle"], ...BOOK.sections.filter((s) => R.some((r) => r.chapterId === s.id)).sort((a, b) => { const x = pref.indexOf(a.id), y = pref.indexOf(b.id); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); }).map((s) => [s.id, s.name])];
+  const chs = [["alle", "Alle"], ...BOOK.sections.filter((s) => R.some((r) => r.chapterId === s.id && isCourse(r))).sort((a, b) => { const x = pref.indexOf(a.id), y = pref.indexOf(b.id); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y); }).map((s) => [s.id, s.name])];
   return `<div class="mkfind">
     <input class="input" type="search" id="mkFindQ" placeholder="Søk etter rett, f.eks. lam, laks, suppe …" value="${esc(mkFind.q)}" autocomplete="off" enterkeyhint="search">
     <div class="chips">${chs.map(([id, n]) => `<button class="chip" type="button" data-mkfch="${id}" aria-pressed="${mkFind.ch === id}">${esc(n)}</button>`).join("")}</div>
