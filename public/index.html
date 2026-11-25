@@ -1310,7 +1310,7 @@ function styleFit(w, p, tags) {
 const hashStr = (x) => { let h = 2166136261; for (const c of String(x)) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0; return h; };
 function winesFor(r, n = 3, list = WINES, who = "Du") {
   const tags = wineTags(r); if (tags === null || !list.length) return null;
-  const STOP = /^(poteter|potet|gratinert|ovnsbakt|ovnsbakte|ovnsbakte|klassisk|hjemmelaget|langtidsstekt|helstekt|pannestekt|grillet|kremet|sitron|asparges|aspargesbønner|sjalottløk|rotgrønnsaker|småpoteter|ristede|urtepoteter|varmende)$/;
+  const STOP = /^(poteter|potet|gratinert|ovnsbakt|ovnsbakte|ovnsbakte|klassisk|hjemmelaget|langtidsstekt|helstekt|pannestekt|grillet|kremet|sitron|asparges|aspargesbønner|sjalottløk|rotgrønnsaker|småpoteter|ristede|urtepoteter|varmende|syltet|syltede|stekte|bakte|ovnsbakt|glasert|glaserte|kremete|frisk|friske|fersk|ferske|hjemmelagede|gratinerte|fløtegratinerte|grillede|marinert|marinerte|røkt|røkte|gravet|gravede)$/;
   const words = r.title.toLowerCase().replace(/œ/g, "oe").split(/[\s,–-]+/).filter((w) => w.length > 5 && !STOP.test(w));
   const fishy = tags.includes("Fisk") || tags.includes("Skalldyr"), dessert = tags.includes("Dessert"), prof = dishProfile(r);
   return list.filter((w) => w.qty > 0).map((w) => {
@@ -1323,7 +1323,7 @@ function winesFor(r, n = 3, list = WINES, who = "Du") {
     if (smak.includes("Kjøper igjen")) s += 1;
     if (!why && who === "Du" && w.rating >= 4) why = `Du ga den ${w.rating} av 5${smak.length ? " · " + smak.filter((x) => x !== "Kjøper igjen").slice(0, 2).join(", ").toLowerCase() : ""}`;
     const sweetW = /Dessert|Sterk/.test(w.type || "") || ((w.scales || []).find((x) => x.k === "Sødme") || {}).v >= 5;
-    if (dessert && !sweetW && !cm) return { ok: false };
+    if (dessert && !sweetW) return { ok: false };
     const fit = styleFit(w, prof, tags); s += fit.s;
     if (!cm && fit.why && fit.s >= 2) why = fit.why + (who === "Du" && w.rating >= 4 ? ` · du ga den ${w.rating} av 5` : "");
     if (!why && hit.length) why = "Passer til " + hit.join(" og ").toLowerCase();
