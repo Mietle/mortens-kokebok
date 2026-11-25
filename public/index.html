@@ -287,6 +287,20 @@ body.page-cellar .kpis, body.page-cellar #shelves, body.page-cellar .filterbar, 
 .card .newb { top: 14px; left: 14px; } .card .newb + .made { top: 46px; }
 
 /* ---------- velkomst ---------- */
+.wweb .wbox { text-align: center; } .wweb.wios { padding-bottom: 96px; } .wweb.wios .wbox { max-height: calc(100dvh - 120px); } .wweb h2 { margin: 6px 0 8px; } .wweb p { margin: 0 0 14px; }
+.wgo { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; border: 0; border-radius: 20px; cursor: pointer; background: linear-gradient(135deg, #f0b071, #d27a3d); color: #2a160a; font: 700 17px system-ui, sans-serif; box-shadow: 0 12px 30px rgba(234,165,96,.35); }
+.wsmall { font-size: 12.5px !important; color: var(--muted); margin: 12px 0 0 !important; }
+.wkey { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; vertical-align: middle; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); }
+.wkey svg { width: 18px; height: 18px; stroke: #e9eef5; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } .wkey svg circle { fill: #e9eef5; stroke: none; }
+.wkey.wapp { overflow: hidden; border-color: var(--ember); background: radial-gradient(circle, #3a2418, #140c08); } .wkey.wapp img { width: 100%; height: 100%; object-fit: cover; }
+.wsteps { display: grid; gap: 8px; margin: 8px 0 12px; text-align: left; }
+.wst { display: grid; grid-template-columns: 28px 34px minmax(0,1fr); gap: 10px; align-items: center; padding: 9px 10px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid var(--line); font-size: 14px; }
+.wst .wkey { width: 34px; height: 34px; }
+.wn { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(#f6c890, #d9823f); color: #2a1a10; font: 700 13px system-ui; }
+.wok { width: 64px; height: 64px; margin: 4px auto 10px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, #3b5a33, #1f3519); border: 2px solid #9fd2a8; color: #c9f0cf; }
+.warrow { position: fixed; left: 26%; bottom: calc(env(safe-area-inset-bottom, 0px) + 6px); width: 54px; height: 72px; z-index: 71; pointer-events: none; animation: warr 1.4s ease-in-out infinite; }
+.warrow svg { width: 100%; height: 100%; fill: none; stroke: #f0b071; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 8px rgba(240,176,113,.7)); }
+@keyframes warr { 50% { transform: translateY(8px); } }
 .welcome { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 18px; background: rgba(8, 5, 4, .6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: fade .4s both; }
 .welcome .wbox { box-sizing: border-box; width: min(560px, 100%); max-height: calc(100dvh - 36px); overflow-y: auto; scrollbar-width: none; border-radius: 30px; padding: 28px 26px 22px; background: linear-gradient(160deg, rgba(44, 29, 22, .92), rgba(20, 14, 11, .94)); border: 1px solid var(--line-strong); box-shadow: 0 40px 120px rgba(0, 0, 0, .6), 0 0 80px rgba(234, 165, 96, .12); text-align: center; animation: unfold .8s cubic-bezier(.2, .8, .2, 1) both; }
 .welcome .wbox::-webkit-scrollbar { display: none; }
@@ -2659,11 +2673,79 @@ function installHint() {
   return `<button class="btn small go" type="button" data-install="1" ${INSTALLEVT ? "" : "hidden"}>${icon("plus", 15)}Installer appen på mobilen</button>`;
 }
 async function doInstall() { if (!INSTALLEVT) { toast("Trykk ⋮ i Chrome → «Legg til på startskjermen»"); return; } INSTALLEVT.prompt(); try { await INSTALLEVT.userChoice; } catch (e) {} INSTALLEVT = null; document.querySelectorAll("[data-install]").forEach((b) => (b.hidden = true)); }
+/* ---------- velkomst i webappen: leder alltid til neste reelle steg (åpne i nettleser → hjemskjerm → klar) ---------- */
+const UAX = navigator.userAgent || "";
+const ANDROID = /Android/i.test(UAX);
+const INAPP = /FBAN|FBAV|FB_IAB|FBIOS|Instagram|Messenger|Line\/|Snapchat|LinkedInApp|MicroMessenger|GSA\/|Twitter/i.test(UAX);
+const MOBILE = IOS || ANDROID;
+function setupAll() {
+  try { localStorage.setItem("kokebok-oppsatt", "1"); localStorage.setItem("kokebok-velkommen", "1"); if (!localStorage.getItem("kokebok-vinkjeller")) localStorage.setItem("kokebok-vinkjeller", JSON.stringify({ wines: {}, wish: {} })); } catch (x) {}
+  markSetupDone();
+}
+const WSYM = {
+  pm: '<path d="M4 6h10M4 11h10M4 16h7"/><path d="M17 13l3 3-3 3"/>',
+  share: '<path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/>',
+  add: '<rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M12 8.5v7M8.5 12h7"/>',
+  dots: '<circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/>',
+  vdots: '<circle cx="12" cy="5.5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="18.5" r="1.3"/>',
+};
+const wsvg = (k) => `<svg viewBox="0 0 24 24">${WSYM[k]}</svg>`;
+function webWelcome() {
+  const el = document.createElement("div"); el.className = "welcome wweb"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Velkommen");
+  const face = `<div style="display:grid;place-items:center">${faceSVG(96)}</div>`;
+  let mode = STANDALONE || !MOBILE ? "ready" : INAPP ? "inapp" : IOS ? "ios" : "android";
+  const draw = () => {
+    let h = "";
+    if (mode === "ready") h = `<div class="wok">${icon("check", 30)}</div><h2>Alt er <em>klart!</em></h2><p>Kokeboka med alle oppskriftene og din egen vinkjeller er satt opp. Trykk på meg nederst når du vil spørre om noe.</p><button class="wgo" type="button" data-wdone="1">Kom i gang</button>`;
+    else if (mode === "inapp") h = `${face}<h2>Hei! Åpne meg i <em>${IOS ? "Safari" : "Chrome"}</em></h2><p>Inne i ${/Instagram/i.test(UAX) ? "Instagram" : /GSA\//.test(UAX) ? "Google-appen" : "Messenger"} kan jeg ikke legges på hjemskjermen, og jeg glemmer det du lagrer når du lukker. Ett trykk, så flytter vi over:</p>
+      <button class="wgo" type="button" data-wopen="1">Åpne i ${IOS ? "Safari" : "Chrome"}</button>
+      <p class="wsmall">Skjer det ingenting? Trykk <span class="wkey">${wsvg(IOS ? "dots" : "vdots")}</span> ${IOS ? "nederst eller øverst til høyre" : "øverst til høyre"} → <b>Åpne i ${IOS ? "nettleser" : "Chrome"}</b>.</p>
+      <button class="wlater" type="button" data-wbrowser="1">Bruk appen her likevel</button>`;
+    else if (mode === "ios") h = `<h2>Legg <em>Mortens Kokebok</em> på hjemskjermen</h2><p>Da åpner du appen fra et eget ikon – og alt du lagrer blir liggende.</p>
+      <div class="wsteps">
+        <div class="wst"><span class="wn">1</span><span class="wkey">${wsvg("pm")}</span><span>Trykk på ikonet til venstre i adressefeltet <b>nederst</b></span></div>
+        <div class="wst"><span class="wn">2</span><span class="wkey">${wsvg("share")}</span><span>Trykk <b>Del</b></span></div>
+        <div class="wst"><span class="wn">3</span><span class="wkey">${wsvg("add")}</span><span>Velg <b>Legg til på Hjem-skjerm</b></span></div>
+        <div class="wst"><span class="wn">4</span><span class="wkey wapp"><img src="apple-touch-icon.png" alt="" onerror="this.remove()"></span><span>Åpne appen fra det nye ikonet</span></div>
+      </div>
+      <button class="wlater" type="button" data-wbrowser="1">Bruk i nettleseren i stedet</button>`;
+    else h = `${face}<h2>Velkommen til <em>Mortens Kokebok</em></h2><p>Ett trykk, så ligger appen på hjemskjermen din – med kokeboka og din egen vinkjeller klare.</p>
+      <button class="wgo" type="button" data-winstall="1">${icon("plus", 18)}Installer Mortens Kokebok</button>
+      ${INSTALLEVT ? "" : `<p class="wsmall">Kommer det ikke et vindu? Trykk <span class="wkey">${wsvg("vdots")}</span> øverst til høyre i Chrome → <b>Installer app</b> eller <b>Legg til på startsiden</b>.</p>`}
+      <button class="wlater" type="button" data-wbrowser="1">Bruk i nettleseren i stedet</button><p class="wsmall">Gratis · ingen konto · ingen reklame</p>`;
+    el.innerHTML = `<div class="wbox wone">${h}</div>${mode === "ios" ? `<div class="warrow" aria-hidden="true"><svg viewBox="0 0 60 80"><path d="M40 4C40 34 20 44 14 70"/><path d="M6 60l8 12 10-10"/></svg></div>` : ""}`;
+  };
+  if (mode === "ready") setupAll();
+  if (mode === "ios") el.classList.add("wios");
+  draw(); document.body.appendChild(el); lock(true);
+  setTimeout(() => { FACE.happy = 1; FACE.speaking = true; setTimeout(() => { FACE.speaking = false; }, 1500); }, 500);
+  const close = () => { el.remove(); lock(!!$("#sheet") || !!$("#drawer")); };
+  // Android: når installasjonsvinduet blir tilgjengelig etter at velkomsten er vist
+  const onEvt = () => { if (mode === "android" && document.body.contains(el)) draw(); };
+  window.addEventListener("beforeinstallprompt", onEvt);
+  el.addEventListener("click", async (e) => {
+    const t = e.target.closest("button"); if (!t) return;
+    if (t.dataset.wdone) { close(); return; }
+    if (t.dataset.wbrowser) { setupAll(); close(); toast("Alt er klart – god fornøyelse!"); return; }
+    if (t.dataset.wopen) {
+      const u = location.href.split("#")[0];
+      if (IOS) location.href = "x-safari-" + u;
+      else location.href = "intent://" + u.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;end";
+      return;
+    }
+    if (t.dataset.winstall) {
+      if (!INSTALLEVT) { toast("Trykk ⋮ øverst til høyre i Chrome → «Installer app»"); return; }
+      setupAll(); INSTALLEVT.prompt(); let ok = false; try { ok = (await INSTALLEVT.userChoice).outcome === "accepted"; } catch (x) {} INSTALLEVT = null;
+      if (ok) { mode = "ready"; draw(); } else draw();
+    }
+  });
+}
 function maybeWelcome(force) {
   let done = false; try { done = !!localStorage.getItem("kokebok-velkommen"); } catch (e) {}
   if (!force && !done && (location.hash === "#" + APPHASH || hasOwnData())) { markSetupDone(); return; }
   if (!force && done && !location.hash) markSetupDone();
   if (!force && (done || CAP.isOwner || CAP.canEdit || $(".welcome") || $("#sheet") || $("#drawer") || $("#cook"))) return;
+  if (!force && WEBAPP) { webWelcome(); return; }
   const el = document.createElement("div"); el.className = "welcome"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Velkommen");
   let step = 1;
   const draw = () => {
