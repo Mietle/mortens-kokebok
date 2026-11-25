@@ -180,6 +180,13 @@ body.page-cellar .kpis, body.page-cellar #shelves, body.page-cellar .filterbar, 
 .atab { width: 100%; border-collapse: collapse; font-size: 13.5px; border-radius: 14px; overflow: hidden; }
 .atab th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ember); font-weight: 600; text-align: center; padding: 8px 6px; background: rgba(234, 165, 96, .08); }
 .whint { margin: 4px auto 14px; max-width: 420px; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(234,165,96,.35); background: rgba(234,165,96,.08); display: grid; gap: 4px; font-size: 13.5px; text-align: left; } .whint b { color: var(--ember); } .wbox [data-install] { margin: 14px auto 0; display: flex; }
+.buysug:empty { display: none; } .buysug { margin-top: 18px; }
+.bgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.bcard { display: grid; grid-template-columns: 48px minmax(0,1fr); gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.015)); }
+.bcard .bb { display: grid; place-items: end center; height: 96px; filter: drop-shadow(0 6px 12px rgba(0,0,0,.45)); }
+.bcard .bt { display: grid; gap: 3px; min-width: 0; } .bcard b { font-size: 14.5px; line-height: 1.25; } .bcard small { color: var(--muted); font-size: 12px; }
+.bcard .bband { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ember); font-weight: 700; }
+.bcard .brow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .inbox { display: grid; gap: 14px; } .inb { display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 14px; padding: 14px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.03); }
 .inb > img { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; } .inb:not(:has(> img)) { grid-template-columns: minmax(0,1fr); }
 .inb h4 { margin: 0 0 4px; font-size: 17px; } .inb p { margin: 0 0 8px; font-size: 13px; } .inb details { margin: 4px 0 10px; font-size: 13.5px; } .inb summary { cursor: pointer; color: var(--ember); }
@@ -1107,6 +1114,39 @@ function winesFor(r, n = 3, list = WINES, who = "Du") {
     return { w, s, why, ok: hit.length || cm };
   }).filter((x) => x.ok).sort((a, b) => b.s - a.s).slice(0, n);
 }
+/* ---------- kjøpsforslag fra Vinmonopolets sortiment ---------- */
+const P_REV = { "Lam og sau": "Lam", "Aperitiff": "Aperitif" };
+const WTYPES = new Set(["Rødvin", "Hvitvin", "Rosévin", "Musserende", "Perlende"]);
+function buyFor(r, n = 3) {
+  const tags = wineTags(r); if (!REGV || !tags || !tags.length) return [];
+  const T = REGV.tabs, bits = tags.map((t) => T.p.indexOf(P_REV[t] || t)).filter((i) => i >= 0); if (!bits.length) return [];
+  const dessert = tags.includes("Dessert"), fishy = tags.includes("Fisk") || tags.includes("Skalldyr");
+  const have = new Set([...WINES.map((w) => String(w.id)), ...myWines().map((w) => String(w.code || ""))]);
+  const basis = T.sel.indexOf("Basisutvalget"), tillegg = T.sel.indexOf("Tilleggsutvalget");
+  const bands = [[0, 200, "Rimelig"], [200, 350, "Mellomklasse"], [350, 800, "Til fest"]], cand = bands.map(() => []);
+  for (const x of REGV.rows) {
+    if (!x[9] || !x[2] || x[3] < 70 || x[3] > 75 || have.has(x[0])) continue;
+    const cat = T.cat[x[4]]; if (!(WTYPES.has(cat) || (dessert && cat === "Sterkvin"))) continue;
+    let hit = 0; bits.forEach((b) => { if ((x[16] >> b) & 1) hit++; }); if (!hit) continue;
+    let sc = hit * 3 + (x[8] === basis ? 3 : x[8] === tillegg ? 1.5 : 0) + (x[10] >= 0 ? 1 : 0);
+    if (fishy && /Hvitvin|Musserende/.test(cat)) sc += 1.5;
+    if (dessert && x[14] >= 4) sc += 2;
+    const i = bands.findIndex(([a, b]) => x[2] >= a && x[2] < b); if (i >= 0) cand[i].push({ x, sc });
+  }
+  let h = 0; for (const c of String(r.id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return cand.map((c, i) => { c.sort((a, b) => b.sc - a.sc); const top = c.slice(0, 8); return top.length ? { x: top[h % top.length].x, band: bands[i][2] } : null; }).filter(Boolean).slice(0, n);
+}
+function buyCard({ x, band }) {
+  const w = regToWine(x), wished = !!CEL.wish["onske_" + x[0]];
+  return `<div class="bcard"><span class="bb">${x[10] >= 0 ? sprite(x[10], 92) : bottleSvg(w.type, 92)}</span><span class="bt"><span class="bband">${esc(band)} · ${Math.round(w.price)} kr</span><b>${esc(w.name)}</b><small>${esc([w.type, w.district || w.country].filter(Boolean).join(" · "))}</small>${w.style ? `<small>${esc(w.style)}</small>` : ""}<span class="brow"><a class="btn small" href="${esc(w.url)}" target="_blank" rel="noopener">Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button class="btn small" type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
+}
+function fillBuy(id) {
+  loadReg().then(() => {
+    const el = document.getElementById("buySug"), r = BY[id]; if (!el || el.dataset.rid !== id || !r) return;
+    const list = buyFor(r);
+    el.innerHTML = list.length ? `<div class="wsub-h">Kjøp til denne retten</div><div class="bgrid">${list.map(buyCard).join("")}</div><p class="wnote">Forslag fra Vinmonopolets sortiment som passer til retten, og som ikke står i kjelleren${REGV.at ? ` · priser per ${nbDate(String(REGV.at).slice(0, 10))}` : ""}. Sjekk lagerstatus i din butikk hos Vinmonopolet.</p>` : "";
+  }).catch(() => {});
+}
 const normName = (s) => String(s || "").toLowerCase().replace(/\b(19|20)\d{2}\b/g, "").replace(/[^a-z0-9æøåéèüö]+/g, " ").trim();
 function myEquivalent(w) { if (CAP.isOwner) return null; const n = normName(w.name); return myWines().find((x) => (x.code && String(x.code) === String(w.id)) || (n && normName(x.name) === n)) || null; }
 const WCOL = { "Rødvin": "#c2465f", "Hvitvin": "#d9b95a", "Rosévin": "#e59aab", "Sider": "#d9a441", "Dessertvin": "#e8b04a" };
@@ -1122,6 +1162,11 @@ function wineCard(w, why, opt = {}) {
   return `<button class="wcard" type="button" ${attr}><span class="wbottle">${pic}</span><span class="wtxt"><span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${gr ? `<span class="wgr">${esc(gr)}</span>` : ""}${why ? `<span class="wwhy">${esc(why)}</span>` : ""}<span class="wmeta">${w.rating ? `<span class="wdrops">${"●".repeat(w.rating)}${"○".repeat(5 - w.rating)}</span>` : ""}<span>${w.qty} ${opt.mine ? "fl. hos deg" : "på lager"}</span>${w.price ? `<span>${Math.round(w.price)} kr</span>` : ""}</span>${have ? `<span class="whave">✓ Du har denne i kjelleren</span>` : ""}${more ? `<span class="wmore">${more}</span>` : ""}</span></button>`;
 }
 function wineSection(r) {
+  const base = wineSection0(r); if (!base) return "";
+  setTimeout(() => fillBuy(r.id), 0);
+  return base + `<div class="buysug" id="buySug" data-rid="${esc(r.id)}"></div>`;
+}
+function wineSection0(r) {
   if (wineTags(r) === null) return "";
   const owner = CAP.isOwner;
   const mw = winesFor(r, 3, WINES, owner ? "Du" : "Morten") || [];
@@ -1844,6 +1889,7 @@ const INSTR = () => `Du er «Digitale Morten», en AI-utgave av Morten som har l
 Snakk i første person om oppskriftene som dine egne («lammeskanken min»), kort, varmt og praktisk, som en erfaren hjemmekokk som elsker å lage mat. Svar på norsk bokmål. Den du snakker med kan være Morten selv eller en venn som har fått kokeboka. Spør noen om du er den ekte Morten, si ærlig at du er en AI som kjenner kokeboka og vinkjelleren hans. Bruk verktøyene for å finne og lese oppskrifter i boka før du anbefaler noe derfra.
 Når du nevner en oppskrift fra boka, skriv den som [[id]], for eksempel [[opp12]], så blir den en lenke. Ikke påstå at noe står i boka hvis du ikke har funnet det med verktøyene. Generelle råd (erstatninger, teknikk, drikke til maten, tilbehør) kan du gi fritt.
 Du har også tilgang til vinkjelleren din (Mortens) med verktøyet vinkjeller, og brukerens egen vinkjeller med min_vinkjeller. Foreslå gjerne fra begge: først det brukeren selv har, så det du (Morten) anbefaler, som de kan kjøpe hos Vinmonopolet. Når noen spør om drikke til maten, foreslå helst viner som faktisk står i kjelleren, og nevn karakteren og notatet ditt når det passer.
+Har ingen av kjellerne en vin som passer, eller spør noen hva de bør kjøpe, så bruk sok_vinmonopolet og foreslå 2–3 konkrete viner i ulike prisklasser, med pris og lenke skrevet som [Vinens navn](lenke). Foretrekk Basisutvalget, som finnes i de fleste butikker.
 Når noen vil ha en meny eller et menykort til et selskap, bruk verktøyet lag_menykort: velg retter fra boka (oppskrift_id), skriv korte, appetittvekkende beskrivelser av tilbehør og smaker, og foreslå vin til hver rett, helst fra brukerens egen kjeller. Skriv [[menykort]] i svaret etterpå.
 Bruk korte avsnitt og eventuelt punktlister med «- ». Ingen overskrifter.`;
 function recipeText(r) { return `${r.title} [${r.id}] – kapittel: ${r.chapter}. Tid: ${r.tid}. Gir: ${r.porsjoner}.\nIngredienser:\n${r.ingredients.map(([k, t]) => (k === "H" ? `${unlink(t)}:` : `- ${unlink(t)}`)).join("\n")}\nFremgangsmåte:\n${r.steps.map(([k, t]) => (k === "H" ? `${unlink(t)}:` : `- ${unlink(t)}`)).join("\n")}${r.tips.length ? "\nTips: " + r.tips.join(" ") : ""}`; }
@@ -1860,11 +1906,25 @@ const TOOLS = [
     execute: () => myWines().slice(0, 60).map((x) => ({ navn: x.name, type: x.type, land: x.country, distrikt: x.district, passer_til: x.pairing, karakter: x.rating, notat: x.note, antall: x.qty, pris: x.price })) },
   { name: "vinkjeller", description: "Søk i vinene Morten har i kjelleren: navn, årgang, type, distrikt, druer, stil, «passer til»-kategorier fra Vinmonopolet, hans karakter (1–5), kommentar og antall flasker. Søk på f.eks. 'lam', 'Burgund', 'hvitvin' eller la sok være tom for alle.", inputSchema: { type: "object", properties: { sok: { type: "string" } } },
     execute: ({ sok }) => { const w = String(sok || "").toLowerCase().split(/[\s,]+/).filter(Boolean); return WINES.filter((x) => x.qty > 0 && (!w.length || w.some((t) => JSON.stringify(x).toLowerCase().includes(t)))).slice(0, 30).map((x) => ({ navn: x.name, årgang: x.vintage, type: x.type, distrikt: [x.country, x.district, x.sub].filter(Boolean).join(", "), druer: x.grapes, stil: x.style, passer_til: x.pairing, karakter: x.rating, kommentar: x.comment, antall: x.qty, pris: x.price, lukt: x.smell, smak: x.taste, produsent: x.producer })); } },
+  { name: "sok_vinmonopolet", description: "Søk i hele Vinmonopolets vinsortiment (ca. 27 700 produkter) – også viner som verken Morten eller brukeren har. Søk på navn, land, område, drue, stil eller hva vinen passer til (f.eks. 'lam', 'Barolo', 'fisk', 'Champagne'). Filtrer på type og pris. Returnerer opptil 12 treff med pris, stil, «passer til», utvalg og lenke til Vinmonopolet. Basisutvalget finnes i de fleste butikker.", inputSchema: { type: "object", properties: { sok: { type: "string", description: "Søkeord, flere ord må alle passe" }, type: { type: "string", enum: ["Rødvin", "Hvitvin", "Rosévin", "Musserende", "Perlende", "Sterkvin"] }, min_pris: { type: "number" }, maks_pris: { type: "number" } } },
+    execute: async ({ sok, type, min_pris, maks_pris }) => {
+      await loadReg(); const T = REGV.tabs, words = String(sok || "").toLowerCase().split(/[\s,]+/).filter(Boolean), basis = T.sel.indexOf("Basisutvalget");
+      const hits = [];
+      for (const x of REGV.rows) {
+        if (!x[9] || !x[2]) continue; if (type && T.cat[x[4]] !== type) continue;
+        if (min_pris && x[2] < min_pris) continue; if (maks_pris && x[2] > maks_pris) continue;
+        if (words.length && !words.every((w) => x.hay.includes(w))) continue;
+        hits.push(x);
+      }
+      hits.sort((a, b) => (b[8] === basis) - (a[8] === basis) || (b[11] + b[12]) - (a[11] + a[12]));
+      return { antall_treff: hits.length, viner: hits.slice(0, 12).map((x) => { const w = regToWine(x); return { navn: w.name, type: w.type, land: w.country, område: [w.district, w.sub].filter(Boolean).join(", "), pris: Math.round(w.price), stil: w.style, passer_til: w.pairing, utvalg: T.sel[x[8]], lenke: w.url }; }) };
+    } },
 ];
 function mdLite(t) {
   let h = esc(t);
   h = h.replace(/\[\[menykort\]\]/g, `<button type="button" class="btn small primary" data-mkopen="1" style="margin:6px 0">Åpne menykortet</button>`);
   h = h.replace(/\[\[(opp\d+)(?:\|[^\]]*)?\]\]/g, (m, id) => BY[id] ? `<button type="button" class="ilink" data-open="${id}">${esc(BY[id].title)}</button>` : m);
+  h = h.replace(/\[([^\]]+)\]\((https:\/\/www\.vinmonopolet\.no\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1 ↗</a>');
   h = h.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
   const lines = h.split("\n"); let out = "", inList = false;
   lines.forEach((l) => { const m = l.match(/^\s*[-•]\s+(.*)/); if (m) { if (!inList) { out += "<ul>"; inList = true; } out += `<li>${m[1]}</li>`; } else { if (inList) { out += "</ul>"; inList = false; } out += l.trim() ? `<p style="margin:0 0 6px">${l}</p>` : ""; } });
@@ -2204,7 +2264,7 @@ function loadReg() {
   if (REGV) return Promise.resolve(REGV);
   if (REGP) return REGP;
   REGP = fetch("vinregister.json").then((r) => r.json()).then((m) => { REGM = m; return fetch(m.data); }).then((r) => r.json()).then((d) => {
-    d.rows.forEach((r) => { r.hay = r[1].toLowerCase() + " " + (d.tabs.country[r[5]] || "").toLowerCase() + " " + (d.tabs.district[r[6]] || "").toLowerCase() + " " + (d.tabs.sub[r[7]] || "").toLowerCase(); });
+    d.rows.forEach((r) => { r.hay = (r[1] + " " + (d.tabs.country[r[5]] || "") + " " + (d.tabs.district[r[6]] || "") + " " + (d.tabs.sub[r[7]] || "") + " " + (d.tabs.cat[r[4]] || "") + " " + (r[15] >= 0 ? d.tabs.st[r[15]] : "") + " " + d.tabs.p.filter((_, b) => (r[16] >> b) & 1).join(" ")).toLowerCase(); });
     REGV = d; return d;
   }).catch((e) => { REGP = null; throw e; });
   return REGP;
@@ -2259,7 +2319,7 @@ function renderCellar() {
   el.innerHTML = `<div class="cel-head">
       <div><div class="k">${owner ? "Fra vinkjeller-appen din" : "Bygg din egen samling"}</div><h2>${owner ? "Mortens" : "Min"} <em>vinkjeller</em></h2>
       <p class="muted">${st.n ? `${st.n} ${st.n === 1 ? "vin" : "viner"} · ${st.bottles} ${st.bottles === 1 ? "flaske" : "flasker"}${st.value ? ` · verdi ${Math.round(st.value).toLocaleString("nb-NO")} kr` : ""}` : "Ingen viner ennå"}</p></div>
-      <div class="row">${owner && WEBAPP ? "" : owner ? `<a class="btn" href="${VINKJELLER}" target="_blank" rel="noopener">${icon("wine", 16)}Åpne vinkjeller-appen ↗</a>` : `<button class="btn primary" type="button" data-addvin="kjeller">${icon("plus", 16)}Legg til vin</button>${CAP.sample && CAP.imgAI ? `<label class="btn">Les kvittering<input type="file" accept="image/*" id="rcptFile" hidden></label>` : ""}<button class="btn" type="button" data-backup="1">Sikkerhetskopi</button><label class="btn">Hent kopi<input type="file" accept="application/json,.json" id="restoreFile" hidden></label>`}</div>
+      <div class="row">${owner ? `<button class="btn primary" type="button" data-addvin="sok">${icon("search", 16)}Søk i Vinmonopolet</button>${WEBAPP ? "" : `<a class="btn" href="${VINKJELLER}" target="_blank" rel="noopener">${icon("wine", 16)}Åpne vinkjeller-appen ↗</a>`}` : `<button class="btn primary" type="button" data-addvin="kjeller">${icon("plus", 16)}Legg til vin</button>${CAP.sample && CAP.imgAI ? `<label class="btn">Les kvittering<input type="file" accept="image/*" id="rcptFile" hidden></label>` : ""}<button class="btn" type="button" data-backup="1">Sikkerhetskopi</button><label class="btn">Hent kopi<input type="file" accept="application/json,.json" id="restoreFile" hidden></label>`}</div>
     </div>
     <div class="seg cel-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" data-ctab="${k}" aria-pressed="${cv.tab === k}">${l}</button>`).join("")}</div>
     <div id="celBody"></div>`;
@@ -2346,11 +2406,11 @@ function renderAddVin() {
   const d = $("#drawerBody"); if (!d) return; const a = cv.add;
   if (a.manual) return renderManualVin();
   d.innerHTML = `<div class="form">
-    <p class="muted" style="margin:0">${a.mode === "onske" ? "Finn vinen du ønsker deg" : "Søk blant alle vinene til Vinmonopolet og legg dem i kjelleren din"}.</p>
+    <p class="muted" style="margin:0">${a.mode === "sok" ? `Søk blant alle vinene til Vinmonopolet på navn, område, drue eller hva den passer til (f.eks. «lam», «Barolo», «fisk Chablis»)` : a.mode === "onske" ? "Finn vinen du ønsker deg" : "Søk blant alle vinene til Vinmonopolet og legg dem i kjelleren din"}.</p>
     <label class="search"><svg width="18" height="18"><use href="#i-search"/></svg><input id="regQ" type="search" placeholder="Navn, område, land eller årgang …" value="${esc(a.q)}" autocomplete="off"></label>
     <div class="chips noscroll" id="regTypes"></div>
     <div id="regHits"><p class="muted">Laster vinregisteret …</p></div>
-    <button class="btn small" type="button" data-vmanual="1">${icon("edit", 15)}Finner du den ikke? Registrer selv</button>
+    ${a.mode === "sok" ? "" : `<button class="btn small" type="button" data-vmanual="1">${icon("edit", 15)}Finner du den ikke? Registrer selv</button>`}
   </div>`;
   const qi = $("#regQ"); qi.oninput = () => { a.q = qi.value; renderRegHits(); }; setTimeout(() => qi.focus(), 60);
   loadReg().then(() => { renderRegTypes(); renderRegHits(); }).catch(() => { $("#regHits").innerHTML = `<p class="muted">Klarte ikke å laste vinregisteret. Du kan registrere vinen selv.</p>`; });
@@ -2369,7 +2429,7 @@ function renderRegHits() {
   el.innerHTML = hits.length ? hits.map((r) => {
     const code = r[0], have = !!CEL.wines["vin_" + code], wished = !!CEL.wish["onske_" + code];
     return `<div class="rhit"><span class="rb">${r[10] >= 0 ? sprite(r[10], 84) : bottleSvg(T.cat[r[4]], 84)}</span><div class="t"><b>${esc(r[1])}</b><small>${esc([T.cat[r[4]], T.country[r[5]], T.district[r[6]]].filter(Boolean).join(" · "))}</small><small>${r[2] ? Math.round(r[2]) + " kr" : ""}${r[9] ? "" : " · ikke i salg nå"}</small></div>
-      <div class="acts"><button class="btn small ${a.mode === "kjeller" ? "primary" : ""}" type="button" data-regadd="${code}">${have ? "+1 i kjelleren" : "Kjeller"}</button><button class="btn small ${a.mode === "onske" ? "primary" : ""}" type="button" data-regwish="${code}" ${wished ? "disabled" : ""}>${wished ? "Ønsket" : "Ønske"}</button></div></div>`;
+      <div class="acts">${a.mode === "sok" ? `<a class="btn small" href="https://www.vinmonopolet.no/p/${esc(code)}" target="_blank" rel="noopener">Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button class="btn small" type="button" data-regwish="${code}" ${wished ? "disabled" : ""}>${wished ? "Ønsket" : "♡ Ønske"}</button>`}</div></div>` : ""}${a.mode === "sok" ? "" : `<button class="btn small ${a.mode === "kjeller" ? "primary" : ""}" type="button" data-regadd="${code}">${have ? "+1 i kjelleren" : "Kjeller"}</button><button class="btn small ${a.mode === "onske" ? "primary" : ""}" type="button" data-regwish="${code}" ${wished ? "disabled" : ""}>${wished ? "Ønsket" : "Ønske"}</button></div></div>`}`;
   }).join("") + (hits.length >= 40 ? `<p class="muted">Viser de 40 første. Skriv mer for å snevre inn.</p>` : "") : `<p class="muted">Ingen treff. Prøv færre ord, eller registrer vinen selv.</p>`;
 }
 async function regAdd(code, wish) {
@@ -2689,7 +2749,7 @@ async function deleteComment(key) {
 function openDrawer(kind) {
   closeDrawer(true);
   view.drawer = kind;
-  const titles = { list: "Handleliste", week: "Ukemeny", chef: "Spør Morten", edit: edit.id ? "Rediger oppskrift" : edit.mine ? "Ny oppskrift – bare for meg" : "Ny oppskrift", send: "Send til Morten", wine: "Vinen", vin: "Vinen din", rcpt: "Les kvittering", om: "Om appen", inbox: "Innboks", meny: "Lag menykort", addvin: cv.add.mode === "onske" ? "Legg til ønske" : "Legg til vin" };
+  const titles = { list: "Handleliste", week: "Ukemeny", chef: "Spør Morten", edit: edit.id ? "Rediger oppskrift" : edit.mine ? "Ny oppskrift – bare for meg" : "Ny oppskrift", send: "Send til Morten", wine: "Vinen", vin: "Vinen din", rcpt: "Les kvittering", om: "Om appen", inbox: "Innboks", meny: "Lag menykort", addvin: cv.add.mode === "sok" ? "Søk i Vinmonopolet" : cv.add.mode === "onske" ? "Legg til ønske" : "Legg til vin" };
   const foot = kind === "list" ? `<button class="btn small" type="button" data-lcopy="1">Kopier</button><button class="btn small" type="button" data-ldl="1" ${CAP.dl ? "" : "hidden"}>Last ned</button><button class="btn small" type="button" data-lclean="1">Fjern avkryssede</button><button class="btn small" type="button" data-lclear="1">Tøm listen</button>`
     : kind === "week" ? `<button class="btn small primary" type="button" data-week2list="1">${icon("cart", 15)}Legg uka i handlelisten</button><button class="btn small" type="button" data-wrand="1">${icon("dice", 15)}Fyll tomme dager</button><button class="btn small" type="button" data-wclear="1">Tøm uka</button>`
     : kind === "edit" ? `<button class="btn small primary" type="button" data-esave="1">${icon("check", 15)}Lagre</button><button class="btn small" type="button" data-dclose="1">Avbryt</button>${edit.id && BY[edit.id] && BY[edit.id].edited ? `<button class="btn small" type="button" data-ereset="1">Angre endringene</button>` : ""}${edit.id && BY[edit.id] ? `<button class="btn small danger" type="button" data-edel="1">Slett oppskriften</button>` : ""}`
@@ -3001,6 +3061,7 @@ document.addEventListener("click", (ev) => {
   if (d.wishdel) { celDel("wish", d.wishdel).then(() => renderCellar()); return; }
   if (d.wine) { wine.id = d.wine; openDrawer("wine"); return; }
   if (d.sendm) { send.id = d.sendm; openDrawer("send"); return; }
+  if (d.buywish) { const code = d.buywish; loadReg().then(() => regAdd(code, true)).then(() => { const el = document.getElementById("buySug"); if (el) fillBuy(el.dataset.rid); }); return; }
   if (d.bnchef) { $("#chefFab").click(); return; }
   if (d.bnlist) { $("#btnList").click(); return; }
   if (d.scopy) { copySend(); return; }
