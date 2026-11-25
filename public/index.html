@@ -1598,16 +1598,23 @@ setTimeout(() => { const bc = document.querySelector(".botnav .bn-clip"); if (bc
 /* ---------- anonym bruksstatistikk (bare webappen, ikke Morten selv) ---------- */
 const STATS = (() => {
   if (!WEBAPP || WEBOWNER) return { hit() {} };
+  // Roboter (forhåndsvisning av lenker, søkemotorer, automatiserte nettlesere) telles ikke.
+  const UA = navigator.userAgent || "";
+  if (navigator.webdriver || /bot|crawl|spider|slurp|preview|facebookexternalhit|facebot|headless|lighthouse|pagespeed|prerender|embedly|whatsapp|telegram|skype|discord|slack/i.test(UA)) return { hit() {} };
   const today = () => new Date().toLocaleDateString("sv-SE");
   const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
   let dev = ls("mk-dev"); if (!dev) { dev = (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)).slice(0, 20); ls("mk-dev", dev); }
   let first = ls("mk-first"); if (!first) { first = today(); ls("mk-first", first); }
   let day = null; try { day = JSON.parse(ls("mk-stat") || "null"); } catch (e) {}
-  const send = (d, beacon) => { const body = JSON.stringify({ dev, first, day: d }); try { if (beacon && navigator.sendBeacon) { navigator.sendBeacon("/api/stats", new Blob([body], { type: "application/json" })); return; } fetch("/api/stats", { method: "POST", headers: { "content-type": "application/json" }, body, keepalive: true }).catch(() => {}); } catch (e) {} };
+  const send = (d, beacon) => { if (!human) return; const body = JSON.stringify({ dev, first, day: d }); try { if (beacon && navigator.sendBeacon) { navigator.sendBeacon("/api/stats", new Blob([body], { type: "application/json" })); return; } fetch("/api/stats", { method: "POST", headers: { "content-type": "application/json" }, body, keepalive: true }).catch(() => {}); } catch (e) {} };
   const fresh = () => { if (!day || day.d !== today()) { if (day && day.d) send(day); day = { d: today(), o: 0, c: 0, s: (() => { try { return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true ? 1 : 0; } catch (e) { return 0; } })(), r: {} }; } return day; };
   const save = () => ls("mk-stat", JSON.stringify(day));
-  fresh().o++; save(); setTimeout(() => send(day), 4000);
-  document.addEventListener("visibilitychange", () => { if (document.hidden) send(fresh(), true); else { fresh().o++; save(); } });
+  // En enhet telles først når et menneske har gjort noe: trykket, scrollet, skrevet – eller hatt appen synlig i 10 sekunder.
+  let human = ls("mk-human") === "1";
+  const becomeHuman = () => { if (human) return; human = true; ls("mk-human", "1"); send(day); ["pointerdown", "touchstart", "touchmove", "keydown", "wheel"].forEach((e) => removeEventListener(e, becomeHuman, true)); };
+  if (!human) { ["pointerdown", "touchstart", "touchmove", "keydown", "wheel"].forEach((e) => addEventListener(e, becomeHuman, { capture: true, passive: true })); setTimeout(() => { if (!document.hidden) becomeHuman(); }, 10000); }
+  fresh().o++; save(); if (human) setTimeout(() => send(day), 4000);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { if (human) send(fresh(), true); } else { fresh().o++; save(); } });
   return { hit(kind, id) { const d = fresh(); if (kind === "r" && id) d.r[id] = (d.r[id] || 0) + 1; if (kind === "c") d.c++; save(); } };
 })();
 const STATV = { data: null, err: "" };
@@ -1630,6 +1637,7 @@ function renderStats() {
   const c = S.chef || {}, perQ = c.questions && c.usd != null ? c.usd / c.questions : null;
   d.innerHTML = `<div class="stats">
     <div class="st-grid">${tile(nf(S.users7), "aktive siste 7 dager")}${tile(nf(S.users30), "aktive siste 30 dager", `${nf(S.usersAll)} totalt`)}${tile(nf(S.new30), "nye siste 30 dager")}${tile(nf(S.home30), "bruker appen fra hjemskjermen")}</div>
+    <p class="muted st-note" style="margin-top:6px">Tallene teller <b>enheter</b>, ikke personer: samme person kan telles flere ganger hvis hen bruker både Safari og appen på hjemskjermen, Messenger-nettleseren eller både mobil og PC. Fra 25.11 telles bare enheter der noen faktisk har brukt appen (roboter og lenkeforhåndsvisninger telles ikke).</p>
     <h3>Aktive brukere per dag</h3>
     <div class="st-chart" role="img" aria-label="Aktive brukere per dag siste 30 dager, høyest ${max}">${bars}</div>
     <div class="st-axis"><span>${new Date(S.days[0].d + "T12:00").toLocaleDateString("nb-NO", { day: "numeric", month: "short" })}</span><span>høyest ${max}</span><span>i dag</span></div>
