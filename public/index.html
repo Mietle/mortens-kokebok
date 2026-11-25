@@ -1278,7 +1278,7 @@ function wineTags(r) {
 function dishProfile(r) {
   const t = r.title.toLowerCase(), a = t + " " + String(r.hay || "").toLowerCase();
   return {
-    spicy: /chili|sambal|sriracha|curry|gochujang|koreansk|jalapeño|kimchi|pil-pil|butter chicken/.test(t) || /garam masala|gochujang|sambal|sriracha|chilibønner|chipotle|chili con carne/.test(a),
+    spicy: /chili|sambal|sriracha|curry|gochujang|koreansk|jalapeño|kimchi|pil-pil|butter chicken|shawarma|kebab|döner/.test(t) || /garam masala|gochujang|sambal|sriracha|chilibønner|chipotle|chili con carne/.test(a),
     asian: r.chapterId === "kat1" || /ramen|gyoza|tempura|hoisin|vårrull|teriyaki|soyamarinert|butter chicken/.test(t),
     creamy: /fløte|hollandaise|krem|smørsaus|sandefjordsmør|béarnaise|bearnaise|frikassé|marry me|kremet/.test(t),
     tomato: /tomat|lasagne|osso buco|bolognese|pizza/.test(t),
