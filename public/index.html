@@ -824,6 +824,7 @@ a.btn { color: inherit; text-decoration: none; }
 .tile-ill { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; position: relative; flex: none; background: linear-gradient(160deg, rgba(255,226,190,.16), rgba(255,255,255,.03) 60%); border: 1px solid rgba(234,165,96,.35); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 8px 26px rgba(234,165,96,.22); }
 .tile-ill::after { content: ""; position: absolute; inset: 1px 1px 50% 1px; border-radius: 14px 14px 40% 40%; background: linear-gradient(rgba(255,255,255,.14), transparent); pointer-events: none; }
 .tile-ill .ill { filter: drop-shadow(0 0 6px rgba(234,165,96,.45)); }
+.img2 { margin: 16px 0 0; } .img2 img { width: 100%; border-radius: 18px; display: block; box-shadow: 0 14px 40px rgba(0,0,0,.45); } .img2 figcaption { font-size: 12.5px; color: var(--muted); margin-top: 6px; text-align: center; }
 /* ---------- serveres som ---------- */
 .servmode { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 2px 0 10px; } .servmode > span { font-size: 12px; color: var(--muted); margin-right: 2px; }
 .servmode .chip { padding: 5px 12px; font-size: 13px; }
@@ -1952,6 +1953,7 @@ function refreshRecipe() {
         <h4 class="sec">Slik gjør du</h4>
         <ol class="steps">${stepsHtml}</ol>
         ${r.tips.length ? `<div class="tips"><div class="k">Tips</div>${r.tips.map((t) => `<p>${linkify(esc(t))}</p>`).join("")}</div>` : ""}
+        ${r.img2 ? `<figure class="img2"><img src="${imgSrc({ img: r.img2 })}" alt="" loading="lazy">${r.img2cap ? `<figcaption>${esc(r.img2cap)}</figcaption>` : ""}</figure>` : ""}
       </div>
     </div>
     ${wineSection(r)}
