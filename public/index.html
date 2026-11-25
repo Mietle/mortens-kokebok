@@ -796,6 +796,9 @@ a.btn { color: inherit; text-decoration: none; }
 @keyframes plateFloat { to { transform: translateY(-60%) rotate(.4deg); } }
 @media (prefers-reduced-motion: reduce) { .cover.lowres .cover-plate { animation: none; } }
 
+/* ---------- serveres som ---------- */
+.servmode { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 2px 0 10px; } .servmode > span { font-size: 12px; color: var(--muted); margin-right: 2px; }
+.servmode .chip { padding: 5px 12px; font-size: 13px; }
 /* ---------- menykort ---------- */
 .apsug { display: grid; gap: 6px; }
 .apsug .aprow { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 10px; align-items: center; padding: 10px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.03); color: inherit; font: inherit; text-align: left; cursor: pointer; width: 100%; box-sizing: border-box; }
@@ -1358,14 +1361,22 @@ function splitQty(t, f) {
   const m = t.match(QRE);
   if (!m) return { q: "", rest: t };
   if (f === 1) return { q: m[0], rest: t.slice(m[0].length) };
-  let q = (m[1] || "") + fmt(num(m[2]) * f);
-  if (m[4]) q += "–" + fmt(num(m[4]) * f);
-  return { q, rest: t.slice(m[0].length) };
+  const rest = t.slice(m[0].length), u = (rest.match(/^\s*([a-zæøå.]+)/i) || [])[1] || "";
+  // Naturlig avrunding: gram til nærmeste 5/10, hele ting (fedd, egg, stk …) til nærmeste halve, aldri under en halv.
+  const nice = (v) => {
+    if (/^(g|gram)$/i.test(u)) return v >= 100 ? Math.round(v / 10) * 10 : v >= 20 ? Math.round(v / 5) * 5 : v;
+    if (/^(ml)$/i.test(u)) return v >= 100 ? Math.round(v / 10) * 10 : v;
+    if (!u || /^(fedd|stk\.?|egg|eggeplommer?|eggehviter?|skiver?|blad|kvast(er)?|kvister?|stilker?|never?|bunt(er)?|pk|pakke(r)?|boks(er)?|ark|sjalottløk|løk|lime|sitron(er)?|appelsin(er)?|epler?|poteter?|gulrøtter?)$/i.test(u)) return Math.max(.5, Math.round(v * 2) / 2);
+    return v;
+  };
+  let q = (m[1] || "") + fmt(nice(num(m[2]) * f));
+  if (m[4]) q += "–" + fmt(nice(num(m[4]) * f));
+  return { q, rest };
 }
 const scaleLine = (t, f) => { const s = splitQty(t, f); return s.q + s.rest; };
 
 /* ============================== tilstand (synk) ============================== */
-const DEF = () => ({ favs: [], cooked: {}, ratings: {}, notes: {}, list: [], extra: [], week: { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }, serv: {} });
+const DEF = () => ({ favs: [], cooked: {}, ratings: {}, notes: {}, list: [], extra: [], week: { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }, serv: {}, smode: {} });
 let S = DEF();
 const LS = "mortens-kokebok-v1";
 try { const raw = localStorage.getItem(LS); if (raw) S = Object.assign(DEF(), JSON.parse(raw)); } catch (e) {}
@@ -1749,7 +1760,11 @@ function renderAll() {
 const view = { kind: null, id: null, drawer: null, checked: {}, doneSteps: {}, page: "book" };
 const layer = $("#layer");
 function lock(on) { document.body.classList.toggle("locked", on); }
-function getServ(r) { const si = servInfo(r.porsjoner); return { ...si, v: S.serv[r.id] || si.base }; }
+// Serveres som middag, forrett eller smårett: forrett ≈ halv porsjon, smårett ≈ en tredjedel per person.
+const SERV_MODES = [["middag", "Middag", 1], ["forrett", "Forrett", .5], ["smarett", "Smårett", .34]];
+const modeK = (m) => (SERV_MODES.find((x) => x[0] === m) || SERV_MODES[0])[2];
+const canMode = (r) => ["kat1", "kat2", "kat3", "kat4"].includes(r.chapterId) && !["opp3", "opp4", "opp5", "opp7", "opp8", "opp9"].includes(r.id);
+function getServ(r) { const si = servInfo(r.porsjoner), v = S.serv[r.id] || si.base, mode = canMode(r) ? (S.smode || {})[r.id] || "middag" : "middag", k = modeK(mode); return { ...si, v, mode, k, fac: (v * k) / si.base }; }
 const TRE = /(\d+(?:,\d+)?)(?:\s*[–-]\s*(\d+(?:,\d+)?))?\s*(minutter|minutt|min\b|timer|time\b|sekunder|sek\b)/gi;
 const RLINK = /\[\[([A-Za-z0-9_-]+)\]\]/g;
 const linkify = (h) => h.replace(RLINK, (m, id) => BY[id] ? `<button type="button" class="rlink" data-open="${id}">${esc(BY[id].title)} ↗</button>` : "");
@@ -1774,7 +1789,7 @@ function openRecipe(id, push = true) {
 }
 function refreshRecipe() {
   const r = BY[view.id]; if (!r) return; const card = $("#sheetCard"); if (!card) return;
-  const sv = getServ(r), f = sv.v / sv.base, fav = S.favs.includes(r.id), rt = S.ratings[r.id] || 0, log = S.cooked[r.id] || [];
+  const sv = getServ(r), f = sv.fac, fav = S.favs.includes(r.id), rt = S.ratings[r.id] || 0, log = S.cooked[r.id] || [];
   const inList = L().list.find((x) => x.rid === r.id);
   const note = $("#note"); const noteFocus = note && document.activeElement === note;
   if (noteFocus) return; // ikke forstyrr skriving
@@ -1827,7 +1842,8 @@ function refreshRecipe() {
         <div class="ing-head"><h4 class="sec">Ingredienser</h4>
           <div class="stepper" aria-label="Juster mengde"><button type="button" data-serv="-1" aria-label="Færre">−</button><output><b>${fmt(sv.v)}</b> ${esc(sv.label)}</output><button type="button" data-serv="1" aria-label="Flere">+</button></div>
         </div>
-        ${f !== 1 ? `<p class="muted" style="font-size:12px;margin:-4px 0 6px">Mengdene er regnet om fra ${esc(r.porsjoner)}. <button type="button" class="ilink" style="color:var(--ember)" data-servreset="1">Tilbakestill</button></p>` : ""}
+        ${canMode(r) ? `<div class="servmode" role="group" aria-label="Serveres som"><span>Serveres som</span>${SERV_MODES.map(([m, n]) => `<button class="chip" type="button" data-smode="${m}" aria-pressed="${sv.mode === m}">${n}</button>`).join("")}</div>` : ""}
+        ${f !== 1 || sv.mode !== "middag" ? `<p class="muted" style="font-size:12px;margin:-4px 0 6px">${sv.mode !== "middag" ? `Mengdene er for ${fmt(sv.v)} ${sv.mode === "forrett" ? "forrettsporsjoner (ca. halv porsjon per person)" : "småretter (ca. en tredjedel per person)"}, regnet om fra ${esc(r.porsjoner)}.` : `Mengdene er regnet om fra ${esc(r.porsjoner)}.`} <button type="button" class="ilink" style="color:var(--ember)" data-servreset="1">Tilbakestill</button></p>` : ""}
         ${ingHtml}
       </div>
       <div>
@@ -1862,7 +1878,7 @@ function openCook(id) {
 }
 function renderCook() {
   const r = BY[cook.id], st = cook.list[cook.i], N = cook.list.length; const el = $("#cook"); if (!el) return;
-  const sv = getServ(r), f = sv.v / sv.base;
+  const sv = getServ(r), f = sv.fac;
   el.innerHTML = `
     <div class="cook-top"><button class="btn small" type="button" data-cookclose="1">${icon("x", 15)}Avslutt</button><span class="t">${esc(r.title)}</span><button class="btn small" type="button" data-cooking="1">${icon("list", 15)}Ingredienser</button></div>
     <div class="progress"><i style="width:${((cook.i + 1) / N) * 100}%"></i></div>
@@ -1971,7 +1987,7 @@ function stopSpeak() {
 }
 function speakStep() { const st = cook.list[cook.i]; if (st) speak(`Steg ${cook.i + 1}. ${st.t}`); }
 function speakRecipe(r) {
-  const sv = getServ(r), f = sv.v / sv.base;
+  const sv = getServ(r), f = sv.fac;
   const ing = r.ingredients.filter(([k]) => k === "I").map(([, t]) => scaleLine(t, f)).join(". ");
   speak(`${r.title}. Du trenger: ${ing}.`.slice(0, 1990));
 }
@@ -2033,7 +2049,7 @@ let listMode = (() => { try { return localStorage.getItem("mk-listmode") || "sam
 function listLines() {
   const lines = [];
   L().list.forEach((it) => {
-    const r = BY[it.rid]; if (!r) return; const f = (it.v || getServ(r).base) / servInfo(r.porsjoner).base;
+    const r = BY[it.rid]; if (!r) return; const f = ((it.v || getServ(r).base) * (it.k || 1)) / servInfo(r.porsjoner).base;
     r.ingredients.forEach(([k, t], i) => { if (k === "I") lines.push({ rid: r.id, i, text: scaleLine(t, f), checked: (it.c || []).includes(i) }); });
   });
   return lines;
@@ -2050,14 +2066,14 @@ function mergedLines() {
   return [...map.values()].map((e) => ({ ...e, text: e.hasQ ? `${fmt(e.q)} ${e.unit ? e.unit + " " : ""}${e.name}` : e.refs.length > 1 ? `${e.name} (${e.refs.length} oppskrifter)` : e.raw })).sort((a, b) => Number(a.checked) - Number(b.checked) || a.name.localeCompare(b.name, "nb"));
 }
 function addToList(rid) {
-  const r = BY[rid]; const v = getServ(r).v; const ex = L().list.find((x) => x.rid === rid);
-  if (ex) { ex.v = v; toast("Handlelisten er oppdatert"); } else { L().list.push({ rid, v, c: [] }); toast(`${r.title} er lagt i handlelisten`); }
+  const r = BY[rid]; const sv = getServ(r), v = sv.v, k = sv.k; const ex = L().list.find((x) => x.rid === rid);
+  if (ex) { ex.v = v; ex.k = k; toast("Handlelisten er oppdatert"); } else { L().list.push({ rid, v, k, c: [] }); toast(`${r.title} er lagt i handlelisten`); }
   save(); renderAll();
 }
 function listText() {
   const out = ["Handleliste – Mortens Kokebok", ""];
   if (listMode === "samlet") { const ml = mergedLines().filter((l) => !l.checked); AISLES.forEach(([name, a]) => { const g = ml.filter((l) => aisleOf(l.name || l.text) === a); if (g.length) { out.push(name.replace(/^\S+\s/, "").toUpperCase()); g.forEach((l) => out.push("☐ " + l.text)); out.push(""); } }); }
-  else L().list.forEach((it) => { const r = BY[it.rid]; out.push(`${r.title} (${fmt(it.v)} ${servInfo(r.porsjoner).label})`); listLines().filter((l) => l.rid === it.rid && !l.checked).forEach((l) => out.push("  ☐ " + l.text)); out.push(""); });
+  else L().list.forEach((it) => { const r = BY[it.rid]; out.push(`${r.title} (${fmt(it.v)} ${servInfo(r.porsjoner).label}${it.k && it.k < 1 ? (it.k > .4 ? ", som forrett" : ", som smårett") : ""})`); listLines().filter((l) => l.rid === it.rid && !l.checked).forEach((l) => out.push("  ☐ " + l.text)); out.push(""); });
   const ex = L().extra.filter((x) => !x.c); if (ex.length) { out.push("Annet"); ex.forEach((x) => out.push("  ☐ " + x.t)); }
   return out.join("\n");
 }
@@ -2224,7 +2240,7 @@ function partyHtml() {
 }
 function mkShop() {
   const n = parseInt(mk.guests, 10); let k = 0;
-  mk.courses.forEach((c) => { const r = c.rid && BY[c.rid]; if (!r) return; const v = n > 0 ? n : getServ(r).v; const ex = L().list.find((x) => x.rid === r.id); if (ex) ex.v = v; else L().list.push({ rid: r.id, v, c: [] }); k++; });
+  mk.courses.forEach((c) => { const r = c.rid && BY[c.rid]; if (!r) return; const v = n > 0 ? n : getServ(r).v; const kk = canMode(r) && /forrett|mellomrett|smårett|smårett|tapas|amuse/i.test(c.label || "") ? (/smårett|smårett|tapas|amuse/i.test(c.label) ? .34 : .5) : 1; const ex = L().list.find((x) => x.rid === r.id); if (ex) { ex.v = v; ex.k = kk; } else L().list.push({ rid: r.id, v, k: kk, c: [] }); k++; });
   save(); renderAll(); toast(k ? `${k} ${k === 1 ? "rett" : "retter"} lagt i handlelisten${n > 0 ? " for " + n : ""}` : "Velg retter først");
 }
 async function mkPlan() {
@@ -3636,7 +3652,8 @@ document.addEventListener("click", (ev) => {
   if (d.tstop) { const i = TM.findIndex((x) => x.id === d.tstop); if (i >= 0) TM.splice(i, 1); renderTimers(); return; }
   if (d.tadd) { const x = TM.find((y) => y.id === d.tadd); if (x) { x.end += 60000; x.total += 60; } renderTimers(); return; }
   if (d.serv) { const r = BY[view.id]; const sv = getServ(r); S.serv[r.id] = Math.max(sv.step, Math.round((sv.v + sv.step * +d.serv) * 100) / 100); save(); refreshRecipe(); return; }
-  if (d.servreset) { delete S.serv[view.id]; save(); refreshRecipe(); return; }
+  if (d.servreset) { delete S.serv[view.id]; if (S.smode) delete S.smode[view.id]; save(); refreshRecipe(); return; }
+  if (d.smode) { S.smode = S.smode || {}; if (d.smode === "middag") delete S.smode[view.id]; else S.smode[view.id] = d.smode; save(); refreshRecipe(); return; }
   if (d.cook) { openCook(d.cook); return; }
   if (d.cookclose) { closeCook(); return; }
   if (d.cooknext) { cookGo(1); return; }
