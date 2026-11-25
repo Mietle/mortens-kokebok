@@ -1149,16 +1149,56 @@ const WINE_RULES = [
 ];
 const NO_WINE = ["Brød & bakst", "Sauser, dressinger & dipper", "Tilbehør"];
 function wineTags(r) {
-  if (NO_WINE.includes(r.chapter)) return null;
+  if (NO_WINE.includes(r.chapter) || ["opp3", "opp4", "opp5"].includes(r.id)) return null;
   if (r.chapter === "Dessert & søtt") return ["Dessert", "Ost"];
   const pick = (txt) => { const t = []; WINE_RULES.forEach(([re, tg]) => { if (re.test(txt)) t.push(...tg); }); return t; };
   let tags = pick(r.title.toLowerCase()); if (!tags.length) tags = pick(r.hay);
   return [...new Set(tags)];
 }
+// Hva slags rett er det? Brukes til å finne vin som passer til smakene, ikke bare til råvaren.
+function dishProfile(r) {
+  const t = r.title.toLowerCase(), a = t + " " + String(r.hay || "").toLowerCase();
+  return {
+    spicy: /chili|sambal|sriracha|curry|gochujang|koreansk|jalapeño|kimchi|pil-pil|butter chicken/.test(t) || /garam masala|gochujang|sambal|sriracha/.test(a),
+    asian: r.chapterId === "kat1" || /ramen|gyoza|tempura|hoisin|vårrull|teriyaki|soyamarinert|butter chicken/.test(t),
+    creamy: /fløte|hollandaise|krem|smørsaus|sandefjordsmør|béarnaise|bearnaise|frikassé|marry me|kremet/.test(t),
+    tomato: /tomat|lasagne|osso buco|bolognese|pizza|bourguignon/.test(t),
+    smoked: /røke|gravet/.test(t),
+    fruity: /bringebær|honning|eple|appelsin|calvados|mango|portvin|balsamico|plomme|kirsebær/.test(t),
+    apple: /eple|calvados/.test(t),
+    mushroom: /sopp/.test(t),
+    heavy: /langtid|bourguignon|osso buco|lammelår|stek\b|lammestek|rødvinssaus|confit|ribbe|pinnekjøtt|lapskaus|amarone/.test(t),
+    grill: /grill|biff|entrecôte|entrecote|burger|taco|chimichurri/.test(t),
+    light: /salat|suppe|ramen|vårrull|tempura|scampi|blåskjell/.test(t),
+  };
+}
+function styleFit(w, p, tags) {
+  const sc = {}; (w.scales || []).forEach((x) => { sc[x.k] = x.v; });
+  const type = w.type || "", red = /Rød/.test(type), white = /Hvit|Musser|Rosé|Sider|Perl|Champ/.test(type);
+  const g = String(w.grapes || "").toLowerCase(), tan = sc.Garvestoffer ?? (red ? 8 : 0), body = sc.Fylde ?? 8, sweet = sc.Sødme ?? 0;
+  let s = 0, why = "";
+  const say = (x) => { if (!why) why = x; };
+  if (p.spicy) { if (white) { s += 4; say(sweet >= 2 ? "Frisk og litt fruktsøt – demper chilien" : "Frisk og ren – tåler krydderet"); } else if (red && tan >= 8) s -= 4; else if (red && tan <= 6) s += 1; if (sweet >= 2 && sweet < 6) s += 1.5; }
+  else if (p.asian) { if (white) { s += 2.5; say("Frisk vin til asiatiske smaker"); } if (red && /pinot noir/.test(g) && tan <= 7) s += 1.5; if (red && tan >= 9) s -= 2; }
+  if (p.creamy) { if (/chardonnay/.test(g)) { s += 3; say("Chardonnay løfter de kremete smakene"); } else if (white) s += 1.5; if (red && tan >= 9) s -= 1.5; }
+  if (p.tomato && red && /sangiovese|barbera|brunello|nebbiolo|corvina|pinot noir/.test(g)) { s += 3; say(/pinot/.test(g) ? "Burgunder til gryta – en klassiker" : "Italiensk syre som møter tomaten"); }
+  if (p.smoked && white) { s += 2; say("Frisk syre til røkt og gravet fisk"); }
+  if (p.apple && /Sider/.test(type) && sweet < 6) { s += 4; say("Eple møter eple"); }
+  else if (p.fruity && red && /pinot noir|grenache|corvina|merlot|barbera/.test(g)) { s += 2; say("Fruktig rødvin til den søtlige sausen"); }
+  if (p.mushroom && red && /pinot noir|nebbiolo/.test(g)) { s += 2.5; say("Sopp og " + (/pinot/.test(g) ? "pinot noir" : "nebbiolo") + " er en klassiker"); }
+  if (p.heavy && red) { if (body >= 9) s += 2; if (tan >= 8) s += 1; say("Fyldig vin til en mektig rett"); }
+  if (p.grill && red && /syrah|shiraz|cabernet|malbec|tempranillo|carignan|saperavi|grenache/.test(g)) { s += 2.5; say("Kraftig rødvin til stekt kjøtt"); }
+  if (p.light && red && body >= 10) s -= 2;
+  if (tags.includes("Lam og sau") && red && /syrah|tempranillo|grenache|cabernet|nebbiolo|sangiovese|brunello/.test(g)) s += 1;
+  if (tags.includes("Lyst kjøtt") && !p.heavy && red && tan >= 9) s -= 1.5;
+  return { s, why };
+}
+const hashStr = (x) => { let h = 2166136261; for (const c of String(x)) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0; return h; };
 function winesFor(r, n = 3, list = WINES, who = "Du") {
   const tags = wineTags(r); if (tags === null || !list.length) return null;
-  const words = r.title.toLowerCase().replace(/œ/g, "oe").split(/[\s,–-]+/).filter((w) => w.length > 5);
-  const fishy = tags.includes("Fisk") || tags.includes("Skalldyr");
+  const STOP = /^(poteter|potet|gratinert|ovnsbakt|ovnsbakte|ovnsbakte|klassisk|hjemmelaget|langtidsstekt|helstekt|pannestekt|grillet|kremet|sitron|asparges|aspargesbønner|sjalottløk|rotgrønnsaker|småpoteter|ristede|urtepoteter|varmende)$/;
+  const words = r.title.toLowerCase().replace(/œ/g, "oe").split(/[\s,–-]+/).filter((w) => w.length > 5 && !STOP.test(w));
+  const fishy = tags.includes("Fisk") || tags.includes("Skalldyr"), dessert = tags.includes("Dessert"), prof = dishProfile(r);
   return list.filter((w) => w.qty > 0).map((w) => {
     const hit = (w.pairing || []).filter((p) => tags.includes(p));
     const note = w.comment || w.note || ""; const c = note.toLowerCase(); const cm = words.find((x) => c.includes(x.slice(0, 7)));
@@ -1168,8 +1208,13 @@ function winesFor(r, n = 3, list = WINES, who = "Du") {
     const smak = Array.isArray(w.smak) ? w.smak : [];
     if (smak.includes("Kjøper igjen")) s += 1;
     if (!why && who === "Du" && w.rating >= 4) why = `Du ga den ${w.rating} av 5${smak.length ? " · " + smak.filter((x) => x !== "Kjøper igjen").slice(0, 2).join(", ").toLowerCase() : ""}`;
+    const sweetW = /Dessert|Sterk/.test(w.type || "") || ((w.scales || []).find((x) => x.k === "Sødme") || {}).v >= 5;
+    if (dessert && !sweetW && !cm) return { ok: false };
+    const fit = styleFit(w, prof, tags); s += fit.s;
+    if (!cm && fit.why && fit.s >= 2) why = fit.why + (who === "Du" && w.rating >= 4 ? ` · du ga den ${w.rating} av 5` : "");
     if (!why && hit.length) why = "Passer til " + hit.join(" og ").toLowerCase();
-    return { w, s, why, ok: hit.length || cm };
+    s += (hashStr(r.id + "|" + w.id) % 100) / 125; // like gode viner fordeles på ulike retter
+    return { w, s, why, ok: (hit.length && fit.s > -3) || cm || ((prof.spicy || prof.asian) && fit.s >= 3) };
   }).filter((x) => x.ok).sort((a, b) => b.s - a.s).slice(0, n);
 }
 /* ---------- kjøpsforslag fra Vinmonopolets sortiment ---------- */
@@ -2390,7 +2435,7 @@ function renderCover() {
   const wkr = weeklyRecipe(); const r = wkr || todays(); if (!r) return;
   const img = $("#coverImg"); img.src = imgSrc(r); img.style.objectPosition = r.fp ? `${r.fp[0]}% ${r.fp[1]}%` : ""; const pl = $("#coverPlate"); if (pl) { pl.src = img.src; pl.style.objectPosition = img.style.objectPosition; } const lowCheck = () => { const cv = $("#cover"); if (cv && img.naturalWidth > 1) cv.classList.toggle("lowres", img.naturalWidth < 1500); }; if (img.complete) lowCheck(); img.onload = lowCheck;
   const d = new Date(); $("#kdate").textContent = d.toLocaleDateString("nb-NO", { weekday: "long", day: "numeric", month: "long" });
-  const wl = winesFor(r, 1); const w = wl && wl[0] && wl[0].w;
+  const wl = winesFor(r, 4) || [], top = wl.filter((x) => wl[0] && x.s >= wl[0].s - 1.5); const w = top.length ? top[hashStr(todayKey() + r.id) % top.length].w : null;
   $("#dish").innerHTML = `<div><div class="k">${wkr ? "Ukens oppskrift fra Morten" : "Dagens rett"}</div><h2>${esc(r.title)}</h2>${wkr && WEEKLY.msg ? `<p class="wkmsg">${faceSVG(34)}<span>«${esc(WEEKLY.msg)}»</span></p>` : ""}<div class="meta"><span>${icon("clock", 14)}${esc(r.tid || "")}</span><span>${icon("plate", 14)}${esc(r.porsjoner || "")}</span>${w ? `<span>${icon("wine", 14)}${esc(w.name)}</span>` : ""}</div></div>
     <div class="acts"><button class="btn small primary" type="button" data-open="${r.id}">Se oppskriften</button><button class="btn small" type="button" data-cook="${r.id}">${icon("play", 14)}Lag den</button></div>`;
   steam.focus = r.fp ? [r.fp[0] / 100, r.fp[1] / 100] : [.65, .55];
