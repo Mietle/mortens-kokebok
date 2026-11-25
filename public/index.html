@@ -854,6 +854,22 @@ button.kpi:hover .go, button.kpi[aria-pressed="true"] .go { opacity: 1; color: v
 <div class="ambient" aria-hidden="true"><span class="glow g1"></span><span class="glow g2"></span><span class="glow g3"></span><canvas class="sparks" id="sparks"></canvas></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="iw-gl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".6"/><stop offset=".45" stop-color="#fff" stop-opacity=".12"/><stop offset="1" stop-color="#fff" stop-opacity=".38"/></linearGradient>
+<linearGradient id="iw-red" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c2465f"/><stop offset="1" stop-color="#6e1428"/></linearGradient>
+<linearGradient id="iw-white" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf0b8"/><stop offset="1" stop-color="#e2c46a"/></linearGradient>
+<linearGradient id="iw-rose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbc6c4"/><stop offset="1" stop-color="#e5878f"/></linearGradient>
+<linearGradient id="iw-champ" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe6a2"/><stop offset="1" stop-color="#d9a640"/></linearGradient>
+<linearGradient id="iw-sweet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c45c"/><stop offset="1" stop-color="#b8701e"/></linearGradient>
+<linearGradient id="iw-port" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c2f3f"/><stop offset="1" stop-color="#4a0c17"/></linearGradient>
+<linearGradient id="iw-cider" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7dc8a"/><stop offset="1" stop-color="#d79a2e"/></linearGradient>
+</defs><symbol id="ic-w-red" viewBox="0 0 32 32"><path d="M8 3h16c.6 6.6-.6 12-8 13-7.4-1-8.6-6.4-8-13z" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/><path d="M8.5 8.6h15c-.6 4.3-2.8 6.6-7.5 7.2-4.7-.6-6.9-2.9-7.5-7.2z" fill="url(#iw-red)"/><path d="M10.2 4.6c-.2 2.8.4 5.2 1.6 6.8" stroke="#fff" stroke-opacity=".75" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M16 16v9.5" stroke="#f4eee6" stroke-width="1.2"/><ellipse cx="16" cy="26.4" rx="6" ry="1.5" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/></symbol>
+<symbol id="ic-w-white" viewBox="0 0 32 32"><path d="M10.5 3h11c.6 6.8-.6 11.4-5.5 12.4-4.9-1-6.1-5.6-5.5-12.4z" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/><path d="M10.8 8h10.4c-.4 4-2 6.4-5.2 6.9-3.2-.5-4.8-2.9-5.2-6.9z" fill="url(#iw-white)"/><path d="M12.4 4.4c-.2 2.6.3 4.8 1.3 6.3" stroke="#fff" stroke-opacity=".8" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M16 15.4v10.1" stroke="#f4eee6" stroke-width="1.2"/><ellipse cx="16" cy="26.4" rx="5.4" ry="1.4" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/></symbol>
+<symbol id="ic-w-rose" viewBox="0 0 32 32"><path d="M10.5 3h11c.6 6.8-.6 11.4-5.5 12.4-4.9-1-6.1-5.6-5.5-12.4z" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/><path d="M10.8 8h10.4c-.4 4-2 6.4-5.2 6.9-3.2-.5-4.8-2.9-5.2-6.9z" fill="url(#iw-rose)"/><path d="M12.4 4.4c-.2 2.6.3 4.8 1.3 6.3" stroke="#fff" stroke-opacity=".8" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M16 15.4v10.1" stroke="#f4eee6" stroke-width="1.2"/><ellipse cx="16" cy="26.4" rx="5.4" ry="1.4" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/></symbol>
+<symbol id="ic-w-spark" viewBox="0 0 32 32"><path d="M12.5 2.5h7l-1 11a2.5 2.5 0 0 1-5 0z" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".7"/><path d="M12.9 6.5h6.2l-.7 6.9a2.4 2.4 0 0 1-4.8 0z" fill="url(#iw-champ)"/><circle cx="15.4" cy="11" r=".6" fill="#fff"/><circle cx="16.6" cy="8.6" r=".5" fill="#fff"/><circle cx="15.8" cy="13.3" r=".45" fill="#fff"/><path d="M13.8 3.8l-.3 5" stroke="#fff" stroke-opacity=".85" stroke-width=".9" stroke-linecap="round"/><path d="M16 16.2v9.4" stroke="#f4eee6" stroke-width="1.2"/><ellipse cx="16" cy="26.4" rx="4.6" ry="1.3" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/></symbol>
+<symbol id="ic-w-sweet" viewBox="0 0 32 32"><path d="M11.5 7h9c.5 4.8-.8 8.2-4.5 8.8-3.7-.6-5-4-4.5-8.8z" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/><path d="M11.8 10h8.4c-.3 3-1.6 4.8-4.2 5.2-2.6-.4-3.9-2.2-4.2-5.2z" fill="url(#iw-sweet)"/><path d="M13 8.2c-.1 1.8.2 3.3.9 4.3" stroke="#fff" stroke-opacity=".8" stroke-width=".9" fill="none" stroke-linecap="round"/><path d="M16 15.8v9.7" stroke="#f4eee6" stroke-width="1.2"/><ellipse cx="16" cy="26.4" rx="4.6" ry="1.3" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/></symbol>
+<symbol id="ic-w-port" viewBox="0 0 32 32"><path d="M11.5 7h9c.5 4.8-.8 8.2-4.5 8.8-3.7-.6-5-4-4.5-8.8z" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/><path d="M11.8 10h8.4c-.3 3-1.6 4.8-4.2 5.2-2.6-.4-3.9-2.2-4.2-5.2z" fill="url(#iw-port)"/><path d="M13 8.2c-.1 1.8.2 3.3.9 4.3" stroke="#fff" stroke-opacity=".8" stroke-width=".9" fill="none" stroke-linecap="round"/><path d="M16 15.8v9.7" stroke="#f4eee6" stroke-width="1.2"/><ellipse cx="16" cy="26.4" rx="4.6" ry="1.3" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/></symbol>
+<symbol id="ic-w-cider" viewBox="0 0 32 32"><path d="M9 6h14l-1.6 19a2.4 2.4 0 0 1-2.4 2.2h-6a2.4 2.4 0 0 1-2.4-2.2z" fill="url(#iw-gl)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"/><path d="M9.6 11.5h12.8l-1.2 13.4a2 2 0 0 1-2 1.8h-6.4a2 2 0 0 1-2-1.8z" fill="url(#iw-cider)"/><circle cx="14" cy="18" r=".8" fill="#fff" fill-opacity=".9"/><circle cx="17.6" cy="15.2" r=".6" fill="#fff" fill-opacity=".9"/><circle cx="16.4" cy="21.6" r=".55" fill="#fff" fill-opacity=".9"/><path d="M10.6 7.5l.6 7" stroke="#fff" stroke-opacity=".8" stroke-width=".9" stroke-linecap="round"/></symbol></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <linearGradient id="ig-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe3a3"/><stop offset=".55" stop-color="#e9b04f"/><stop offset="1" stop-color="#b8782a"/></linearGradient>
 <linearGradient id="ig-champ" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe6a2"/><stop offset="1" stop-color="#d9a640"/></linearGradient>
 <linearGradient id="ig-glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".6"/><stop offset=".45" stop-color="#fff" stop-opacity=".12"/><stop offset="1" stop-color="#fff" stop-opacity=".38"/></linearGradient>
@@ -1034,6 +1050,8 @@ const isoDate = (d = new Date()) => d.toISOString().slice(0, 10);
 const nbDate = (iso) => { const [y, m, d] = iso.split("-"); return `${+d}.${+m}.${y.slice(2)}`; };
 
 const ill = (n, sz = 18) => `<svg class="ill" width="${sz}" height="${sz}" aria-hidden="true"><use href="#ic-${n}"/></svg>`;
+// Vinglass etter type: rødvin, hvitvin, rosé, musserende, dessertvin, sterkvin, sider
+const wineIc = (t) => { t = String(t || "").toLowerCase(); return "w-" + (/rød/.test(t) ? "red" : /rosé|rose/.test(t) ? "rose" : /muss|champ|perl|crémant|cremant|prosecco|cava/.test(t) ? "spark" : /sider|cider/.test(t) ? "cider" : /sterk|port|sherry|madeira/.test(t) ? "port" : /dessert|søt/.test(t) ? "sweet" : /hvit/.test(t) ? "white" : "red"); };
 let toastT;
 function toast(msg) {
   document.querySelectorAll(".toast").forEach((t) => t.remove());
@@ -1321,7 +1339,7 @@ function buyCard({ x, band, why }) {
   const hl = COVER_BUY && COVER_BUY.code === String(x[0]);
   const w = regToWine(x), wished = !!CEL.wish["onske_" + x[0]], where = [w.district || w.country, w.vintage].filter(Boolean).join(" ");
   const pic = x[10] >= 0 ? sprite(x[10], 112) : bottleSvg(w.type, 112);
-  return `<div class="wcard bcard2${hl ? " hl" : ""}" data-code="${esc(x[0])}"><span class="wbottle">${pic}</span><span class="wtxt">${hl ? `<span class="hlbadge">${ill("star", 13)} Dagens anbefaling</span>` : ""}<span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${w.style ? `<span class="wgr">${esc(w.style)}</span>` : ""}<span class="wwhy">${esc(band)}${why ? " · " + esc(why) : w.pairing.length ? " · passer til " + esc(w.pairing.slice(0, 2).join(" og ").toLowerCase()) : ""}</span><span class="wmeta"><span>${Math.round(w.price)} kr</span></span><span class="wmore blinks"><a href="${esc(w.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "✓ I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
+  return `<div class="wcard bcard2${hl ? " hl" : ""}" data-code="${esc(x[0])}"><span class="wbottle">${pic}</span><span class="wtxt">${hl ? `<span class="hlbadge">${ill("star", 13)} Dagens anbefaling</span>` : ""}<span class="wtype">${ill(wineIc(w.type), 15)}${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${w.style ? `<span class="wgr">${esc(w.style)}</span>` : ""}<span class="wwhy">${esc(band)}${why ? " · " + esc(why) : w.pairing.length ? " · passer til " + esc(w.pairing.slice(0, 2).join(" og ").toLowerCase()) : ""}</span><span class="wmeta"><span>${Math.round(w.price)} kr</span></span><span class="wmore blinks"><a href="${esc(w.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "✓ I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
 }
 function fillBuy(id) {
   loadReg().then(() => {
@@ -1342,7 +1360,7 @@ function wineCard(w, why, opt = {}) {
   const attr = opt.mine ? `data-vin="${esc(w.id)}"` : `data-wine="${esc(w.id)}"`;
   const pic = opt.mine ? bottleOf(w, 120) : `<img src="${esc(w.img)}" alt="" loading="lazy">`;
   const more = opt.mine ? "Din vin – åpne →" : have ? "" : CAP.isOwner ? "Lukt, smak og detaljer →" : "Lukt, smak og bestilling →";
-  return `<button class="wcard" type="button" ${attr}><span class="wbottle">${pic}</span><span class="wtxt"><span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${gr ? `<span class="wgr">${esc(gr)}</span>` : ""}${why ? `<span class="wwhy">${esc(why)}</span>` : ""}<span class="wmeta">${w.rating ? `<span class="wdrops">${"●".repeat(w.rating)}${"○".repeat(5 - w.rating)}</span>` : ""}<span>${w.qty} ${opt.mine ? "fl. hos deg" : "på lager"}</span>${w.price ? `<span>${Math.round(w.price)} kr</span>` : ""}</span>${have ? `<span class="whave">✓ Du har denne i kjelleren</span>` : ""}${more ? `<span class="wmore">${more}</span>` : ""}</span></button>`;
+  return `<button class="wcard" type="button" ${attr}><span class="wbottle">${pic}</span><span class="wtxt"><span class="wtype">${ill(wineIc(w.type), 15)}${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${gr ? `<span class="wgr">${esc(gr)}</span>` : ""}${why ? `<span class="wwhy">${esc(why)}</span>` : ""}<span class="wmeta">${w.rating ? `<span class="wdrops">${"●".repeat(w.rating)}${"○".repeat(5 - w.rating)}</span>` : ""}<span>${w.qty} ${opt.mine ? "fl. hos deg" : "på lager"}</span>${w.price ? `<span>${Math.round(w.price)} kr</span>` : ""}</span>${have ? `<span class="whave">✓ Du har denne i kjelleren</span>` : ""}${more ? `<span class="wmore">${more}</span>` : ""}</span></button>`;
 }
 function wineSection(r) {
   const base = wineSection0(r); if (!base) return "";
@@ -2201,7 +2219,7 @@ function renderFridge() {
 function addFridge(v) { String(v || "").split(/,|\bog\b/).map((x) => x.trim().toLowerCase()).filter((x) => x.length > 1).forEach((x) => { if (!FRIDGE.items.includes(x)) FRIDGE.items.push(x); }); fridgeSave(); renderFridge(); setTimeout(() => $("#fridgeIn")?.focus(), 30); }
 
 /* ============================== 2) handleliste etter butikkens avdelinger ============================== */
-const AISLE_IC = { 1: "veg", 2: "bread", 3: "meat", 4: "fish", 5: "cheese", 6: "can", 7: "frozen", 8: "wineglass", 9: "basket" };
+const AISLE_IC = { 1: "veg", 2: "bread", 3: "meat", 4: "fish", 5: "cheese", 6: "can", 7: "frozen", 8: "w-red", 9: "basket" };
 const AISLES = [
   ["Frukt og grønt", 1], ["Brød og bakst", 2], ["Kjøtt", 3], ["Fisk og sjømat", 4], ["Meieri og egg", 5], ["Tørrvarer og krydder", 6], ["Frys", 7], ["Drikke", 8], ["Annet", 9],
 ];
@@ -2537,8 +2555,8 @@ function renderCover() {
   const own = CAP.isOwner ? pickTop(winesFor(r, 4)) : pickTop((winesFor(r, 4, myWines(), "Du") || []).filter((x) => x.s >= 8));
   let buy = null; if (REGV) { const bl = buyFor(r, 3, todayKey() + r.id); buy = bl.find((b) => b.band === "Mellomklasse") || bl[0] || null; } else setTimeout(() => loadReg().then(renderCover).catch(() => {}), 1200);
   const bw = buy && regToWine(buy.x); COVER_BUY = buy ? { rid: r.id, code: String(buy.x[0]) } : null;
-  const wineLines = (own ? `<button type="button" data-open="${r.id}">${icon("wine", 14)}<span><b>${esc(own.w.name)}</b> <small>· fra ${CAP.isOwner ? "kjelleren" : "kjelleren din"}</small></span></button>` : "")
-    + (bw ? `<button type="button" data-coverbuy="${r.id}|${esc(buy.x[0])}">${icon("wine", 14)}<span>${own ? "Eller prøv: " : ""}<b>${esc(bw.name)}</b> <small>· ${Math.round(bw.price)} kr · Vinmonopolet</small></span></button>` : "");
+  const wineLines = (own ? `<button type="button" data-open="${r.id}">${ill(wineIc(own.w.type), 19)}<span><b>${esc(own.w.name)}</b> <small>· fra ${CAP.isOwner ? "kjelleren" : "kjelleren din"}</small></span></button>` : "")
+    + (bw ? `<button type="button" data-coverbuy="${r.id}|${esc(buy.x[0])}">${ill(wineIc(bw.type), 19)}<span>${own ? "Eller prøv: " : ""}<b>${esc(bw.name)}</b> <small>· ${Math.round(bw.price)} kr · Vinmonopolet</small></span></button>` : "");
   $("#dish").innerHTML = `<div><div class="k">${wkr ? "Ukens oppskrift fra Morten" : "Dagens rett"}</div><h2>${esc(r.title)}</h2>${wkr && WEEKLY.msg ? `<p class="wkmsg">${faceSVG(34)}<span>«${esc(WEEKLY.msg)}»</span></p>` : ""}<div class="meta"><span>${icon("clock", 14)}${esc(r.tid || "")}</span><span>${icon("plate", 14)}${esc(r.porsjoner || "")}</span></div>${wineLines ? `<div class="cwine">${wineLines}</div>` : ""}</div>
     <div class="acts"><button class="btn small primary" type="button" data-open="${r.id}">Se oppskriften</button><button class="btn small" type="button" data-cook="${r.id}">${icon("play", 14)}Lag den</button></div>`;
   steam.focus = r.fp ? [r.fp[0] / 100, r.fp[1] / 100] : [.65, .55];
@@ -2817,7 +2835,7 @@ function vcard(w) {
   const where = [w.country, w.district].filter(Boolean).join(" · ");
   return `<button class="vcard ${(w.qty || 0) > 0 ? "" : "empty0"}" type="button" ${w._m ? `data-wine="${esc(w.id)}"` : `data-vin="${esc(w.id)}"`}>
     <span class="vb" style="--wc:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}">${bottleOf(w, 150)}</span><span class="qb">${(w.qty || 0) > 0 ? `${w.qty} fl.` : "Tom"}</span>
-    <span class="vtx"><span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${w.vintage ? " · " + w.vintage : ""}</span><b>${esc(w.name)}</b><small>${esc(where)}</small>
+    <span class="vtx"><span class="wtype">${ill(wineIc(w.type), 15)}${esc(w.type || "Vin")}${w.vintage ? " · " + w.vintage : ""}</span><b>${esc(w.name)}</b><small>${esc(where)}</small>
     <span class="wmeta">${w.rating ? `<span class="wdrops">${"●".repeat(w.rating)}${"○".repeat(5 - w.rating)}</span>` : ""}${w.price ? `<span>${Math.round(w.price)} kr</span>` : ""}</span></span></button>`;
 }
 // ---------- egen vin: panel ----------
@@ -3358,7 +3376,7 @@ function mkApScoreWine(w, mp) {
 function mkApSuggestions() {
   const mp = mkMenuProfile(), out = [], seed = hashStr(mk.courses.map((c) => c.rid).join("|") + todayKey());
   const cel = mkApCellar().map((w) => ({ w, s: mkApScoreWine(w, mp) })).sort((a, b) => b.s - a.s);
-  if (cel[0] && cel[0].s >= 3) { const w = cel[0].w; out.push({ src: "cel", ic: /Musserende|Champagne/.test(w.type || "") ? "bottle" : /Sider/.test(w.type || "") ? "bottle" : "wineglass", name: w.name + (w.vintage ? " " + w.vintage : ""), desc: mkWineDesc(w), tag: CAP.isOwner ? "Fra kjelleren" : "Fra kjelleren din" }); }
+  if (cel[0] && cel[0].s >= 3) { const w = cel[0].w; out.push({ src: "cel", ic: wineIc(w.type), name: w.name + (w.vintage ? " " + w.vintage : ""), desc: mkWineDesc(w), tag: CAP.isOwner ? "Fra kjelleren" : "Fra kjelleren din" }); }
   if (REGV) {
     const T = REGV.tabs, ap = T.p.indexOf("Aperitif"), basis = T.sel.indexOf("Basisutvalget"), tillegg = T.sel.indexOf("Tilleggsutvalget");
     const have = new Set([...(WINES || []).map((w) => String(w.id)), ...myWines().map((w) => String(w.code || ""))]);
@@ -3379,7 +3397,7 @@ function mkApSuggestions() {
     cand.forEach((c, i) => { c.sort((a, b) => b.sc - a.sc); const top = c.filter((y) => y.sc >= (c[0] ? c[0].sc : 0) - 2).slice(0, 8); if (!top.length) return; const x = top[(seed + i) % top.length].x, w = regToWine(x);
       const dry = (w.name.match(/\b(extra brut|brut nature|extra dry|brut|demi-sec|dry|sec)\b/i) || [])[0];
       const desc = [w.type === "Musserende" ? (/rosé|rose\b/i.test(w.name) ? "Rosé musserende" : "Musserende") : w.type, String(w.grapes || "").split(",")[0], [w.sub || w.district, w.country].filter(Boolean).join(", "), dry ? dry.toLowerCase() : w.style].filter(Boolean).join(" · ");
-      out.push({ src: "vmp", ic: /Musserende/.test(w.type) ? "flutes" : "wineglass", name: w.name, desc, tag: `${bands[i][2]} · ${Math.round(w.price)} kr · Vinmonopolet`, url: w.url }); });
+      out.push({ src: "vmp", ic: wineIc(w.type), name: w.name, desc, tag: `${bands[i][2]} · ${Math.round(w.price)} kr · Vinmonopolet`, url: w.url }); });
   }
   const AF = mp.fish ? [["Alkoholfri musserende", "Tørr og frisk, gjerne Blanc de Blancs-stil · fås i dagligvare"], ["Sprudlende sitron og agurk", "Isvann med sitron, agurk og et dryss salt – hjemmelaget"]]
     : mp.spicy ? [["Alkoholfri Riesling", "Litt fruktsødme og frisk syre · fås i dagligvare"], ["Ingefær og lime med tonic", "Revet ingefær, lime og tonic – hjemmelaget"]]
