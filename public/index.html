@@ -3465,7 +3465,10 @@ document.addEventListener("pointerup", (e) => { if (sx == null) return; const dx
 // klikk utenfor arket lukker
 document.addEventListener("click", (e) => { if (e.target.id === "sheet") closeRecipe(); });
 
-$("#btnRandom").onclick = () => { const pool = R.filter(matches); const p = (pool.length ? pool : R)[Math.floor(Math.random() * (pool.length || R.length))]; openRecipe(p.id); };
+// «Overrask meg» trekker bare middager og småretter – ikke sauser, dipper, tilbehør, brød, desserter eller grunnoppskrifter.
+const SURPRISE_CH = new Set(["kat1", "kat2", "kat3", "kat4"]), SURPRISE_NOT = new Set(["opp3", "opp4", "opp5"]);
+const isMeal = (r) => SURPRISE_CH.has(r.chapterId) && !SURPRISE_NOT.has(r.id);
+$("#btnRandom").onclick = () => { const meals = R.filter(isMeal), hit = meals.filter(matches), pool = hit.length ? hit : meals.length ? meals : R; openRecipe(pool[Math.floor(Math.random() * pool.length)].id); };
 $("#btnList").onclick = () => openDrawer("list");
 $("#btnWeek").onclick = () => openDrawer("week");
 $("#btnMeny").onclick = () => openMeny();
