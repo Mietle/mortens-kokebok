@@ -579,7 +579,6 @@ footer.foot { margin-top: 60px; color: var(--faint); font-size: 12px; text-align
 @media (max-width: 760px) {
   .botnav { display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; position: fixed; z-index: 46; left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); height: 62px; padding: 0 6px; border-radius: 24px;
     background: rgba(28, 18, 14, .72); -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); border: 1px solid rgba(234,165,96,.22); box-shadow: 0 14px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06); }
-  html.webapp .botnav { bottom: calc(env(safe-area-inset-bottom, 0px) + 44px); }
   .botnav > button { height: 62px; display: grid; place-items: center; align-content: center; gap: 3px; color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: .01em; background: none; border: 0; padding: 0; }
   .botnav > button svg { width: 22px; height: 22px; }
   .botnav > button[aria-pressed="true"] { color: var(--ember); }
@@ -598,11 +597,11 @@ footer.foot { margin-top: 60px; color: var(--faint); font-size: 12px; text-align
   .botnav > button { position: relative; }
   .chef-fab, html.webapp .chef-fab { display: none !important; }
   .pagetabs { display: none !important; }
-  body { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px); } html.webapp body { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 130px); }
-  .sheet { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 110px) !important; } html.webapp .sheet { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 144px) !important; }
+  body { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px); }
+  .sheet { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 110px) !important; }
   body.chef-on .botnav, body.cooking .botnav { opacity: 0; pointer-events: none; }
 }
-html.webapp .chef-fab { bottom: calc(74px + env(safe-area-inset-bottom, 0px)); }
+
 body.chef-on .chef-fab, body.cooking .chef-fab { opacity: 0; pointer-events: none; transform: scale(.8); }
 @media (prefers-reduced-motion: no-preference) {
   .chef-fab::before { animation: fabring 4.5s ease-out infinite; }

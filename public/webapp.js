@@ -1,7 +1,7 @@
 // Mortens Kokebok – webapp-kobling. Gir appen «Spør Morten» via /api/chef (Netlify-funksjon med API-nøkkelen).
 (function () {
   window.MK_WEBAPP = true;
-  document.documentElement.classList.add("webapp"); // gir plass til «Powered by Netlify»-merket nede til høyre
+  document.documentElement.classList.add("webapp");
   const API = "/api/chef";
   const err = (code, message, text) => Object.assign(new Error(message || code), { code, text });
 
