@@ -1,3 +1,4 @@
+import { getStore } from "@netlify/blobs";
 // «Spør Morten» – trygg kobling til Claude. API-nøkkelen ligger i Netlify (ANTHROPIC_API_KEY) og vises aldri i appen.
 // Begrensninger: maks antall spørsmål per bruker (IP) per time, størrelse på forespørsel og svarlengde.
 // Det viktigste taket settes som månedsgrense (spend limit) i Anthropic Console.
@@ -56,6 +57,10 @@ export default async (req, context) => {
     if (/credit|billing|balance/i.test(msg)) return json(402, { message: "«Spør Morten» er tom for kreditt. Si fra til Morten." });
     return json(502, { message: "Noe gikk galt hos Claude. Prøv igjen." });
   }
+  try { // forbruk til statistikken (bare antall tokens, ikke innholdet)
+    const u = out.usage || {}; const day = new Date().toISOString().slice(0, 10);
+    await getStore({ name: "stats" }).setJSON(`u/${day}/${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`, { in: (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0), out: u.output_tokens || 0, model: payload.model });
+  } catch (e) {}
   return json(200, { content: out.content || [], stop_reason: out.stop_reason });
 };
 

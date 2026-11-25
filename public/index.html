@@ -181,17 +181,53 @@ body.page-cellar .kpis, body.page-cellar #shelves, body.page-cellar .filterbar, 
 .atab th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ember); font-weight: 600; text-align: center; padding: 8px 6px; background: rgba(234, 165, 96, .08); }
 .whint { margin: 4px auto 14px; max-width: 420px; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(234,165,96,.35); background: rgba(234,165,96,.08); display: grid; gap: 4px; font-size: 13.5px; text-align: left; } .whint b { color: var(--ember); } .wbox [data-install] { margin: 14px auto 0; display: flex; }
 .buysug:empty { display: none; } .buysug { margin-top: 18px; }
-.bgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.bcard2 { cursor: default; min-width: 0; box-sizing: border-box; } .bcard2 .wtxt { min-width: 0; } .bcard2 b { overflow-wrap: anywhere; } .bcard2 .wmore.blinks { opacity: 1; display: flex; flex-wrap: wrap; gap: 6px 16px; } .blinks a, .blinks button { color: inherit; font: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; } .blinks button[disabled] { opacity: .7; cursor: default; }
+.bgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 12px; }
 .bcard { display: grid; grid-template-columns: 48px minmax(0,1fr); gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.015)); }
 .bcard .bb { display: grid; place-items: end center; height: 96px; filter: drop-shadow(0 6px 12px rgba(0,0,0,.45)); }
 .bcard .bt { display: grid; gap: 3px; min-width: 0; } .bcard b { font-size: 14.5px; line-height: 1.25; } .bcard small { color: var(--muted); font-size: 12px; }
 .bcard .bband { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ember); font-weight: 700; }
 .bcard .brow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+/* ---------- nye funksjoner (kjøleskap, butikkliste, i kveld, selskap, ukens oppskrift, smaksord) ---------- */
+.chip.fr-chip { border-color: rgba(234,165,96,.45); color: #f8dcbb; }
+.fr-list { display: grid; gap: 8px; } .fridge { min-width: 0; } .fridge .addrow { display: flex; gap: 8px; min-width: 0; } .fr-r { width: 100%; box-sizing: border-box; min-width: 0; } .fr-r > span { min-width: 0; } .fridge .addrow .input { flex: 1; min-width: 0; }
+.fr-r { display: grid; grid-template-columns: 64px minmax(0,1fr); gap: 12px; align-items: center; padding: 8px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.03); text-align: left; color: inherit; font: inherit; cursor: pointer; }
+.fr-r img { width: 64px; height: 64px; object-fit: cover; border-radius: 12px; }
+.fr-r b { display: block; font-family: Fraunces, Georgia, serif; font-weight: 400; font-size: 16px; line-height: 1.2; } .fr-r small { color: var(--muted); font-size: 12px; }
+.fr-r em { display: inline-block; margin-top: 4px; font-style: normal; font-size: 11.5px; padding: 3px 8px; border-radius: 999px; }
+.fr-ok { background: rgba(155,189,143,.15); color: #b9d6ad; } .fr-miss { background: rgba(234,165,96,.13); color: #f0c08a; }
+.aisle-h { display: flex; justify-content: space-between; margin: 16px 0 4px; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ember); font-weight: 700; } .aisle-h:first-child { margin-top: 0; }
+.tonight { margin-bottom: 22px; padding: 16px; border-radius: 22px; border: 1px solid var(--line); background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.012)); }
+.tonight h3 em { color: var(--ember); font-style: italic; }
+.tn-card { display: grid; grid-template-columns: 64px minmax(0,1fr); gap: 14px; align-items: center; margin-top: 12px; }
+.tn-card .tn-b { display: grid; place-items: end center; height: 150px; filter: drop-shadow(0 12px 18px rgba(0,0,0,.55)); } .tn-card .tn-b img { max-height: 150px; }
+.tn-card .k { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--wine, #e68aa0); font-weight: 700; }
+.tn-card b { display: block; font-family: Fraunces, Georgia, serif; font-weight: 400; font-size: 21px; line-height: 1.15; margin: 3px 0; } .tn-card small { color: var(--muted); font-size: 12.5px; } .tn-card p { margin: 8px 0 10px; font-size: 13.5px; color: #e9dccd; line-height: 1.4; }
+.tn-soon { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); } .tn-soon .k { width: 100%; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ember); font-weight: 700; }
+.party .tplan { margin-top: 6px; }
+.tl { display: grid; grid-template-columns: 74px minmax(0,1fr); gap: 10px; font-size: 13.5px; padding: 6px 0 6px 14px; border-left: 2px solid rgba(234,165,96,.3); margin-left: 6px; position: relative; } .tl b { color: var(--ember); font-size: 12.5px; } .tl::before { content: ""; position: absolute; left: -6px; top: 11px; width: 10px; height: 10px; border-radius: 50%; background: var(--ember); }
+.wkmsg { display: flex; gap: 10px; align-items: flex-start; margin: 8px 0 2px; font-size: 13.5px; line-height: 1.4; color: #efe3d4; font-style: italic; } .wkmsg .chef-face { flex: none; }
+.taste { display: flex; flex-wrap: wrap; gap: 6px; }
 .inbox { display: grid; gap: 14px; } .inb { display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 14px; padding: 14px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.03); }
 .inb > img { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; } .inb:not(:has(> img)) { grid-template-columns: minmax(0,1fr); }
 .inb h4 { margin: 0 0 4px; font-size: 17px; } .inb p { margin: 0 0 8px; font-size: 13px; } .inb details { margin: 4px 0 10px; font-size: 13.5px; } .inb summary { cursor: pointer; color: var(--ember); }
 .inb h5 { margin: 10px 0 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); } .inb ul, .inb ol { margin: 0; padding-left: 18px; } .inb li.h { list-style: none; margin-left: -18px; font-weight: 700; margin-top: 6px; }
 .inb-l { display: grid; gap: 4px; font-size: 12.5px; margin-bottom: 10px; }
+.stats h3 { margin: 22px 0 10px; font-size: 17px; } .stats > h3:first-child { margin-top: 0; }
+.st-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.st-t { display: grid; gap: 2px; padding: 14px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+.st-t b { font-size: 28px; font-family: Fraunces, Georgia, serif; font-weight: 400; color: #f6ece2; line-height: 1.1; } .st-t span { font-size: 12.5px; color: var(--muted); } .st-t small { font-size: 11.5px; color: var(--muted); opacity: .75; }
+.st-chart { display: grid; grid-template-columns: repeat(30, 1fr); gap: 2px; align-items: end; height: 120px; padding-top: 8px; border-bottom: 1px solid var(--line); }
+.st-b { height: 100%; display: flex; align-items: flex-end; cursor: default; } .st-b i { display: block; width: 100%; border-radius: 4px 4px 0 0; background: var(--ember); opacity: .85; } .st-b:hover i { opacity: 1; box-shadow: 0 0 12px rgba(234,165,96,.5); }
+.st-axis { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+.st-top { margin: 0; padding: 0; list-style: none; counter-reset: st; display: grid; gap: 4px; } .st-top li { counter-increment: st; display: grid; grid-template-columns: 22px minmax(0,1fr) auto; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 12px; background: rgba(255,255,255,.03); font-size: 14px; }
+.st-top li::before { content: counter(st); color: var(--ember); font-weight: 700; font-size: 12.5px; } .st-top button { text-align: left; background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .st-top span { color: var(--muted); font-size: 13px; }
+.st-note { font-size: 12.5px; margin-top: 14px; }
+.news .wbox h2 { text-align: center; } .newsl { list-style: none; margin: 12px 0 16px; padding: 0; display: grid; gap: 8px; text-align: left; }
+.newsl li { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 10px; align-items: start; padding: 10px 12px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+.newsl .ni { font-size: 20px; line-height: 1.25; text-align: center; } .newsl b { display: block; font-size: 14.5px; margin-bottom: 1px; color: var(--text, #f6ece2); } .newsl li span:last-child { font-size: 13px; color: var(--muted); line-height: 1.35; }
+.news .wbox { padding: 20px 18px 18px; } .news .wbox h2 { margin: 6px 0 0; font-size: 26px; }
+.news .nclose { display: flex; margin: 0 auto; min-width: 140px; justify-content: center; }
 .afeat { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; font-size: 14px; } .afeat li { display: flex; gap: 10px; align-items: baseline; } .afeat .ok { color: var(--ember); }
 .atab td { padding: 9px 8px; border-top: 1px solid var(--line); vertical-align: top; } .atab td + td { text-align: center; white-space: nowrap; font-size: 12.5px; color: var(--muted); }
 .atab .ok { color: #9bbd8f; font-weight: 700; font-size: 15px; } .atab .no { color: var(--faint); }
@@ -207,7 +243,7 @@ body.page-cellar .kpis, body.page-cellar #shelves, body.page-cellar .filterbar, 
 .bigbtn.done { color: #eaf7ec; background: linear-gradient(135deg, #2f6b46, #1d4a30); box-shadow: 0 10px 30px rgba(40, 140, 80, .3); }
 .bigbtn.pulse { animation: bpulse 1.8s ease-in-out infinite; }
 @keyframes bpulse { 50% { transform: scale(1.025); } }
-@media (prefers-reduced-motion: reduce) { .bigbtn.pulse { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .bigbtn.pulse, .botnav .bn-chef .bn-face { animation: none; } }
 .wlater { margin-top: 14px; font-size: 13.5px; color: var(--muted, #b9a99a); text-decoration: underline; }
 .wbig { display: grid; gap: 12px; }
 .bigbtn { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 14px; align-items: center; text-align: left; padding: 16px 18px; border-radius: 20px; color: #1d1009; background: linear-gradient(135deg, #f0c08a, var(--ember-deep)); box-shadow: 0 14px 40px rgba(210, 115, 60, .45); transition: transform .2s; }
@@ -543,7 +579,12 @@ footer.foot { margin-top: 60px; color: var(--faint); font-size: 12px; text-align
   .botnav .bn-chef { position: relative; }
   .botnav .bn-chef .bn-face { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 50% 35%, #4a2c1e, #1a0f0a); border: 2px solid rgba(234,165,96,.75); box-shadow: 0 0 0 5px rgba(28,18,14,.85), 0 10px 26px rgba(0,0,0,.55), 0 0 26px rgba(234,165,96,.35); }
   .botnav .bn-chef .bn-clip { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); width: 60px; height: 60px; clip-path: inset(-60px -6px 0 -6px round 0 0 30px 30px); pointer-events: none; }
-  .botnav .bn-chef .bn-clip img { position: absolute; left: 50%; bottom: -6px; width: 58px; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 4px 10px rgba(0,0,0,.45)); }
+  .botnav .bn-clip .chef-pic { position: absolute !important; left: 50%; bottom: -8px; transform: translateX(-50%); } .botnav .bn-clip .cp-halo { display: none; }
+  .botnav .bn-clip .cp-think { right: -30%; top: 4px; }
+  .botnav .bn-chef .bn-face { animation: bnglow 4s ease-in-out infinite; }
+  .botnav .bn-chef:active .bn-clip .cp-in { animation: hatwob .6s ease; }
+  @keyframes bnglow { 50% { box-shadow: 0 0 0 5px rgba(28,18,14,.85), 0 10px 26px rgba(0,0,0,.55), 0 0 36px rgba(234,165,96,.6); } }
+  .botnav .bn-chef .bn-clip > img { position: absolute; left: 50%; bottom: -6px; width: 58px; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 4px 10px rgba(0,0,0,.45)); }
   .botnav .bn-chef span.bn-l { align-self: end; margin-bottom: 9px; color: var(--ember); }
   .botnav .bn-chef { align-content: end; }
   .botnav .bn-n { position: absolute; top: 9px; right: calc(50% - 20px); min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--ember); color: #1a0f0a; font-size: 10px; line-height: 16px; } .botnav .bn-n[data-n="0"] { display: none; }
@@ -1110,6 +1151,9 @@ function winesFor(r, n = 3, list = WINES, who = "Du") {
     let s = hit.length * 3 + (w.rating || 0) * .6, why = "";
     if (cm) { s += 8; why = `${who} har notert: «${note}»`; }
     if (fishy && /Hvitvin|Musserende|Sider/.test(w.type || "")) s += 2;
+    const smak = Array.isArray(w.smak) ? w.smak : [];
+    if (smak.includes("Kjøper igjen")) s += 1;
+    if (!why && who === "Du" && w.rating >= 4) why = `Du ga den ${w.rating} av 5${smak.length ? " · " + smak.filter((x) => x !== "Kjøper igjen").slice(0, 2).join(", ").toLowerCase() : ""}`;
     if (!why && hit.length) why = "Passer til " + hit.join(" og ").toLowerCase();
     return { w, s, why, ok: hit.length || cm };
   }).filter((x) => x.ok).sort((a, b) => b.s - a.s).slice(0, n);
@@ -1137,14 +1181,15 @@ function buyFor(r, n = 3) {
   return cand.map((c, i) => { c.sort((a, b) => b.sc - a.sc); const top = c.slice(0, 8); return top.length ? { x: top[h % top.length].x, band: bands[i][2] } : null; }).filter(Boolean).slice(0, n);
 }
 function buyCard({ x, band }) {
-  const w = regToWine(x), wished = !!CEL.wish["onske_" + x[0]];
-  return `<div class="bcard"><span class="bb">${x[10] >= 0 ? sprite(x[10], 92) : bottleSvg(w.type, 92)}</span><span class="bt"><span class="bband">${esc(band)} · ${Math.round(w.price)} kr</span><b>${esc(w.name)}</b><small>${esc([w.type, w.district || w.country].filter(Boolean).join(" · "))}</small>${w.style ? `<small>${esc(w.style)}</small>` : ""}<span class="brow"><a class="btn small" href="${esc(w.url)}" target="_blank" rel="noopener">Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button class="btn small" type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
+  const w = regToWine(x), wished = !!CEL.wish["onske_" + x[0]], where = [w.district || w.country, w.vintage].filter(Boolean).join(" ");
+  const pic = x[10] >= 0 ? sprite(x[10], 112) : bottleSvg(w.type, 112);
+  return `<div class="wcard bcard2"><span class="wbottle">${pic}</span><span class="wtxt"><span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${w.style ? `<span class="wgr">${esc(w.style)}</span>` : ""}<span class="wwhy">${esc(band)}${w.pairing.length ? " · passer til " + esc(w.pairing.slice(0, 2).join(" og ").toLowerCase()) : ""}</span><span class="wmeta"><span>${Math.round(w.price)} kr</span></span><span class="wmore blinks"><a href="${esc(w.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "✓ I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
 }
 function fillBuy(id) {
   loadReg().then(() => {
     const el = document.getElementById("buySug"), r = BY[id]; if (!el || el.dataset.rid !== id || !r) return;
     const list = buyFor(r);
-    el.innerHTML = list.length ? `<div class="wsub-h">Kjøp til denne retten</div><div class="bgrid">${list.map(buyCard).join("")}</div><p class="wnote">Forslag fra Vinmonopolets sortiment som passer til retten, og som ikke står i kjelleren${REGV.at ? ` · priser per ${nbDate(String(REGV.at).slice(0, 10))}` : ""}. Sjekk lagerstatus i din butikk hos Vinmonopolet.</p>` : "";
+    el.innerHTML = list.length ? `<div class="wsub-h">Kjøp til denne retten</div><div class="wgrid">${list.map(buyCard).join("")}</div><p class="wnote">Forslag fra Vinmonopolets sortiment som passer til retten, og som ikke står i kjelleren${REGV.at ? ` · priser per ${nbDate(String(REGV.at).slice(0, 10))}` : ""}. Sjekk lagerstatus i din butikk hos Vinmonopolet.</p>` : "";
   }).catch(() => {});
 }
 const normName = (s) => String(s || "").toLowerCase().replace(/\b(19|20)\d{2}\b/g, "").replace(/[^a-z0-9æøåéèüö]+/g, " ").trim();
@@ -1164,7 +1209,9 @@ function wineCard(w, why, opt = {}) {
 function wineSection(r) {
   const base = wineSection0(r); if (!base) return "";
   setTimeout(() => fillBuy(r.id), 0);
-  return base + `<div class="buysug" id="buySug" data-rid="${esc(r.id)}"></div>`;
+  const ph = `<div class="buysug" id="buySug" data-rid="${esc(r.id)}"></div>`;
+  const i = base.lastIndexOf("</div>");
+  return i >= 0 ? base.slice(0, i) + ph + base.slice(i) : base + ph;
 }
 function wineSection0(r) {
   if (wineTags(r) === null) return "";
@@ -1341,6 +1388,9 @@ async function initSync() {
 
 /* ============================== kapabiliteter ============================== */
 const WEBAPP = !!window.MK_WEBAPP;
+const NEWS_ID = "2026-11-25";
+const WAS_USER = (() => { try { return !!(localStorage.getItem("kokebok-velkommen") || localStorage.getItem("kokebok-vinkjeller") || localStorage.getItem("mortens-kokebok-mine")); } catch (e) { return false; } })();
+try { if (!WAS_USER && !localStorage.getItem("mk-nytt")) localStorage.setItem("mk-nytt", NEWS_ID); } catch (e) {}
 const APPURL = WEBAPP ? location.origin + "/" : "https://claude.ai/artifact/87euqhuMEw6PK3QF8TCziv";
 // Eier-modus i webappen: Morten åpner /?eier=<hemmelig kode> én gang per enhet (bare hashen ligger i koden).
 const EIERHASH = "14dacdf1dfad279c87050573c72e318f1e76380331d1001b17bf2cb412833379";
@@ -1380,6 +1430,78 @@ if (WEBAPP) { const fa = document.getElementById("footAbout"); if (fa) fa.textCo
 (() => { const src = document.getElementById("listBadge"), dst = document.getElementById("bnListN"); if (!src || !dst) return; const sync = () => { dst.textContent = src.textContent; dst.dataset.n = src.dataset.n || src.textContent; }; sync(); new MutationObserver(sync).observe(src, { childList: true, characterData: true, subtree: true, attributes: true }); })();
 const CAP = { tts: null, sample: null, dict: null, dl: null, assets: null, db: null, user: null, artifact: null, canEdit: false, imgAI: false };
 if (WEBOWNER) CAP.isOwner = true;
+setTimeout(() => { const bc = document.querySelector(".botnav .bn-clip"); if (bc && typeof faceSVG === "function") bc.innerHTML = faceSVG(58, "bn-pic"); }, 0);
+/* ---------- anonym bruksstatistikk (bare webappen, ikke Morten selv) ---------- */
+const STATS = (() => {
+  if (!WEBAPP || WEBOWNER) return { hit() {} };
+  const today = () => new Date().toLocaleDateString("sv-SE");
+  const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
+  let dev = ls("mk-dev"); if (!dev) { dev = (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)).slice(0, 20); ls("mk-dev", dev); }
+  let first = ls("mk-first"); if (!first) { first = today(); ls("mk-first", first); }
+  let day = null; try { day = JSON.parse(ls("mk-stat") || "null"); } catch (e) {}
+  const send = (d, beacon) => { const body = JSON.stringify({ dev, first, day: d }); try { if (beacon && navigator.sendBeacon) { navigator.sendBeacon("/api/stats", new Blob([body], { type: "application/json" })); return; } fetch("/api/stats", { method: "POST", headers: { "content-type": "application/json" }, body, keepalive: true }).catch(() => {}); } catch (e) {} };
+  const fresh = () => { if (!day || day.d !== today()) { if (day && day.d) send(day); day = { d: today(), o: 0, c: 0, s: (() => { try { return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true ? 1 : 0; } catch (e) { return 0; } })(), r: {} }; } return day; };
+  const save = () => ls("mk-stat", JSON.stringify(day));
+  fresh().o++; save(); setTimeout(() => send(day), 4000);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) send(fresh(), true); else { fresh().o++; save(); } });
+  return { hit(kind, id) { const d = fresh(); if (kind === "r" && id) d.r[id] = (d.r[id] || 0) + 1; if (kind === "c") d.c++; save(); } };
+})();
+const STATV = { data: null, err: "" };
+async function loadStats() {
+  STATV.err = "";
+  try {
+    if (!EIERTOK()) { const k = prompt("Skriv inn eierkoden din én gang til"); if (!k || !(await eierUnlock(k))) throw { text: "Feil eller manglende eierkode" }; }
+    const r = await fetch("/api/stats", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "read", token: EIERTOK() }) });
+    const j = await r.json().catch(() => null); if (!r.ok || !j) throw { text: (j && j.message) || "Fikk ikke hentet statistikken." }; STATV.data = j;
+  } catch (e) { STATV.err = (e && e.text) || "Fikk ikke hentet statistikken."; }
+  if (view.drawer === "stats") renderStats();
+}
+function renderStats() {
+  const d = $("#drawerBody"); if (!d) return; const S = STATV.data;
+  if (STATV.err) { d.innerHTML = `<p class="status err">${esc(STATV.err)}</p>`; return; }
+  if (!S) { d.innerHTML = `<p class="muted">Henter statistikk …</p>`; return; }
+  const max = Math.max(1, ...S.days.map((x) => x.users)), nf = (n) => Number(n || 0).toLocaleString("nb-NO");
+  const tile = (v, l, sub) => `<div class="st-t"><b>${v}</b><span>${l}</span>${sub ? `<small>${sub}</small>` : ""}</div>`;
+  const bars = S.days.map((x) => { const h = Math.round((x.users / max) * 100); const dd = new Date(x.d + "T12:00"); return `<div class="st-b" title="${dd.toLocaleDateString("nb-NO", { weekday: "short", day: "numeric", month: "short" })}: ${x.users} ${x.users === 1 ? "bruker" : "brukere"}, ${x.opens} åpninger${x.chef ? `, ${x.chef} spørsmål til Morten` : ""}"><i style="height:${x.users ? Math.max(4, h) : 0}%"></i></div>`; }).join("");
+  const c = S.chef || {}, perQ = c.questions && c.usd != null ? c.usd / c.questions : null;
+  d.innerHTML = `<div class="stats">
+    <div class="st-grid">${tile(nf(S.users7), "aktive siste 7 dager")}${tile(nf(S.users30), "aktive siste 30 dager", `${nf(S.usersAll)} totalt`)}${tile(nf(S.new30), "nye siste 30 dager")}${tile(nf(S.home30), "bruker appen fra hjemskjermen")}</div>
+    <h3>Aktive brukere per dag</h3>
+    <div class="st-chart" role="img" aria-label="Aktive brukere per dag siste 30 dager, høyest ${max}">${bars}</div>
+    <div class="st-axis"><span>${new Date(S.days[0].d + "T12:00").toLocaleDateString("nb-NO", { day: "numeric", month: "short" })}</span><span>høyest ${max}</span><span>i dag</span></div>
+    <h3>«Spør Morten» siste 30 dager</h3>
+    <div class="st-grid">${tile(nf(c.questions), "spørsmål")}${tile(nf(Math.round(((c.tokIn || 0) + (c.tokOut || 0)) / 1000)) + "k", "tokens brukt", `${nf(c.calls)} kall til Claude`)}${c.usd != null ? tile("$" + c.usd.toFixed(2), "beregnet kostnad", perQ != null ? `ca. $${perQ.toFixed(3)} per spørsmål` : "") : ""}</div>
+    ${c.usd == null ? `<p class="muted st-note">Nøyaktig kostnad ser du i Claude Console under <b>Spending &amp; usage</b>.</p>` : ""}
+    <h3>Mest brukte oppskrifter</h3>
+    ${S.top.length ? `<ol class="st-top">${S.top.map((x) => { const r = BY[x.id]; return `<li><button type="button" data-open="${esc(x.id)}" ${r ? "" : "disabled"}>${esc(r ? r.title : x.id)}</button><span>${nf(x.n)}</span></li>`; }).join("")}</ol>` : `<p class="muted">Ingen data ennå.</p>`}
+    <p class="muted st-note">Tallene er anonyme: hver telefon eller PC får en tilfeldig id, og ingen navn eller e-post lagres. Dine egne besøk i eier-modus telles ikke.</p></div>`;
+}
+/* ---------- nyheter: vises én gang for dem som brukte appen fra før ---------- */
+const NEWS = [
+  ["👨‍🍳", "Jeg er alltid nederst på skjermen", "Trykk på meg når som helst – også midt i en oppskrift."],
+  ["🧊", "Hva har du i kjøleskapet?", "Trykk «Hva har jeg?» over oppskriftene, så finner jeg retter du kan lage."],
+  ["🍷", "Vin du kan kjøpe", "Hver oppskrift foreslår tre viner fra Vinmonopolet: rimelig, mellomklasse og til fest."],
+  ["🔎", "Søk i hele Vinmonopolet", "Jeg kan anbefale viner du ikke har – med pris og lenke."],
+  ["🥂", "Hva drikker vi i kveld?", "Ny fane i vinkjelleren som plukker en flaske til maten."],
+  ["👅", "Smak og gi karakter", "Gi egne viner smaksord og karakter, så husker jeg det til neste gang."],
+  ["🛒", "Handleliste som i butikken", "Sortert etter avdeling, og like varer slås sammen."],
+  ["🔊", "Jeg leser høyt mens du lager mat", "Slå på «Les høyt», og si «neste» eller «gjenta»."],
+  ["🎉", "Planlegg selskapet", "I «Selskap og menykort»: handleliste for alle gjestene og tidsplan for dagen."],
+  ...(WEBAPP ? [["⭐", "Ukens oppskrift", "Øverst på forsiden finner du ukens rett fra meg, med en liten hilsen."], ["📨", "Send oppskriften din rett til meg", "Liker jeg den, kommer den med i kokeboka for alle."]] : []),
+];
+function showNews(force) {
+  let seen = ""; try { seen = localStorage.getItem("mk-nytt") || ""; } catch (e) {}
+  if (!force && (seen === NEWS_ID || $(".welcome") || $("#drawer") || $("#cook"))) return;
+  const el = document.createElement("div"); el.className = "welcome news"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Nytt i appen");
+  el.innerHTML = `<div class="wbox"><div style="display:grid;place-items:center">${faceSVG(70)}</div><h2>Nytt hos <em>Morten</em> 🎉</h2>
+    <ul class="newsl">${NEWS.map(([i, t, d]) => `<li><span class="ni">${i}</span><span><b>${esc(t)}</b>${esc(d)}</span></li>`).join("")}</ul>
+    <button class="btn primary nclose" type="button">Lukk</button></div>`;
+  const close = () => { try { localStorage.setItem("mk-nytt", NEWS_ID); } catch (e) {} el.remove(); lock(!!$("#sheet") || !!$("#drawer")); };
+  el.querySelector(".nclose").onclick = close; el.addEventListener("click", (e) => { if (e.target === el) close(); });
+  document.body.appendChild(el); lock(true);
+}
+if (WAS_USER) setTimeout(() => showNews(false), 1800);
+
 /* ---------- webappen: felles oppskrifter og innboks (Netlify) ---------- */
 const EIERTOK = () => { try { return localStorage.getItem("mk-eier-tok") || ""; } catch (e) { return ""; } };
 async function webApi(action, extra) {
@@ -1397,6 +1519,7 @@ async function webSync() {
     const j = await r.json(); const next = {};
     Object.entries(j.docs || {}).forEach(([id, d]) => { next[id] = { ...d, id }; });
     if (JSON.stringify(next) !== JSON.stringify(CUSTOM)) { CUSTOM = next; rebuild(); renderAll(); }
+    const wkNew = j.weekly || null; if (JSON.stringify(wkNew) !== JSON.stringify(WEEKLY)) { WEEKLY = wkNew; renderCover(); }
   } catch (e) {}
   if (WEBOWNER) loadInbox();
 }
@@ -1492,6 +1615,7 @@ function renderChips() {
   const n = (id) => R.filter((r) => r.chapterId === id).length;
   const chip = (key, label, pressed, extra = "") => `<button class="chip" type="button" data-chip="${key}" aria-pressed="${pressed}">${label}${extra}</button>`;
   $("#chips").innerHTML =
+    `<button class="chip fr-chip" type="button" data-fridge="1">🧊 Hva har jeg?</button>` +
     chip("fav", icon("heart", 15) + "Favoritter", F.fav, `<span class="c">${S.favs.length}</span>`) +
     chip("quick", icon("bolt", 15) + "Raske (≤ 30 min)", F.quick) +
     chip("made", icon("check", 15) + "Har laget", F.made) +
@@ -1554,6 +1678,7 @@ function stepHtml(t, rid, label) {
   });
 }
 function openRecipe(id, push = true) {
+  STATS.hit("r", id);
   const r = BY[id]; if (!r) return;
   if (view.id !== id) { view.checked = {}; view.doneSteps = {}; }
   view.kind = "recipe"; view.id = id;
@@ -1603,6 +1728,7 @@ function refreshRecipe() {
         <button class="btn" type="button" data-addlist="${r.id}">${icon("cart", 17)}${inList ? "Oppdater i handlelisten" : "Legg i handlelisten"}</button>
         <button class="btn" type="button" data-weektoggle="1">${icon("cal", 17)}Legg i ukemeny</button>
         <button class="btn" type="button" data-chefctx="${r.id}">${icon("chef", 17)}Spør Morten om denne</button>
+        ${WEBOWNER && !r.mine ? `<button class="btn" type="button" data-wkset="${r.id}">⭐ ${WEEKLY && WEEKLY.rid === r.id ? "Ukens oppskrift" : "Gjør til ukens oppskrift"}</button>` : ""}
         ${CAP.canEdit || r.mine ? `<button class="btn" type="button" data-edit="${r.id}">${icon("edit", 17)}Rediger</button>` : ""}
         ${r.mine && !CAP.isOwner ? `<button class="btn" type="button" data-sendm="${r.id}">${icon("right", 17)}Send til Morten</button>` : ""}
         <button class="btn" type="button" data-speakrecipe="1" ${canSpeak() ? "" : "hidden"}>${icon("speak", 17)}<span class="spk">Les opp</span></button>
@@ -1662,7 +1788,7 @@ function renderCook() {
     <div class="cook-bottom">
       <button class="btn nav" type="button" data-cookprev="1" ${cook.i === 0 ? "disabled" : ""}>${icon("left", 18)}<span>Forrige</span></button>
       <div class="cook-tools">
-        <button class="btn" type="button" data-speakstep="1" ${canSpeak() ? "" : "hidden"}>${icon("speak", 17)}<span class="spk">Les opp</span></button>
+        <button class="btn ${autoRead ? "listening" : ""}" type="button" data-speakstep="1" aria-pressed="${autoRead}" ${canSpeak() ? "" : "hidden"}>${icon("speak", 17)}<span class="spk">${autoRead ? "Leser høyt" : "Les høyt"}</span></button>
         <button class="btn ${voice.on ? "listening" : ""}" type="button" data-voice="1" ${CAP.dict ? "" : "hidden"}>${icon("mic", 17)}<span class="vlbl">${voice.on ? "Lytter …" : "Stemmestyring"}</span></button>
       </div>
       ${cook.i < N - 1 ? `<button class="btn primary nav" type="button" data-cooknext="1"><span>Neste</span>${icon("right", 18)}</button>` : `<button class="btn primary nav" type="button" data-cookdone="1">${icon("check", 18)}<span>Ferdig!</span></button>`}
@@ -1775,6 +1901,7 @@ function toggleVoice(target) {
   CAP.dict.start().catch((e) => { if (e && e.code === "not_granted") toast("Mikrofon er ikke tillatt for denne siden"); });
 }
 function onVoice(text, final) {
+  if (voice.target === "fridge") { if (final) { addFridge(text); CAP.dict && CAP.dict.stop().catch(() => {}); voice.target = ""; } return; }
   if (voice.target === "chef") { const inp = $("#chefq"); if (inp) inp.value = (voice.base || "") + text; if (final) voice.base = inp ? inp.value + " " : ""; return; }
   if (!final || !$("#cook")) return;
   const t = text.toLowerCase();
@@ -1815,7 +1942,7 @@ function renderTimers() {
 
 /* ============================== handleliste ============================== */
 const MERGE_RE = /^(\d+(?:,\d+)?)\s+(g|kg|dl|l|liter|ss|ts|ml|fedd|pk|bunt|stilker|kvaster|potte|pose)?\s*(.+)$/i;
-let listMode = "per";
+let listMode = (() => { try { return localStorage.getItem("mk-listmode") || "samlet"; } catch (e) { return "samlet"; } })();
 function listLines() {
   const lines = [];
   L().list.forEach((it) => {
@@ -1842,7 +1969,7 @@ function addToList(rid) {
 }
 function listText() {
   const out = ["Handleliste – Mortens Kokebok", ""];
-  if (listMode === "samlet") mergedLines().filter((l) => !l.checked).forEach((l) => out.push("☐ " + l.text));
+  if (listMode === "samlet") { const ml = mergedLines().filter((l) => !l.checked); AISLES.forEach(([name, a]) => { const g = ml.filter((l) => aisleOf(l.name || l.text) === a); if (g.length) { out.push(name.replace(/^\S+\s/, "").toUpperCase()); g.forEach((l) => out.push("☐ " + l.text)); out.push(""); } }); }
   else L().list.forEach((it) => { const r = BY[it.rid]; out.push(`${r.title} (${fmt(it.v)} ${servInfo(r.porsjoner).label})`); listLines().filter((l) => l.rid === it.rid && !l.checked).forEach((l) => out.push("  ☐ " + l.text)); out.push(""); });
   const ex = L().extra.filter((x) => !x.c); if (ex.length) { out.push("Annet"); ex.forEach((x) => out.push("  ☐ " + x.t)); }
   return out.join("\n");
@@ -1858,10 +1985,12 @@ function renderList() {
   if (!L().list.length && !L().extra.length) {
     d.innerHTML = shareBox() + `<div class="empty"><h3>Tom handleliste</h3><p>Åpne en oppskrift og trykk «Legg i handlelisten», eller legg hele ukemenyen inn på en gang.</p></div>` + extra; return;
   }
-  const seg = `<div class="seg" role="group" aria-label="Visning" style="margin-bottom:14px"><button type="button" data-lmode="per" aria-pressed="${listMode === "per"}">Per oppskrift</button><button type="button" data-lmode="samlet" aria-pressed="${listMode === "samlet"}">Samlet liste</button></div>`;
+  const seg = `<div class="seg" role="group" aria-label="Visning" style="margin-bottom:14px"><button type="button" data-lmode="per" aria-pressed="${listMode === "per"}">Per oppskrift</button><button type="button" data-lmode="samlet" aria-pressed="${listMode === "samlet"}">Som i butikken</button></div>`;
   let body = "";
   if (listMode === "samlet") {
-    body = `<ul class="ing-list">${mergedLines().map((l, i) => `<li><label><input class="check" type="checkbox" data-merged="${i}" ${l.checked ? "checked" : ""}><span>${esc(l.text)}</span></label></li>`).join("")}</ul>`;
+    const ml = mergedLines().map((l, i) => ({ ...l, i, a: aisleOf(l.name || l.text) }));
+    body = AISLES.map(([name, a]) => { const g = ml.filter((l) => l.a === a); if (!g.length) return ""; g.sort((x, y) => Number(x.checked) - Number(y.checked));
+      return `<div class="aisle-h"><span>${name}</span><span>${g.filter((l) => !l.checked).length}</span></div><ul class="ing-list">${g.map((l) => `<li><label><input class="check" type="checkbox" data-merged="${l.i}" ${l.checked ? "checked" : ""}><span>${esc(l.text)}</span></label></li>`).join("")}</ul>`; }).join("");
   } else {
     const lines = listLines();
     body = L().list.map((it) => { const r = BY[it.rid]; if (!r) return ""; const si = servInfo(r.porsjoner);
@@ -1881,6 +2010,153 @@ function renderWeek() {
     <ul>${L().week[i].map((id) => { const r = BY[id]; if (!r) return ""; return `<li><img src="${imgSrc(r)}" alt=""><button class="open" type="button" data-open="${r.id}">${esc(r.title)}</button><button class="xbtn" type="button" data-wrm="${i}:${r.id}" aria-label="Fjern">${icon("x", 14)}</button></li>`; }).join("")}</ul>
     <select class="select" data-wadd="${i}" aria-label="Legg til rett på ${name}"><option value="">+ Legg til rett</option>${BOOK.sections.map((s) => `<optgroup label="${esc(s.name)}">${s.recipes.map((r) => `<option value="${r.id}">${esc(r.title)}</option>`).join("")}</optgroup>`).join("")}</select></div>`).join("");
 }
+
+/* ============================== 1) hva har jeg i kjøleskapet ============================== */
+const FRIDGE = { items: (() => { try { return JSON.parse(localStorage.getItem("mk-kjoleskap") || "[]"); } catch (e) { return []; } })() };
+const PANTRY = /\b(salt|pepper|vann|olje|olivenolje|rapsolje|smør|sukker|hvetemel|mel|eddik|isbiter|is)\b/;
+const fridgeSave = () => { try { localStorage.setItem("mk-kjoleskap", JSON.stringify(FRIDGE.items)); } catch (e) {} };
+const stemNo = (w) => w.toLowerCase().replace(/(ene|ane|er|en|et|a|e)$/, "");
+function fridgeMatches() {
+  const have = FRIDGE.items.map((x) => { const st = stemNo(x.trim()); return st.length > 7 ? st.slice(0, 7) : st; }).filter((x) => x.length >= 3);
+  if (!have.length) return [];
+  return R.filter((r) => !r.mine || true).map((r) => {
+    const ing = r.ingredients.filter(([k]) => k !== "H").map(([, t]) => unlink(t).toLowerCase());
+    const need = ing.filter((t) => !PANTRY.test(t) || /ost|smørbrød|sukkererter|melis/.test(t));
+    let hit = 0; const miss = [];
+    need.forEach((t) => { if (have.some((h) => t.includes(h))) hit++; else miss.push(t); });
+    const used = have.filter((h) => ing.some((t) => t.includes(h))).length;
+    const th = have.filter((h) => r.title.toLowerCase().includes(h)).length;
+    return { r, hit, used, miss, th, score: used * 3 + hit - miss.length * 0.6 };
+  }).filter((x) => x.used >= Math.min(2, have.length)).sort((a, b) => (b.used + b.th * 1.5) - (a.used + a.th * 1.5) || a.miss.length - b.miss.length).slice(0, 12);
+}
+const shortIng = (t) => t.replace(/^[\d.,/½¼¾\s-]*(g|kg|dl|l|ss|ts|stk\.?|fedd|bunt|pk|boks|klype|neve|cl|ml)?\.?\s+/i, "").replace(/\(.*?\)/g, "").split(",")[0].trim();
+function renderFridge() {
+  const d = $("#drawerBody"); if (!d) return;
+  const res = fridgeMatches();
+  d.innerHTML = `<div class="form fridge">
+    <p class="muted" style="margin:0">Skriv${CAP.dict ? " eller si" : ""} hva du har, så finner jeg retter i boka. Salt, pepper, olje og smør regner jeg med at du har.</p>
+    <div class="chips" style="flex-wrap:wrap">${FRIDGE.items.map((x, i) => `<button class="chip" type="button" data-frm="${i}" aria-pressed="true">${esc(x)} ✕</button>`).join("")}</div>
+    <form class="addrow" id="fridgeForm" style="margin:0"><input class="input" id="fridgeIn" placeholder="F.eks. kyllinglår, sopp, fløte" autocomplete="off" aria-label="Ingrediens"><button class="btn small icon" type="button" data-fmic="1" ${CAP.dict ? "" : "hidden"} aria-label="Si det">${icon("mic", 16)}</button><button class="btn small primary" type="submit">Legg til</button></form>
+    ${FRIDGE.items.length ? `<div class="row" style="justify-content:space-between"><h3 class="cel-h" style="margin:6px 0 0">Du kan lage</h3><button class="btn small" type="button" data-fclear="1">Tøm</button></div>` : ""}
+    ${FRIDGE.items.length ? (res.length ? `<div class="fr-list">${res.map(({ r, miss }) => { const m = miss.map(shortIng).filter(Boolean).slice(0, 3); return `<button class="fr-r" type="button" data-open="${r.id}"><img src="${imgSrc(r)}" style="${fpos(r)}" alt="" loading="lazy"><span><b>${esc(r.title)}</b><small>${esc(r.tid || "")}</small>${miss.length ? `<em class="fr-miss">Mangler: ${esc(m.join(", "))}${miss.length > 3 ? ` +${miss.length - 3}` : ""}</em>` : `<em class="fr-ok">✓ Du har alt</em>`}</span></button>`; }).join("")}</div>` : `<p class="muted">Fant ingen retter med det. Prøv et annet ord, eller spør Morten.</p>`) : ""}
+  </div>`;
+  const f = $("#fridgeForm"); if (f) f.onsubmit = (e) => { e.preventDefault(); const v = $("#fridgeIn").value; addFridge(v); };
+}
+function addFridge(v) { String(v || "").split(/,|\bog\b/).map((x) => x.trim().toLowerCase()).filter((x) => x.length > 1).forEach((x) => { if (!FRIDGE.items.includes(x)) FRIDGE.items.push(x); }); fridgeSave(); renderFridge(); setTimeout(() => $("#fridgeIn")?.focus(), 30); }
+
+/* ============================== 2) handleliste etter butikkens avdelinger ============================== */
+const AISLES = [
+  ["🥦 Frukt og grønt", 1], ["🍞 Brød og bakst", 2], ["🥩 Kjøtt", 3], ["🐟 Fisk og sjømat", 4], ["🧀 Meieri og egg", 5], ["🥫 Tørrvarer og krydder", 6], ["❄️ Frys", 7], ["🍷 Drikke", 8], ["🧺 Annet", 9],
+];
+const AISLE_RE = [
+  [6, /buljong|fond\b|kraft\b|eddik|pulver|sirup|soyasaus|fiskesaus|ketchup|majones|sennep|tomatpuré|hermetisk|hakkede tomater|kokosmelk/],
+  [4, /fisk|laks|torsk|sei\b|hyse|kveite|ørret|reke|scampi|kamskjell|blåskjell|krabbe|hummer|ansjos|tunfisk|skrei|sild|makrell|breiflabb|steinbit/],
+  [3, /kjøtt|biff|entrecôte|entrecote|svin|ribbe|skinke|bacon|pølse|kylling|andebryst|\band\b|andelår|lam|kalv|okse|kalkun|karbonade|filet|pinnekjøtt|chorizo|salami|prosciutto|høyrygg|indrefilet|ytrefilet|nakke|bog|lår\b/],
+  [5, /melk|fløte|rømme|crème fraîche|creme fraiche|smør|ost\b|ost,|parmesan|mozzarella|feta|mascarpone|yoghurt|egg|kesam|cottage|ricotta|burrata|cheddar|gruyère|brie/],
+  [2, /brød|tortilla|lefse|pita|baguette|rundstykke|pizzabunn|ciabatta|focaccia|loff/],
+  [7, /frossen|frosne|fryst/],
+  [8, /hvitvin|rødvin|portvin|cognac|konjakk|likør|calvados|sherry|madeira|cider|vodka|\brom\b|øl\b|brus|juice|limoncello|marsala|prosecco|champagne/],
+  [1, /løk|hvitløk|gulrot|gulrøtter|potet|sopp|sjampinjong|kantarell|sitron|lime|eple|tomat|agurk|salat|paprika|chili|ingefær|persille|koriander|basilikum|dill|timian|rosmarin|gressløk|purre|selleri|squash|aubergine|brokkoli|blomkål|kål|spinat|ruccola|avokado|bær|mango|ananas|appelsin|pære|plomme|rabarbra|fennikel|reddik|vårløk|sjalott|erter|mais|nepe|rødbet|kirsebær|druer|banan|mynte|estragon|salvie|laurbær|frukt|grønnsak|urter|sukkererter|bønnespirer|pastinakk|jordskokk/],
+  [6, /mel\b|hvetemel|sukker|ris\b|risotto|pasta|spaghetti|tagliatelle|lasagne|nudler|bønner|linser|kikerter|olje|krydder|pepper|salt|kanel|kardemomme|vanilje|kakao|sjokolade|nøtter|mandler|rosiner|gjær|bakepulver|maizena|panko|sesam|kapers|oliven|stjerneanis|nellik|muskat|karri|spisskummen|honning|gelatin|tørket|havre|couscous|bulgur|polenta|kjeks/],
+];
+function aisleOf(name) { const t = String(name || "").toLowerCase(); for (const [a, re] of AISLE_RE) if (re.test(t)) return a; return 9; }
+
+/* ============================== 5) hva drikker vi i kveld ============================== */
+const TONIGHT = { food: "", n: 0 };
+const T_FOOD = [["", "🍷 Bare vin"], ["kjott", "🥩 Kjøtt"], ["fugl", "🍗 Fugl"], ["fisk", "🐟 Fisk"], ["pasta", "🍝 Pasta og pizza"], ["ost", "🧀 Ost"], ["dessert", "🍮 Dessert"]];
+const T_MAP = { kjott: ["Storfe", "Lam og sau", "Storvilt", "Svin"], fugl: ["Lyst kjøtt", "Småvilt"], fisk: ["Fisk", "Skalldyr"], pasta: ["Lyst kjøtt", "Grønnsaker", "Svin", "Storfe"], ost: ["Ost"], dessert: ["Dessert"], "": ["Aperitiff"] };
+function drinkSoon(w) {
+  const y = new Date().getFullYear(), age = w.vintage ? y - w.vintage : 0, st = String(w.storage || "").toLowerCase();
+  if (/drikkes nå|bør drikkes|ikke lagr|drikkes ung/.test(st)) return 2;
+  if (/Rosévin|Musserende|Perlende|Sider/.test(w.type || "") && age >= 2) return 2;
+  if (/Hvitvin/.test(w.type || "") && age >= 4) return 1.5;
+  if (/Rødvin/.test(w.type || "") && age >= 9) return 1.5;
+  return 0;
+}
+function tonightPicks(list) {
+  const want = T_MAP[TONIGHT.food] || [];
+  return list.filter((w) => (w.qty || 0) > 0).map((w) => {
+    const hit = (w.pairing || []).filter((p) => want.includes(p)).length;
+    const s = hit * 3 + (w.rating || 0) * 0.8 + drinkSoon(w) * 1.5 + ((w.qty || 0) === 1 ? 0.5 : 0);
+    return { w, s, hit };
+  }).filter((x) => !TONIGHT.food || x.hit).sort((a, b) => b.s - a.s);
+}
+function tonightWhy(w) {
+  const bits = [];
+  if (drinkSoon(w)) bits.push("den er på topp nå og bør drikkes snart");
+  if ((w.qty || 0) === 1) bits.push("du har bare én flaske igjen");
+  if (w.rating >= 4) bits.push(`du ga den ${w.rating} av 5`);
+  const p = (w.pairing || []).filter((x) => (T_MAP[TONIGHT.food] || []).includes(x));
+  if (p.length) bits.push("passer til " + p.join(" og ").toLowerCase());
+  const t = bits.slice(0, 2).join(", og ");
+  return t ? t.charAt(0).toUpperCase() + t.slice(1) + "." : "Et godt valg fra kjelleren.";
+}
+function tonightHtml(list) {
+  const picks = tonightPicks(list);
+  const soon = list.filter((w) => (w.qty || 0) > 0 && drinkSoon(w)).sort((a, b) => drinkSoon(b) - drinkSoon(a)).slice(0, 3);
+  const top = picks.length ? picks[TONIGHT.n % Math.min(picks.length, 6)].w : null;
+  return `<div class="tonight">
+    <h3 class="cel-h" style="margin-top:0">Hva drikker vi <em>i kveld?</em></h3>
+    <div class="chips noscroll">${T_FOOD.map(([k, l]) => `<button class="chip" type="button" data-tfood="${k}" aria-pressed="${TONIGHT.food === k}">${l}</button>`).join("")}</div>
+    ${top ? `<div class="tn-card"><span class="tn-b">${bottleOf(top, 150)}</span><div><div class="k">Fra kjelleren din</div><b>${esc(top.name)}</b><small>${esc([top.type, top.district || top.country, top.vintage].filter(Boolean).join(" · "))}</small><p>${esc(tonightWhy(top))}</p>
+      <div class="row"><button class="btn small primary" type="button" data-tpick="${esc(top.id)}">${icon("wine", 15)}Vi tar den!</button><button class="btn small" type="button" data-tnext="1">Nytt forslag</button></div></div></div>` : `<p class="muted">Ingen viner i kjelleren passer til dette. Prøv et annet valg, eller se «Kjøp til denne retten» i oppskriftene.</p>`}
+    ${soon.length ? `<div class="tn-soon"><span class="k">Bør drikkes snart</span>${soon.map((w) => `<span>${esc(w.name)}${w.vintage ? " " + w.vintage : ""}</span>`).join("")}</div>` : ""}
+  </div>`;
+}
+
+/* ============================== 7) ukens oppskrift (webappen) ============================== */
+let WEEKLY = null;
+const weeklyRecipe = () => (WEEKLY && WEEKLY.rid && BY[WEEKLY.rid] ? BY[WEEKLY.rid] : null);
+function renderWeekly() {
+  const d = $("#drawerBody"); if (!d) return; const r = BY[wk.id]; if (!r) return;
+  const cur = WEEKLY && WEEKLY.rid === r.id;
+  d.innerHTML = `<div class="form"><div class="fr-r" style="cursor:default"><img src="${imgSrc(r)}" style="${fpos(r)}" alt=""><span><b>${esc(r.title)}</b><small>${esc(r.chapter)}</small></span></div>
+    <p class="muted" style="margin:0">Den vises øverst på forsiden hos alle, med hilsenen din, til du velger en ny.</p>
+    <label class="fld"><span>Hilsen fra deg</span><textarea class="input" id="wkMsg" rows="4" maxlength="300" placeholder="F.eks. «Skreien er her! Denne lagde vi på søndag – nydelig med en kald Chablis.»">${esc(cur ? WEEKLY.msg || "" : "")}</textarea></label>
+    <p class="status" id="wkStat"></p></div>`;
+}
+const wk = { id: null };
+async function saveWeekly(clear) {
+  const st = $("#wkStat"); if (st) { st.className = "status"; st.textContent = "Lagrer …"; }
+  try { const j = await webApi("weekly", clear ? { clear: true } : { rid: wk.id, msg: ($("#wkMsg") && $("#wkMsg").value.trim()) || "" }); WEEKLY = j.weekly || null; renderCover(); closeDrawer(); toast(clear ? "Ukens oppskrift er fjernet" : "Ukens oppskrift er lagt ut for alle 🎉"); }
+  catch (e) { if (st) { st.className = "status err"; st.textContent = (e && e.text) || "Kunne ikke lagre."; } }
+}
+
+/* ============================== 6) selskapsplanlegger (i menykortet) ============================== */
+const mkPlanBusy = { on: false, msg: "" };
+function partyHtml() {
+  const g = mk.guests || "";
+  const recs = mk.courses.filter((c) => c.rid && BY[c.rid]);
+  return `<div class="mkc party"><div class="mkc-h"><b>🎉 Planlegg selskapet</b><small>valgfritt</small></div>
+    <div class="two"><label class="fld"><span>Antall gjester</span><input class="input" inputmode="numeric" data-mkf="guests" value="${esc(g)}" placeholder="8"></label><label class="fld"><span>Gjestene kommer</span><input class="input" type="time" data-mkf="clock" value="${esc(mk.clock || "19:00")}"></label></div>
+    <div class="row" style="flex-wrap:wrap"><button class="btn small" type="button" data-mkshop="1" ${recs.length ? "" : "disabled"}>${icon("cart", 15)}Handleliste${g ? " for " + esc(g) : ""}</button>${CAP.sample ? `<button class="btn small primary" type="button" data-mkplan="1" ${recs.length && !mkPlanBusy.on ? "" : "disabled"}>${icon("chef", 15)}${mkPlanBusy.on ? "Morten lager plan …" : mk.plan && mk.plan.length ? "Lag ny tidsplan" : "Lag tidsplan med Morten"}</button>` : ""}</div>
+    ${!recs.length ? `<small class="muted">Velg retter fra kokeboka over først.</small>` : ""}
+    ${mkPlanBusy.msg ? `<p class="status err">${esc(mkPlanBusy.msg)}</p>` : ""}
+    ${mk.plan && mk.plan.length ? `<div class="tplan">${mk.plan.map((p) => `<div class="tl"><b>${esc(p.nar || "")}</b><span>${esc(p.hva || "")}</span></div>`).join("")}</div>` : ""}
+  </div>`;
+}
+function mkShop() {
+  const n = parseInt(mk.guests, 10); let k = 0;
+  mk.courses.forEach((c) => { const r = c.rid && BY[c.rid]; if (!r) return; const v = n > 0 ? n : getServ(r).v; const ex = L().list.find((x) => x.rid === r.id); if (ex) ex.v = v; else L().list.push({ rid: r.id, v, c: [] }); k++; });
+  save(); renderAll(); toast(k ? `${k} ${k === 1 ? "rett" : "retter"} lagt i handlelisten${n > 0 ? " for " + n : ""}` : "Velg retter først");
+}
+async function mkPlan() {
+  if (!CAP.sample || mkPlanBusy.on) return;
+  const recs = mk.courses.filter((c) => c.rid && BY[c.rid]).map((c) => `${c.label}: ${recipeText(BY[c.rid])}`).join("\n\n");
+  mkPlanBusy.on = true; mkPlanBusy.msg = ""; renderMeny();
+  try {
+    const v = await CAP.sample.json(`Du er Morten, en erfaren hjemmekokk. Lag en praktisk tidsplan på norsk for et middagsselskap.
+Gjester: ${mk.guests || "6"}. Gjestene kommer kl. ${mk.clock || "19:00"}${mk.date ? `, dato ${mk.date}` : ""}.${mk.apName ? ` Aperitiff: ${mk.apName}.` : ""}
+Menyen (oppskriftene):\n${recs}\n
+Lag 6–10 punkter i riktig rekkefølge: hva som kan gjøres dagen før, og klokkeslett på selve dagen (når ting skal i ovnen, hvile, åpne vin så den får puste, servere hver rett). Kort tekst per punkt.
+Svar med JSON: {"plan":[{"nar":"Dagen før" eller "HH.MM","hva":"kort beskrivelse"}]}`, { modelTier: "default", cache: false });
+    mk.plan = (v && v.plan || []).slice(0, 12).map((p) => ({ nar: String(p.nar || ""), hva: String(p.hva || "") })); mkSave();
+  } catch (e) { mkPlanBusy.msg = (e && e.text) || "Morten fikk ikke laget planen. Prøv igjen."; }
+  mkPlanBusy.on = false; renderMeny();
+}
+
+/* ============================== 4) smaksord for egne viner ============================== */
+const TASTE = ["Fruktig", "Frisk syre", "Fyldig", "Lett", "Myke tanniner", "Krydret", "Søtlig", "Kjøper igjen"];
 
 /* ============================== spør kokken ============================== */
 const chef = { msgs: [], ctx: null, busy: false, ctl: null, voice: (() => { try { return localStorage.getItem("kokk-les") !== "0"; } catch (e) { return true; } })() };
@@ -1951,7 +2227,7 @@ async function askChef(q) {
   const ctx = chef.ctx ? BY[chef.ctx] : null;
   let content = q;
   if (!chef.msgs.length) content = INSTR() + (ctx ? `\n\nSpørsmålet gjelder denne oppskriften:\n${recipeText(ctx)}` : "") + `\n\nSpørsmål: ${q}`;
-  chef.msgs.push({ role: "user", content, show: q });
+  chef.msgs.push({ role: "user", content, show: q }); STATS.hit("c");
   const ans = { role: "assistant", content: "", pending: true }; chef.msgs.push(ans); chef.busy = true; FACE.thinking = true; stopSpeak(); renderChef();
   chef.ctl = new AbortController();
   try {
@@ -2095,11 +2371,11 @@ function todays() {
   return pickN(pool.length ? pool : R, 1, "dag" + todayKey())[0];
 }
 function renderCover() {
-  const r = todays(); if (!r) return;
+  const wkr = weeklyRecipe(); const r = wkr || todays(); if (!r) return;
   const img = $("#coverImg"); img.src = imgSrc(r); img.style.objectPosition = r.fp ? `${r.fp[0]}% ${r.fp[1]}%` : ""; const pl = $("#coverPlate"); if (pl) { pl.src = img.src; pl.style.objectPosition = img.style.objectPosition; } const lowCheck = () => { const cv = $("#cover"); if (cv && img.naturalWidth > 1) cv.classList.toggle("lowres", img.naturalWidth < 1500); }; if (img.complete) lowCheck(); img.onload = lowCheck;
   const d = new Date(); $("#kdate").textContent = d.toLocaleDateString("nb-NO", { weekday: "long", day: "numeric", month: "long" });
   const wl = winesFor(r, 1); const w = wl && wl[0] && wl[0].w;
-  $("#dish").innerHTML = `<div><div class="k">Dagens rett</div><h2>${esc(r.title)}</h2><div class="meta"><span>${icon("clock", 14)}${esc(r.tid || "")}</span><span>${icon("plate", 14)}${esc(r.porsjoner || "")}</span>${w ? `<span>${icon("wine", 14)}${esc(w.name)}</span>` : ""}</div></div>
+  $("#dish").innerHTML = `<div><div class="k">${wkr ? "Ukens oppskrift fra Morten" : "Dagens rett"}</div><h2>${esc(r.title)}</h2>${wkr && WEEKLY.msg ? `<p class="wkmsg">${faceSVG(34)}<span>«${esc(WEEKLY.msg)}»</span></p>` : ""}<div class="meta"><span>${icon("clock", 14)}${esc(r.tid || "")}</span><span>${icon("plate", 14)}${esc(r.porsjoner || "")}</span>${w ? `<span>${icon("wine", 14)}${esc(w.name)}</span>` : ""}</div></div>
     <div class="acts"><button class="btn small primary" type="button" data-open="${r.id}">Se oppskriften</button><button class="btn small" type="button" data-cook="${r.id}">${icon("play", 14)}Lag den</button></div>`;
   steam.focus = r.fp ? [r.fp[0] / 100, r.fp[1] / 100] : [.65, .55];
 }
@@ -2314,7 +2590,7 @@ function cellarStats(list) {
 function renderCellar() {
   const el = $("#cellarPage"); if (!el || !BOOK) return;
   const owner = isOwnerCellar(), list = cellarList(), st = cellarStats(list);
-  const tabs = [["kjeller", "Kjeller"], ["statistikk", "Statistikk"], ["middag", "Middag"]].concat(owner ? [] : [["onsker", "Ønsker"]]);
+  const tabs = [["kjeller", "Kjeller"], ["statistikk", "Statistikk"], ["middag", "I kveld"]].concat(owner ? [] : [["onsker", "Ønsker"]]);
   if (!tabs.some((t) => t[0] === cv.tab)) cv.tab = "kjeller";
   el.innerHTML = `<div class="cel-head">
       <div><div class="k">${owner ? "Fra vinkjeller-appen din" : "Bygg din egen samling"}</div><h2>${owner ? "Mortens" : "Min"} <em>vinkjeller</em></h2>
@@ -2350,7 +2626,7 @@ function renderCelBody() {
     const pick = cv.food;
     const wl = pick ? list.filter((w) => (w.pairing || []).includes(pick) && (w.qty || 0) > 0).sort((a, b) => (b.rating || 0) - (a.rating || 0)) : [];
     const recs = pick ? recipesForPairing([pick], 8) : [];
-    el.innerHTML = `<p class="muted" style="margin:0 0 12px">Hva skal du spise? Velg, så foreslår kjelleren vinene som passer, og kokeboka rettene.</p>
+    el.innerHTML = tonightHtml(list) + `<p class="muted" style="margin:0 0 12px">Hva skal du spise? Velg, så foreslår kjelleren vinene som passer, og kokeboka rettene.</p>
       <div class="chips" style="flex-wrap:wrap">${PCATS.map((p) => `<button class="chip" type="button" data-food="${esc(p)}" aria-pressed="${pick === p}">${esc(p)}</button>`).join("")}</div>
       ${pick ? `<h3 class="cel-h">Fra kjelleren</h3>${wl.length ? `<div class="vgrid">${wl.slice(0, 12).map(vcard).join("")}</div>` : `<p class="muted">Ingen viner i kjelleren er merket for ${esc(pick.toLowerCase())}.${owner ? "" : " Søk i vinregisteret etter noe som passer."}</p>`}
         ${recs.length ? `<h3 class="cel-h">Retter i kokeboka</h3><div class="track">${recs.map(mini).join("")}</div>` : ""}` : ""}`;
@@ -2385,6 +2661,7 @@ function renderMyWine() {
     <div class="wd-verdict">
       <div><div class="k">Din karakter</div><div class="rate5">${[1, 2, 3, 4, 5].map((i) => `<button type="button" data-vrate="${i}" class="${i <= (w.rating || 0) ? "on" : ""}" aria-label="${i} av 5">●</button>`).join("")}</div></div>
       <div><div class="k">I kjelleren</div><div class="stepper"><button type="button" data-vqty="-1" aria-label="Drakk en">−</button><output><b>${w.qty || 0}</b> fl.</output><button type="button" data-vqty="1" aria-label="Kjøpte en">+</button></div></div>
+      <div style="grid-column:1/-1"><div class="k">Smak</div><div class="taste">${TASTE.map((t) => `<button class="chip" type="button" data-vtaste="${esc(t)}" aria-pressed="${(w.smak || []).includes(t)}">${esc(t)}</button>`).join("")}</div></div>
       <div style="grid-column:1/-1"><div class="k">Notatet ditt</div><textarea class="note" id="vnote" placeholder="Hvordan smakte den? Hva drakk du den til?">${esc(w.note || "")}</textarea></div>
     </div>
     ${(w.pairing || []).length ? `<div class="wd-note"><div class="k">Passer til</div><div class="row" style="gap:6px">${w.pairing.map((p) => `<span class="chip" style="height:30px;cursor:default">${esc(p)}</span>`).join("")}</div></div>` : ""}
@@ -2616,15 +2893,17 @@ function renderAbout() {
     <p class="lead2">Mortens oppskrifter, en vinkjeller du bygger selv, og vinanbefalinger fra Mortens egen kjeller. Hjemmelaget – fra mitt kjøkken til ditt.</p>
     <h3>Dette får du</h3>
     <ul class="afeat">${feats.map((a) => `<li><span class="ok">✓</span>${esc(a)}</li>`).join("")}</ul>
+    <button class="btn small" type="button" data-news="1">🎉 Nytt i appen</button>
     <h3>Kom i gang</h3>
     ${installSteps()}
-    <p class="muted">Det du lagrer selv (egne oppskrifter, vinkjeller, notater) ligger på denne enheten. Bruk <b>Sikkerhetskopi</b> i vinkjelleren for å ta vare på det, og <b>Hent kopi</b> på en ny telefon eller PC.</p>
+    <p class="muted">Appen teller anonymt hvor mye den brukes (antall besøk og hvilke oppskrifter som åpnes), uten navn eller e-post. Det du lagrer selv (egne oppskrifter, vinkjeller, notater) ligger på denne enheten. Bruk <b>Sikkerhetskopi</b> i vinkjelleren for å ta vare på det, og <b>Hent kopi</b> på en ny telefon eller PC.</p>
   </div>`;
     return;
   }
   d.innerHTML = `<div class="about">
     <p class="lead2">Mortens oppskrifter, en vinkjeller du bygger selv, og vinanbefalinger fra Mortens egen kjeller. Hjemmelaget – fra mitt kjøkken til ditt.</p>
     <table class="atab"><thead><tr><th></th><th>Uten konto</th><th>Med Claude-konto</th></tr></thead><tbody>${rows.map(([a, b, c]) => `<tr><td>${esc(a)}</td><td>${b}</td><td>${c}</td></tr>`).join("")}</tbody></table>
+    <button class="btn small" type="button" data-news="1">🎉 Nytt i appen</button>
     <h3>Få alt med en gratis Claude-konto – tar 1 minutt</h3>
     ${setupSteps()}
     <p class="muted">AI-funksjonene bruker din egen Claude-konto. Det du lagrer selv (egne oppskrifter, vinkjeller, notater) ligger på enheten din. Bruk <b>Sikkerhetskopi</b> i vinkjelleren for å ta vare på det, og <b>Hent kopi</b> på en ny telefon eller PC.</p>
@@ -2749,12 +3028,15 @@ async function deleteComment(key) {
 function openDrawer(kind) {
   closeDrawer(true);
   view.drawer = kind;
-  const titles = { list: "Handleliste", week: "Ukemeny", chef: "Spør Morten", edit: edit.id ? "Rediger oppskrift" : edit.mine ? "Ny oppskrift – bare for meg" : "Ny oppskrift", send: "Send til Morten", wine: "Vinen", vin: "Vinen din", rcpt: "Les kvittering", om: "Om appen", inbox: "Innboks", meny: "Lag menykort", addvin: cv.add.mode === "sok" ? "Søk i Vinmonopolet" : cv.add.mode === "onske" ? "Legg til ønske" : "Legg til vin" };
+  const titles = { list: "Handleliste", week: "Ukemeny", chef: "Spør Morten", edit: edit.id ? "Rediger oppskrift" : edit.mine ? "Ny oppskrift – bare for meg" : "Ny oppskrift", send: "Send til Morten", wine: "Vinen", vin: "Vinen din", rcpt: "Les kvittering", om: "Om appen", inbox: "Innboks", stats: "Statistikk", fridge: "Hva har du i kjøleskapet?", weekly: "Ukens oppskrift", meny: "Selskap og menykort", addvin: cv.add.mode === "sok" ? "Søk i Vinmonopolet" : cv.add.mode === "onske" ? "Legg til ønske" : "Legg til vin" };
   const foot = kind === "list" ? `<button class="btn small" type="button" data-lcopy="1">Kopier</button><button class="btn small" type="button" data-ldl="1" ${CAP.dl ? "" : "hidden"}>Last ned</button><button class="btn small" type="button" data-lclean="1">Fjern avkryssede</button><button class="btn small" type="button" data-lclear="1">Tøm listen</button>`
     : kind === "week" ? `<button class="btn small primary" type="button" data-week2list="1">${icon("cart", 15)}Legg uka i handlelisten</button><button class="btn small" type="button" data-wrand="1">${icon("dice", 15)}Fyll tomme dager</button><button class="btn small" type="button" data-wclear="1">Tøm uka</button>`
     : kind === "edit" ? `<button class="btn small primary" type="button" data-esave="1">${icon("check", 15)}Lagre</button><button class="btn small" type="button" data-dclose="1">Avbryt</button>${edit.id && BY[edit.id] && BY[edit.id].edited ? `<button class="btn small" type="button" data-ereset="1">Angre endringene</button>` : ""}${edit.id && BY[edit.id] ? `<button class="btn small danger" type="button" data-edel="1">Slett oppskriften</button>` : ""}`
     : kind === "rcpt" ? `<button class="btn small primary" type="button" data-rcsave="1">${icon("check", 15)}Legg i kjelleren</button><button class="btn small" type="button" data-dclose="1">Avbryt</button>`
     : kind === "om" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button>`
+    : kind === "fridge" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button>`
+    : kind === "weekly" ? `<button class="btn small primary" type="button" data-wksave="1">${icon("check", 15)}Legg ut for alle</button>${WEEKLY ? `<button class="btn small" type="button" data-wkclear="1">Fjern ukens oppskrift</button>` : ""}<button class="btn small" type="button" data-dclose="1">Avbryt</button>`
+    : kind === "stats" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button><button class="btn small" type="button" data-streload="1">Oppdater</button>`
     : kind === "inbox" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button><button class="btn small" type="button" data-inreload="1">Oppdater</button>`
     : kind === "meny" ? `<button class="btn small primary" type="button" data-mkprev="1">${icon("check", 15)}Se menykortet</button><button class="btn small" type="button" data-mkreset="1">Start på nytt</button>`
     : kind === "vin" ? `<a class="btn small primary" id="wvmp" href="https://www.vinmonopolet.no" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a><button class="btn small danger" type="button" data-vdel="1">Fjern fra kjelleren</button>`
@@ -2768,7 +3050,7 @@ function openDrawer(kind) {
   layer.insertAdjacentHTML("beforeend", `<div class="overlay ${isChef ? "clear" : ""}" data-dclose="1" style="z-index:49"></div><aside class="drawer ${isChef ? "chefpanel" : ""}" id="drawer" role="dialog" aria-modal="true" aria-label="${titles[kind]}"><div class="d-head">${head}<button class="xbtn" type="button" data-dclose="1" aria-label="Lukk">${icon("x", 18)}</button></div><div class="d-body" id="drawerBody"></div><div class="d-foot">${foot}</div></aside>`);
   document.body.classList.toggle("chef-on", isChef);
   lock(true);
-  if (kind === "list") renderList(); else if (kind === "week") renderWeek(); else if (kind === "edit") renderEditor(); else if (kind === "send") renderSend(); else if (kind === "wine") renderWine(); else if (kind === "vin") renderMyWine(); else if (kind === "rcpt") renderReceipt(); else if (kind === "om") renderAbout(); else if (kind === "inbox") renderInbox(); else if (kind === "meny") renderMeny(); else if (kind === "addvin") renderAddVin(); else { renderChef(); setTimeout(() => $("#chefq")?.focus(), 50); }
+  if (kind === "list") renderList(); else if (kind === "week") renderWeek(); else if (kind === "edit") renderEditor(); else if (kind === "send") renderSend(); else if (kind === "wine") renderWine(); else if (kind === "vin") renderMyWine(); else if (kind === "rcpt") renderReceipt(); else if (kind === "om") renderAbout(); else if (kind === "inbox") renderInbox(); else if (kind === "stats") renderStats(); else if (kind === "fridge") renderFridge(); else if (kind === "weekly") renderWeekly(); else if (kind === "meny") renderMeny(); else if (kind === "addvin") renderAddVin(); else { renderChef(); setTimeout(() => $("#chefq")?.focus(), 50); }
 }
 function closeDrawer(silent) {
   document.querySelectorAll("#drawer, .overlay[data-dclose]").forEach((e) => e.remove());
@@ -2848,6 +3130,7 @@ function renderMeny() {
       <input class="input" data-mkc="${i}" data-k="wdesc" value="${esc(c.wdesc)}" placeholder="Drue · område · smak"></div>`).join("")}
     <datalist id="mkLabels">${MK_LABELS.map((l) => `<option value="${l}">`).join("")}</datalist>
     ${mk.courses.length < 6 ? `<button class="btn small" type="button" data-mkadd="1">${icon("plus", 15)}Legg til rett</button>` : ""}
+    ${partyHtml()}
     <label class="fld"><span>Hilsen nederst</span><input class="input" data-mkf="greet" value="${esc(mk.greet)}" placeholder="Hilsen …"></label>
   </div>`;
   d.oninput = (e) => {
@@ -3062,12 +3345,27 @@ document.addEventListener("click", (ev) => {
   if (d.wine) { wine.id = d.wine; openDrawer("wine"); return; }
   if (d.sendm) { send.id = d.sendm; openDrawer("send"); return; }
   if (d.buywish) { const code = d.buywish; loadReg().then(() => regAdd(code, true)).then(() => { const el = document.getElementById("buySug"); if (el) fillBuy(el.dataset.rid); }); return; }
+  if (d.news) { closeDrawer(); setTimeout(() => showNews(true), 50); return; }
   if (d.bnchef) { $("#chefFab").click(); return; }
   if (d.bnlist) { $("#btnList").click(); return; }
   if (d.scopy) { copySend(); return; }
   if (d.sdirect) { sendDirect(); return; }
   if (d.inok) { inboxApprove(d.inok); return; }
   if (d.inno) { inboxReject(d.inno); return; }
+  if (d.fridge) { openDrawer("fridge"); setTimeout(() => $("#fridgeIn")?.focus(), 60); return; }
+  if (d.frm) { FRIDGE.items.splice(+d.frm, 1); fridgeSave(); renderFridge(); return; }
+  if (d.fclear) { FRIDGE.items = []; fridgeSave(); renderFridge(); return; }
+  if (d.fmic) { if (CAP.dict) { voice.target = "fridge"; voice.base = ""; CAP.dict.start().catch(() => {}); toast("Si hva du har …"); } return; }
+  if (d.tfood !== undefined) { TONIGHT.food = d.tfood; TONIGHT.n = 0; renderCelBody(); return; }
+  if (d.tnext) { TONIGHT.n++; renderCelBody(); return; }
+  if (d.tpick) { if (isOwnerCellar()) toast("Skål! 🍷 Husk å registrere flaska i vinkjeller-appen"); else { myv.id = d.tpick; vinQty(-1).then(() => renderCelBody()); } return; }
+  if (d.mkshop) { mkShop(); return; }
+  if (d.mkplan) { mkPlan(); return; }
+  if (d.wkset) { wk.id = d.wkset; openDrawer("weekly"); return; }
+  if (d.wksave) { saveWeekly(false); return; }
+  if (d.wkclear) { saveWeekly(true); return; }
+  if (d.vtaste) { const w = CEL.wines[myv.id]; if (w) { const t = new Set(w.smak || []); t.has(d.vtaste) ? t.delete(d.vtaste) : t.add(d.vtaste); w.smak = [...t]; celSave("wines", w); renderMyWine(); } return; }
+  if (d.streload) { STATV.data = null; renderStats(); loadStats(); return; }
   if (d.inreload) { INBOX.loaded = false; renderInbox(); loadInbox(); return; }
   if (d.sshare) { shareSend(); return; }
   if (d.cpost) { postComment(d.cpost); return; }
@@ -3113,7 +3411,7 @@ document.addEventListener("click", (ev) => {
   if (d.cookprev) { cookGo(-1); return; }
   if (d.cookdone) { FACE.happy = 1; const id = cook.id; closeCook(); (S.cooked[id] = S.cooked[id] || []).push(isoDate()); save(); renderAll(); toast("Velbekomme! Registrert som laget i dag."); return; }
   if (d.cooking) { cook.showIng = !cook.showIng; renderCook(); return; }
-  if (d.speakstep) { speaking ? stopSpeak() : speakStep(); return; }
+  if (d.speakstep) { autoRead = !autoRead; if (autoRead) speakStep(); else stopSpeak(); renderCook(); return; }
   if (d.speakrecipe) { speaking ? stopSpeak() : speakRecipe(BY[view.id]); return; }
   if (d.voice) { toggleVoice("cook"); return; }
   if (d.chefmic) { voice.base = ($("#chefq")?.value || "") ? $("#chefq").value + " " : ""; toggleVoice("chef"); return; }
@@ -3258,7 +3556,8 @@ window.addEventListener("pointermove", (e) => { FACE.gx = ((e.clientX / innerWid
 Promise.all([fetch("recipes.json").then((r) => r.json()), fetch("wines.json").then((r) => r.json()).catch(() => ({ wines: [] }))]).then(([b, w]) => {
   BASE = pickBase(b); WINES = w.wines || []; WINES_AT = w.at || "";
   rebuild(); renderCover(); renderAll(); route();
-  if (WEBAPP) { webSync(); if (WEBOWNER) { const bn = document.getElementById("btnNew"); if (bn) bn.insertAdjacentHTML("afterend", `<button class="btn" id="btnInbox" type="button">${icon("list", 18)}Innboks <span class="badge" id="inboxBadge" data-n="0">0</span></button>`); const bi = document.getElementById("btnInbox"); if (bi) bi.onclick = () => { openDrawer("inbox"); loadInbox(); }; } }
+  if (WEBAPP) { webSync(); if (WEBOWNER) { const bn = document.getElementById("btnNew"); if (bn) bn.insertAdjacentHTML("afterend", `<button class="btn" id="btnInbox" type="button">${icon("list", 18)}Innboks <span class="badge" id="inboxBadge" data-n="0">0</span></button>`); const bi = document.getElementById("btnInbox"); if (bi) bi.onclick = () => { openDrawer("inbox"); loadInbox(); };
+    bi.insertAdjacentHTML("afterend", `<button class="btn" id="btnStats" type="button">${icon("list", 18)}Statistikk</button>`); document.getElementById("btnStats").onclick = () => { openDrawer("stats"); loadStats(); }; } }
   initSync(); initCaps(); startSteam(); greet(); (() => { const t0 = Date.now(); const tick = () => { if (sync.live || !sync.ref || Date.now() - t0 > 5000) maybeWelcome(); else setTimeout(tick, 300); }; setTimeout(tick, 2200); })();
 }).catch(() => { $("#results").innerHTML = `<div class="empty"><h3>Fant ikke oppskriftene</h3><p>Last siden på nytt.</p></div>`; });
 })();

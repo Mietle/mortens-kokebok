@@ -51,7 +51,8 @@ async function cleanRecipe(r, { stepsK = "S" } = {}) {
 export default async (req, context) => {
   if (req.method === "GET") {
     const all = await readAll();
-    return json(200, { docs: all.docs || {} });
+    const weekly = await store("recipes").get("weekly", { type: "json" }).catch(() => null);
+    return json(200, { docs: all.docs || {}, weekly: weekly || null });
   }
   if (req.method !== "POST") return json(405, { message: "Ikke tillatt" });
   const origin = req.headers.get("origin") || "", host = req.headers.get("host") || "";
@@ -95,6 +96,12 @@ export default async (req, context) => {
     const doc = d.deleted ? { deleted: true, updatedAt: now } : { ...(await cleanRecipe(d, { stepsK: "S" })), custom: !!d.custom, createdAt: str(d.createdAt, 40) || now, updatedAt: now };
     all.docs[id] = doc; await writeAll(all);
     return json(200, { ok: true, id, doc });
+  }
+  if (b.action === "weekly") {
+    if (b.clear) { await store("recipes").delete("weekly"); return json(200, { ok: true, weekly: null }); }
+    const weekly = { rid: str(b.rid, 80), msg: str(b.msg, 300).trim(), at: now };
+    if (!weekly.rid) return json(400, { message: "Mangler oppskrift" });
+    await store("recipes").setJSON("weekly", weekly); return json(200, { ok: true, weekly });
   }
   if (b.action === "delete") { const all = await readAll(); delete all.docs[str(b.id, 80)]; await writeAll(all); return json(200, { ok: true }); }
   return json(400, { message: "Ukjent handling" });

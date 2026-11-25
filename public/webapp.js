@@ -63,7 +63,26 @@
   sample.limits = async () => ({ images: true });
 
   // Bare «sample» finnes i webappen. Alt annet (konto, felles database …) er null, og appen lagrer på enheten.
-  window.claude = { use: async (name) => (name === "sample" ? sample : null) };
+  // Stemmestyring med nettleserens talegjenkjenning (der den finnes, f.eks. Safari og Chrome).
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  function dictation() {
+    if (!SR) return null;
+    let rec = null, want = false; const F = [], P = [], St = [];
+    const emit = (arr, x) => arr.forEach((f) => { try { f(x); } catch (e) {} });
+    const make = () => {
+      rec = new SR(); rec.lang = "nb-NO"; rec.continuous = true; rec.interimResults = true;
+      rec.onresult = (e) => { for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i], t = r[0].transcript; if (r.isFinal) emit(F, { text: t.trim() }); else emit(P, { text: t }); } };
+      rec.onerror = (e) => { if (e.error === "not-allowed" || e.error === "service-not-allowed") want = false; };
+      rec.onend = () => { if (want) { try { rec.start(); return; } catch (e) {} } want = false; emit(St, { state: "idle", reason: "stopped" }); };
+    };
+    return {
+      start: async () => { make(); want = true; rec.start(); emit(St, { state: "listening" }); },
+      stop: async () => { want = false; try { rec && rec.stop(); } catch (e) {} },
+      onFinal: (f) => F.push(f), onPartial: (f) => P.push(f), onState: (f) => St.push(f),
+    };
+  }
+  const DICT = dictation();
+  window.claude = { use: async (name) => (name === "sample" ? sample : name === "dictation" ? DICT : null) };
 
   if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
 })();
