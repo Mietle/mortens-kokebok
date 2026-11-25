@@ -2543,7 +2543,7 @@ const todayKey = () => new Date().toISOString().slice(0, 10);
 function seeded(seed) { let h = 2166136261; for (const c of seed) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; }
 function pickN(list, n, seed) { const rnd = seeded(seed), a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a.slice(0, n); }
 function todays() {
-  const pool = R.filter((r) => !r.mine && r.img && r.fp && !NO_WINE.includes(r.chapter) && r.chapter !== "Dessert & søtt");
+  const pool = R.filter((r) => !r.mine && r.img && r.fp && isCourse(r) && !NO_WINE.includes(r.chapter) && r.chapter !== "Dessert & søtt");
   return pickN(pool.length ? pool : R, 1, "dag" + todayKey())[0];
 }
 function renderCover() {
@@ -2575,7 +2575,8 @@ function renderShelves() {
   const ownIds = [...R.filter((r) => r.mine).map((r) => r.id), ...R.filter((r) => lastCooked(r)).sort((a, b) => lastCooked(b).localeCompare(lastCooked(a))).map((r) => r.id), ...S.favs];
   const own = [...new Set(ownIds)].map((id) => BY[id]).filter(Boolean).slice(0, 16);
   const prefs = (S.prefChaps || []).filter((id) => BOOK.sections.some((s) => s.id === id));
-  const pool = R.filter((r) => !r.mine && (prefs.length ? prefs.includes(r.chapterId) : true) && !own.includes(r));
+  let pool = R.filter((r) => !r.mine && isCourse(r) && (prefs.length ? prefs.includes(r.chapterId) : true) && !own.includes(r));
+  if (pool.length < 6) pool = R.filter((r) => !r.mine && isCourse(r) && !own.includes(r)); // bare retter – ikke sauser, dipper, tilbehør eller brød
   const forYou = pickN(pool, 12, "til" + todayKey() + prefs.join());
   const tune = CAP.isOwner ? "" : `<button class="ilink2" type="button" data-welcome="1">Tilpass</button>`;
   el.innerHTML =
