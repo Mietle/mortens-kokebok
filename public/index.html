@@ -110,6 +110,7 @@ svg { flex: none; }
 .dish .cwine button { all: unset; cursor: pointer; display: flex; align-items: baseline; gap: 7px; font-size: 13px; color: #efe3d4; line-height: 1.3; }
 .dish .cwine button svg { flex: none; color: var(--wine, #e68aa0); transform: translateY(2px); }
 .dish .cwine b { font-weight: 600; } .dish .cwine small { color: var(--muted); font-size: 12px; }
+.bcard2 { position: relative; } .bcard2 .hlbadge { display: inline-block; width: fit-content; align-self: flex-start; margin-bottom: 6px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; color: #2a1a10; background: linear-gradient(135deg, #f3c58f, #e08a4c); box-shadow: 0 4px 14px rgba(224,138,76,.4); }
 .bcard2.hl { border-color: var(--ember) !important; box-shadow: 0 0 0 2px rgba(234,165,96,.35), 0 12px 40px rgba(234,165,96,.18); }
 .dish .acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .cover .hero-actions { animation: rise 1.1s .6s cubic-bezier(.2, .8, .2, 1) both; }
@@ -1252,10 +1253,12 @@ function buyFor(r, n = 3, seed = r.id) {
   const h = hashStr(seed);
   return cand.map((c, i) => { c.sort((a, b) => b.sc - a.sc); const top = c.filter((y) => y.sc >= c[0].sc - 2).slice(0, 8); if (!top.length) return null; const pk = top[h % top.length]; return { x: pk.x, band: bands[i][2], why: pk.why }; }).filter(Boolean).slice(0, n);
 }
+let COVER_BUY = null; // vinen forsiden anbefaler i dag – markeres i oppskriftskortet
 function buyCard({ x, band, why }) {
+  const hl = COVER_BUY && COVER_BUY.code === String(x[0]);
   const w = regToWine(x), wished = !!CEL.wish["onske_" + x[0]], where = [w.district || w.country, w.vintage].filter(Boolean).join(" ");
   const pic = x[10] >= 0 ? sprite(x[10], 112) : bottleSvg(w.type, 112);
-  return `<div class="wcard bcard2" data-code="${esc(x[0])}"><span class="wbottle">${pic}</span><span class="wtxt"><span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${w.style ? `<span class="wgr">${esc(w.style)}</span>` : ""}<span class="wwhy">${esc(band)}${why ? " · " + esc(why) : w.pairing.length ? " · passer til " + esc(w.pairing.slice(0, 2).join(" og ").toLowerCase()) : ""}</span><span class="wmeta"><span>${Math.round(w.price)} kr</span></span><span class="wmore blinks"><a href="${esc(w.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "✓ I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
+  return `<div class="wcard bcard2${hl ? " hl" : ""}" data-code="${esc(x[0])}"><span class="wbottle">${pic}</span><span class="wtxt">${hl ? `<span class="hlbadge">★ Dagens anbefaling</span>` : ""}<span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${w.style ? `<span class="wgr">${esc(w.style)}</span>` : ""}<span class="wwhy">${esc(band)}${why ? " · " + esc(why) : w.pairing.length ? " · passer til " + esc(w.pairing.slice(0, 2).join(" og ").toLowerCase()) : ""}</span><span class="wmeta"><span>${Math.round(w.price)} kr</span></span><span class="wmore blinks"><a href="${esc(w.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "✓ I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
 }
 function fillBuy(id) {
   loadReg().then(() => {
@@ -2452,7 +2455,7 @@ function renderCover() {
   // Eier: beste vin fra egen kjeller. Venner: egen kjeller hvis noe passer godt. Begge: et forslag fra Vinmonopolet å prøve.
   const own = CAP.isOwner ? pickTop(winesFor(r, 4)) : pickTop((winesFor(r, 4, myWines(), "Du") || []).filter((x) => x.s >= 8));
   let buy = null; if (REGV) { const bl = buyFor(r, 3, todayKey() + r.id); buy = bl.find((b) => b.band === "Mellomklasse") || bl[0] || null; } else setTimeout(() => loadReg().then(renderCover).catch(() => {}), 1200);
-  const bw = buy && regToWine(buy.x);
+  const bw = buy && regToWine(buy.x); COVER_BUY = buy ? { rid: r.id, code: String(buy.x[0]) } : null;
   const wineLines = (own ? `<button type="button" data-open="${r.id}">${icon("wine", 14)}<span><b>${esc(own.w.name)}</b> <small>· fra ${CAP.isOwner ? "kjelleren" : "kjelleren din"}</small></span></button>` : "")
     + (bw ? `<button type="button" data-coverbuy="${r.id}|${esc(buy.x[0])}">${icon("wine", 14)}<span>${own ? "Eller prøv: " : ""}<b>${esc(bw.name)}</b> <small>· ${Math.round(bw.price)} kr · Vinmonopolet</small></span></button>` : "");
   $("#dish").innerHTML = `<div><div class="k">${wkr ? "Ukens oppskrift fra Morten" : "Dagens rett"}</div><h2>${esc(r.title)}</h2>${wkr && WEEKLY.msg ? `<p class="wkmsg">${faceSVG(34)}<span>«${esc(WEEKLY.msg)}»</span></p>` : ""}<div class="meta"><span>${icon("clock", 14)}${esc(r.tid || "")}</span><span>${icon("plate", 14)}${esc(r.porsjoner || "")}</span></div>${wineLines ? `<div class="cwine">${wineLines}</div>` : ""}</div>
