@@ -110,6 +110,7 @@ svg { flex: none; }
 .dish .cwine button { all: unset; cursor: pointer; display: flex; align-items: baseline; gap: 7px; font-size: 13px; color: #efe3d4; line-height: 1.3; }
 .dish .cwine button svg { flex: none; color: var(--wine, #e68aa0); transform: translateY(2px); }
 .dish .cwine b { font-weight: 600; } .dish .cwine small { color: var(--muted); font-size: 12px; }
+.bcard2.hl { border-color: var(--ember) !important; box-shadow: 0 0 0 2px rgba(234,165,96,.35), 0 12px 40px rgba(234,165,96,.18); }
 .dish .acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .cover .hero-actions { animation: rise 1.1s .6s cubic-bezier(.2, .8, .2, 1) both; }
 .cover .scrollcue { position: absolute; left: 50%; bottom: 14px; width: 26px; height: 40px; border: 1.5px solid rgba(245, 236, 226, .4); border-radius: 14px; transform: translateX(-50%); cursor: pointer; transition: border-color .25s, box-shadow .25s, transform .25s; }
@@ -1251,15 +1252,15 @@ function buyFor(r, n = 3, seed = r.id) {
   const h = hashStr(seed);
   return cand.map((c, i) => { c.sort((a, b) => b.sc - a.sc); const top = c.filter((y) => y.sc >= c[0].sc - 2).slice(0, 8); if (!top.length) return null; const pk = top[h % top.length]; return { x: pk.x, band: bands[i][2], why: pk.why }; }).filter(Boolean).slice(0, n);
 }
-function buyCard({ x, band }) {
+function buyCard({ x, band, why }) {
   const w = regToWine(x), wished = !!CEL.wish["onske_" + x[0]], where = [w.district || w.country, w.vintage].filter(Boolean).join(" ");
   const pic = x[10] >= 0 ? sprite(x[10], 112) : bottleSvg(w.type, 112);
-  return `<div class="wcard bcard2"><span class="wbottle">${pic}</span><span class="wtxt"><span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${w.style ? `<span class="wgr">${esc(w.style)}</span>` : ""}<span class="wwhy">${esc(band)}${w.pairing.length ? " · passer til " + esc(w.pairing.slice(0, 2).join(" og ").toLowerCase()) : ""}</span><span class="wmeta"><span>${Math.round(w.price)} kr</span></span><span class="wmore blinks"><a href="${esc(w.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "✓ I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
+  return `<div class="wcard bcard2" data-code="${esc(x[0])}"><span class="wbottle">${pic}</span><span class="wtxt"><span class="wtype"><i style="background:${WCOL[w.type] || BCOL[w.type] || "#9a98a5"}"></i>${esc(w.type || "Vin")}${where ? " · " + esc(where) : ""}</span><b>${esc(w.name)}</b>${w.style ? `<span class="wgr">${esc(w.style)}</span>` : ""}<span class="wwhy">${esc(band)}${why ? " · " + esc(why) : w.pairing.length ? " · passer til " + esc(w.pairing.slice(0, 2).join(" og ").toLowerCase()) : ""}</span><span class="wmeta"><span>${Math.round(w.price)} kr</span></span><span class="wmore blinks"><a href="${esc(w.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>${CAP.isOwner ? "" : `<button type="button" data-buywish="${esc(x[0])}" ${wished ? "disabled" : ""}>${wished ? "✓ I ønskelista" : "♡ Ønske"}</button>`}</span></span></div>`;
 }
 function fillBuy(id) {
   loadReg().then(() => {
     const el = document.getElementById("buySug"), r = BY[id]; if (!el || el.dataset.rid !== id || !r) return;
-    const list = buyFor(r);
+    const list = buyFor(r, 3, todayKey() + r.id);
     el.innerHTML = list.length ? `<div class="wsub-h">Kjøp til denne retten</div><div class="wgrid">${list.map(buyCard).join("")}</div><p class="wnote">Forslag fra Vinmonopolets sortiment som passer til retten, og som ikke står i kjelleren${REGV.at ? ` · priser per ${nbDate(String(REGV.at).slice(0, 10))}` : ""}. Sjekk lagerstatus i din butikk hos Vinmonopolet.</p>` : "";
   }).catch(() => {});
 }
@@ -2453,7 +2454,7 @@ function renderCover() {
   let buy = null; if (REGV) { const bl = buyFor(r, 3, todayKey() + r.id); buy = bl.find((b) => b.band === "Mellomklasse") || bl[0] || null; } else setTimeout(() => loadReg().then(renderCover).catch(() => {}), 1200);
   const bw = buy && regToWine(buy.x);
   const wineLines = (own ? `<button type="button" data-open="${r.id}">${icon("wine", 14)}<span><b>${esc(own.w.name)}</b> <small>· fra ${CAP.isOwner ? "kjelleren" : "kjelleren din"}</small></span></button>` : "")
-    + (bw ? `<button type="button" data-open="${r.id}">${icon("wine", 14)}<span>${own ? "Eller prøv: " : ""}<b>${esc(bw.name)}</b> <small>· ${Math.round(bw.price)} kr · Vinmonopolet</small></span></button>` : "");
+    + (bw ? `<button type="button" data-coverbuy="${r.id}|${esc(buy.x[0])}">${icon("wine", 14)}<span>${own ? "Eller prøv: " : ""}<b>${esc(bw.name)}</b> <small>· ${Math.round(bw.price)} kr · Vinmonopolet</small></span></button>` : "");
   $("#dish").innerHTML = `<div><div class="k">${wkr ? "Ukens oppskrift fra Morten" : "Dagens rett"}</div><h2>${esc(r.title)}</h2>${wkr && WEEKLY.msg ? `<p class="wkmsg">${faceSVG(34)}<span>«${esc(WEEKLY.msg)}»</span></p>` : ""}<div class="meta"><span>${icon("clock", 14)}${esc(r.tid || "")}</span><span>${icon("plate", 14)}${esc(r.porsjoner || "")}</span></div>${wineLines ? `<div class="cwine">${wineLines}</div>` : ""}</div>
     <div class="acts"><button class="btn small primary" type="button" data-open="${r.id}">Se oppskriften</button><button class="btn small" type="button" data-cook="${r.id}">${icon("play", 14)}Lag den</button></div>`;
   steam.focus = r.fp ? [r.fp[0] / 100, r.fp[1] / 100] : [.65, .55];
@@ -3561,6 +3562,7 @@ document.addEventListener("click", (ev) => {
   if (d.addlist) { addToList(d.addlist); return; }
   if (d.weektoggle) { $("#weekpick").classList.toggle("open"); $("#mkput")?.classList.remove("open"); return; }
   if (d.mktoggle) { $("#mkput").classList.toggle("open"); $("#weekpick")?.classList.remove("open"); return; }
+  if (d.coverbuy) { const [rid, code] = d.coverbuy.split("|"); openRecipe(rid); let n = 0; const find = () => { const c = document.querySelector(`#buySug [data-code="${code}"]`); if (c) { c.classList.add("hl"); c.scrollIntoView({ block: "center", behavior: "smooth" }); } else if (n++ < 30) setTimeout(find, 150); }; setTimeout(find, 300); return; }
   if (d.mkput) { const box = $("#mkput"), r = BY[box.dataset.rid]; mkPut(r.id, d.mkput); box.innerHTML = mkPutHtml(r); return; }
   if (d.addweek != null) { const i = +d.addweek, id = view.id, w = L().week[i]; const k = w.indexOf(id); k >= 0 ? w.splice(k, 1) : w.push(id); save(); renderKpis(); t.setAttribute("aria-pressed", k < 0); toast(k >= 0 ? `Fjernet fra ${DAYS[i].toLowerCase()}` : `Lagt til på ${DAYS[i].toLowerCase()}`); return; }
   if (d.chefctx) { chef.ctx = d.chefctx; chef.msgs = []; openDrawer("chef"); return; }
