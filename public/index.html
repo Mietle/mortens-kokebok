@@ -577,7 +577,7 @@ footer.foot { margin-top: 60px; color: var(--faint); font-size: 12px; text-align
 /* ---------- bunnmeny på mobil (Morten i midten, alltid innen rekkevidde) ---------- */
 .botnav { display: none; }
 @media (max-width: 760px) {
-  .botnav { display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; position: fixed; z-index: 46; left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); height: 62px; padding: 0 6px; border-radius: 24px;
+  .botnav { display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; position: fixed; z-index: 46; left: 12px; right: 12px; bottom: max(8px, calc(env(safe-area-inset-bottom, 0px) - 18px)); height: 62px; padding: 0 6px; border-radius: 24px;
     background: rgba(28, 18, 14, .72); -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); border: 1px solid rgba(234,165,96,.22); box-shadow: 0 14px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06); }
   .botnav > button { height: 62px; display: grid; place-items: center; align-content: center; gap: 3px; color: var(--muted); font-size: 10.5px; font-weight: 600; letter-spacing: .01em; background: none; border: 0; padding: 0; }
   .botnav > button svg { width: 22px; height: 22px; }
