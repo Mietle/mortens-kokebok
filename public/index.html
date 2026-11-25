@@ -797,6 +797,15 @@ a.btn { color: inherit; text-decoration: none; }
 @media (prefers-reduced-motion: reduce) { .cover.lowres .cover-plate { animation: none; } }
 
 /* ---------- menykort ---------- */
+.apsug { display: grid; gap: 6px; }
+.apsug .aprow { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 10px; align-items: center; padding: 10px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.03); color: inherit; font: inherit; text-align: left; cursor: pointer; width: 100%; box-sizing: border-box; }
+.apsug .aprow:hover { border-color: rgba(234,165,96,.5); }
+.apsug .aprow .ic { font-size: 20px; text-align: center; }
+.apsug .aprow b { display: block; font-family: Fraunces, Georgia, serif; font-weight: 400; font-size: 15.5px; line-height: 1.2; } .apsug .aprow small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+.apsug .aprow em { display: inline-block; font-style: normal; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ember); font-weight: 700; margin-bottom: 2px; }
+.apsug .aprow em.af { color: #9fd2a8; }
+.apsug .vmp { font-size: 12px; color: var(--wine, #e68aa0); text-decoration: none; justify-self: start; margin: -2px 0 4px 50px; }
+.aphint { font-size: 12.5px; color: var(--muted); margin: 0; }
 .mkpick-row { display: grid; grid-template-columns: 52px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 6px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.03); color: inherit; font: inherit; text-align: left; cursor: pointer; width: 100%; box-sizing: border-box; }
 .mkpick-row img { width: 52px; height: 52px; object-fit: cover; border-radius: 10px; }
 .mkpick-row b { display: block; font-family: Fraunces, Georgia, serif; font-weight: 400; font-size: 15.5px; line-height: 1.2; } .mkpick-row small { color: var(--muted); font-size: 12px; }
@@ -1248,6 +1257,7 @@ function buyFor(r, n = 3, seed = r.id) {
     let sc = fit.s * 1.5 + hit * 3 + (x[8] === basis ? 3 : x[8] === tillegg ? 1.5 : 0) + (x[10] >= 0 ? 1 : 0);
     if (fishy && /Hvitvin|Musserende/.test(cat)) sc += 1.5;
     if (dessert && x[14] >= 4) sc += 2;
+    sc += (hashStr(x[0] + "|" + seed) % 100) / 60; // spre forslagene over hele sortimentet, ikke bare starten av alfabetet
     const i = bands.findIndex(([a, b]) => x[2] >= a && x[2] < b); if (i >= 0) cand[i].push({ x, sc, why: fit.s >= 2 ? fit.why : "" });
   }
   const h = hashStr(seed);
@@ -3246,6 +3256,77 @@ function mkPut(rid, label) {
   mkSetCourse(c, r); mkSave();
   toast(replaced ? `${label}: byttet ut «${replaced}»` : `Lagt i menykortet som ${label.toLowerCase()}`);
 }
+/* ---------- aperitiff: valgliste og forslag ---------- */
+const mkAp = { open: false, loading: false };
+const AP_TYPES = /Musserende|Champagne|Sider|Rosé|Perlende|Hvitvin/;
+function mkApCellar() {
+  const list = CAP.isOwner ? (WINES || []).filter((w) => (w.qty || 0) > 0) : myWines().filter((w) => (w.qty || 0) > 0);
+  return list.filter((w) => AP_TYPES.test(w.type || "") || (w.pairing || []).includes("Aperitiff"));
+}
+function mkMenuProfile() {
+  const rs = mk.courses.map((c) => BY[c.rid]).filter(Boolean), first = rs[0];
+  const fp = first ? dishProfile(first) : {}, tags = first ? wineTags(first) || [] : [];
+  const all = rs.map(dishProfile);
+  return { any: rs.length > 0, fish: tags.includes("Fisk") || tags.includes("Skalldyr") || !!fp.fish, spicy: all.some((p) => p.spicy || p.asian), heavy: all.some((p) => p.heavy) || rs.some((r) => (wineTags(r) || []).some((t) => /Lam|Storfe|vilt/.test(t))), creamy: !!fp.creamy, first };
+}
+function mkApWhy(mp) {
+  return mp.fish ? "Frisk syre som passer forretten med fisk og skalldyr" : mp.spicy ? "Litt fruktsødme som tåler krydderet i menyen" : mp.heavy ? "Spenstige bobler som vekker ganen før en fyldig meny" : mp.any ? "Lett og frisk start på kvelden" : "Klassisk start på kvelden";
+}
+function mkApScoreWine(w, mp) {
+  const t = w.type || "", g = String(w.grapes || "").toLowerCase(), n = String(w.name || "").toLowerCase(), sc = {}; (w.scales || []).forEach((x) => { sc[x.k] = x.v; });
+  let s = (w.pairing || []).includes("Aperitiff") || (w.pairing || []).includes("Aperitif") ? 3 : 0;
+  if (/Musserende|Champagne/.test(t)) s += 3; if (/Sider|Perlende/.test(t)) s += 1.5; if (/Rosé/.test(t)) s += 1;
+  if (mp.fish && (/Musserende|Champagne/.test(t) || /chardonnay|sauvignon|albari|chablis/.test(g + " " + n))) s += 2;
+  if (mp.spicy && (/riesling/.test(g + " " + n) || (sc.Sødme >= 2 && sc.Sødme <= 6))) s += 2.5;
+  if (mp.heavy && (sc.Friskhet || 0) >= 8) s += 1.5;
+  if (/Hvitvin/.test(t) && (sc.Fylde || 8) >= 10) s -= 2;
+  return s + (w.rating || 0) * .4;
+}
+function mkApSuggestions() {
+  const mp = mkMenuProfile(), out = [], seed = hashStr(mk.courses.map((c) => c.rid).join("|") + todayKey());
+  const cel = mkApCellar().map((w) => ({ w, s: mkApScoreWine(w, mp) })).sort((a, b) => b.s - a.s);
+  if (cel[0] && cel[0].s >= 3) { const w = cel[0].w; out.push({ src: "cel", ic: /Musserende|Champagne/.test(w.type || "") ? "🍾" : /Sider/.test(w.type || "") ? "🍏" : "🥂", name: w.name + (w.vintage ? " " + w.vintage : ""), desc: mkWineDesc(w), tag: CAP.isOwner ? "Fra kjelleren" : "Fra kjelleren din" }); }
+  if (REGV) {
+    const T = REGV.tabs, ap = T.p.indexOf("Aperitif"), basis = T.sel.indexOf("Basisutvalget"), tillegg = T.sel.indexOf("Tilleggsutvalget");
+    const have = new Set([...(WINES || []).map((w) => String(w.id)), ...myWines().map((w) => String(w.code || ""))]);
+    const bands = [[0, 260, "Rimelig"], [300, 900, "Til fest"]], cand = [[], []];
+    for (const x of REGV.rows) {
+      if (!x[9] || !x[2] || x[3] < 70 || x[3] > 75 || have.has(x[0])) continue;
+      const cat = T.cat[x[4]]; const fino = cat === "Sterkvin" && /fino|manzanilla/i.test(x[1]);
+      if (!(cat === "Musserende" || cat === "Hvitvin" || cat === "Rosévin" || fino)) continue;
+      const apBit = ap >= 0 && ((x[16] >> ap) & 1);
+      if (!apBit && cat !== "Musserende" && !fino) continue;
+      const w = { type: cat, name: x[1], grapes: regGrapes(x, T), scales: [{ k: "Fylde", v: x[11] * 2 }, { k: "Friskhet", v: x[12] * 2 }, { k: "Sødme", v: x[14] * 2 }].filter((y) => y.v > 0), pairing: apBit ? ["Aperitif"] : [] };
+      let sc = mkApScoreWine(w, mp) + (x[8] === basis ? 3 : x[8] === tillegg ? 1.5 : 0) + (x[10] >= 0 ? 1 : 0);
+      if (fino && mp.fish) sc += 1.5;
+      if (mp.spicy && /extra dry|demi|riesling|sekt|moscato/i.test(x[1])) sc += 2.5;
+      sc += (hashStr(x[0] + "|" + seed) % 100) / 60;
+      const i = bands.findIndex(([a, b]) => x[2] >= a && x[2] < b); if (i >= 0) cand[i].push({ x, sc });
+    }
+    cand.forEach((c, i) => { c.sort((a, b) => b.sc - a.sc); const top = c.filter((y) => y.sc >= (c[0] ? c[0].sc : 0) - 2).slice(0, 8); if (!top.length) return; const x = top[(seed + i) % top.length].x, w = regToWine(x);
+      const dry = (w.name.match(/\b(extra brut|brut nature|extra dry|brut|demi-sec|dry|sec)\b/i) || [])[0];
+      const desc = [w.type === "Musserende" ? (/rosé|rose\b/i.test(w.name) ? "Rosé musserende" : "Musserende") : w.type, String(w.grapes || "").split(",")[0], [w.sub || w.district, w.country].filter(Boolean).join(", "), dry ? dry.toLowerCase() : w.style].filter(Boolean).join(" · ");
+      out.push({ src: "vmp", ic: /Musserende/.test(w.type) ? "🥂" : "🍷", name: w.name, desc, tag: `${bands[i][2]} · ${Math.round(w.price)} kr · Vinmonopolet`, url: w.url }); });
+  }
+  const AF = mp.fish ? [["Alkoholfri musserende", "Tørr og frisk, gjerne Blanc de Blancs-stil · fås i dagligvare"], ["Sprudlende sitron og agurk", "Isvann med sitron, agurk og et dryss salt – hjemmelaget"]]
+    : mp.spicy ? [["Alkoholfri Riesling", "Litt fruktsødme og frisk syre · fås i dagligvare"], ["Ingefær og lime med tonic", "Revet ingefær, lime og tonic – hjemmelaget"]]
+    : mp.heavy ? [["Alkoholfri musserende", "Tørre bobler som vekker ganen · fås i dagligvare"], ["Tonic med rosmarin og grapefrukt", "Bitter og frisk – hjemmelaget"]]
+    : [["Alkoholfri musserende", "Lett og frisk · fås i dagligvare"], ["Sprudlende eplemost", "Norsk eplemost med kullsyre og sitron"]];
+  const af = AF[seed % AF.length]; out.push({ src: "af", ic: "🫧", name: af[0], desc: af[1], tag: "Alkoholfritt" });
+  return { why: mkApWhy(mp), list: out };
+}
+function mkApHtml() {
+  const cel = mkApCellar();
+  const opts = cel.map((w) => `<option value="${esc(String(w.id))}">${esc(w.name + (w.vintage ? " " + w.vintage : ""))}</option>`).join("");
+  let sug = "";
+  if (mkAp.open) {
+    if (mkAp.loading) sug = `<p class="aphint">Finner aperitiff som passer menyen …</p>`;
+    else { const r = mkApSuggestions(); mkAp.last = r.list;
+      sug = `<p class="aphint">${esc(r.why)}. Trykk for å velge:</p><div class="apsug">${r.list.map((x, i) => `<button class="aprow" type="button" data-apset="${i}"><span class="ic">${x.ic}</span><span><em class="${x.src === "af" ? "af" : ""}">${esc(x.tag)}</em><b>${esc(x.name)}</b><small>${esc(x.desc)}</small></span></button>${x.url ? `<a class="vmp" href="${esc(x.url)}" target="_blank" rel="noopener">Se hos Vinmonopolet ↗</a>` : ""}`).join("")}</div>`; }
+  }
+  return `${opts ? `<select class="select" data-apcel="1" aria-label="Velg aperitiff fra kjelleren"><option value="">Velg fra kjelleren …</option>${opts}</select>` : ""}
+      <button class="btn small" type="button" data-apsug="1">✨ ${mkAp.open ? "Skjul forslag" : "Foreslå aperitiff"}</button>${sug}`;
+}
 function openMeny() { if (!mk) { mk = mkDefault(); mkSave(); } openDrawer("meny"); }
 function renderMeny() {
   const d = $("#drawerBody"); if (!d) return;
@@ -3261,7 +3342,8 @@ function renderMeny() {
     <label class="fld"><span>Dato</span><input class="input" type="date" data-mkf="date" value="${esc(mk.date)}"></label>
     <div class="mkc"><div class="mkc-h"><b>Aperitiff</b><small>valgfritt</small></div>
       <input class="input" data-mkf="apName" value="${esc(mk.apName)}" placeholder="F.eks. et glass champagne">
-      <input class="input" data-mkf="apDesc" value="${esc(mk.apDesc)}" placeholder="Kort beskrivelse (valgfritt)"></div>
+      <input class="input" data-mkf="apDesc" value="${esc(mk.apDesc)}" placeholder="Kort beskrivelse (valgfritt)">
+      ${mkApHtml()}</div>
     ${mk.courses.map((c, i) => `<div class="mkc">
       <div class="mkc-h"><span class="mkrom">${MK_ROM[i] || i + 1}</span><input class="input mklab" list="mkLabels" data-mkc="${i}" data-k="label" value="${esc(c.label)}" aria-label="Type rett"><button class="xbtn" type="button" data-mkdel="${i}" aria-label="Fjern retten">${icon("x", 15)}</button></div>
       ${mkCourseRecipe(c, i)}
@@ -3283,11 +3365,14 @@ function renderMeny() {
   };
   d.onchange = (e) => {
     const t = e.target;
+    if (t.dataset.apcel && t.value) { const w = mkApCellar().find((y) => String(y.id) === t.value); if (w) { mk.apName = w.name + (w.vintage ? " " + w.vintage : ""); mk.apDesc = mkWineDesc(w); mkAp.open = false; mkSave(); renderMeny(); } return; }
     if (t.dataset.mkr && t.value) { const r = BY[t.value], c = mk.courses[+t.dataset.mkr]; c.rid = r.id; c.title = r.title; c.desc = mkAutoDesc(r); mkSave(); renderMeny(); }
     else if (t.dataset.mkw && t.value) { const x = mkWineList().find((y) => y.key === t.value), c = mk.courses[+t.dataset.mkw]; if (x) { c.wine = x.w.name + (x.w.vintage ? " " + x.w.vintage : ""); c.wdesc = mkWineDesc(x.w); c.wtype = mkWineType(x.w.type); } mkSave(); renderMeny(); }
   };
   d.onclick = (e) => {
     const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.apsug) { mkAp.open = !mkAp.open; if (mkAp.open && !REGV) { mkAp.loading = true; loadReg().catch(() => null).then(() => { mkAp.loading = false; if (view.drawer === "meny") renderMeny(); }); } renderMeny(); return; }
+    if (b.dataset.apset) { const x = (mkAp.last || [])[+b.dataset.apset]; if (x) { mk.apName = x.name; mk.apDesc = x.desc.replace(/\s*·\s*fås i dagligvare$/, "").replace(/\s*–\s*hjemmelaget$/, ""); mkAp.open = false; mkSave(); renderMeny(); toast("Aperitiff valgt"); } return; }
     if (b.dataset.mkfind) { const i = +b.dataset.mkfind, c = mk.courses[i]; mkFind.i = i; mkFind.q = ""; mkFind.ch = c.label === "Dessert" ? "kat8" : "alle"; renderMeny(); setTimeout(() => { const q = $("#mkFindQ"); if (q) { q.scrollIntoView({ block: "start", behavior: "smooth" }); if (matchMedia("(hover: hover)").matches) q.focus(); } }, 40); return; }
     if (b.dataset.mkfch) { mkFind.ch = b.dataset.mkfch; d.querySelectorAll("[data-mkfch]").forEach((x) => x.setAttribute("aria-pressed", x === b)); $("#mkFindList").innerHTML = mkFindList(); return; }
     if (b.dataset.mkchoose) { const c = mk.courses[mkFind.i], r = BY[b.dataset.mkchoose]; if (c && r) mkSetCourse(c, r); const i = mkFind.i; mkFind.i = -1; mkSave(); renderMeny(); setTimeout(() => d.querySelectorAll(".mkc")[i + 1]?.scrollIntoView({ block: "nearest" }), 40); return; }
