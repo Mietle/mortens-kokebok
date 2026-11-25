@@ -106,6 +106,10 @@ svg { flex: none; }
 .dish h2 { font-family: var(--display); font-weight: 400; font-size: clamp(24px, 3vw, 32px); line-height: 1.08; margin: 6px 0 8px; letter-spacing: -.015em; }
 .dish .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: 13px; }
 .dish .meta span { display: inline-flex; align-items: center; gap: 6px; }
+.dish .cwine { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.dish .cwine button { all: unset; cursor: pointer; display: flex; align-items: baseline; gap: 7px; font-size: 13px; color: #efe3d4; line-height: 1.3; }
+.dish .cwine button svg { flex: none; color: var(--wine, #e68aa0); transform: translateY(2px); }
+.dish .cwine b { font-weight: 600; } .dish .cwine small { color: var(--muted); font-size: 12px; }
 .dish .acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .cover .hero-actions { animation: rise 1.1s .6s cubic-bezier(.2, .8, .2, 1) both; }
 .cover .scrollcue { position: absolute; left: 50%; bottom: 14px; width: 26px; height: 40px; border: 1.5px solid rgba(245, 236, 226, .4); border-radius: 14px; transform: translateX(-50%); cursor: pointer; transition: border-color .25s, box-shadow .25s, transform .25s; }
@@ -1162,7 +1166,9 @@ function dishProfile(r) {
     spicy: /chili|sambal|sriracha|curry|gochujang|koreansk|jalapeño|kimchi|pil-pil|butter chicken/.test(t) || /garam masala|gochujang|sambal|sriracha/.test(a),
     asian: r.chapterId === "kat1" || /ramen|gyoza|tempura|hoisin|vårrull|teriyaki|soyamarinert|butter chicken/.test(t),
     creamy: /fløte|hollandaise|krem|smørsaus|sandefjordsmør|béarnaise|bearnaise|frikassé|marry me|kremet/.test(t),
-    tomato: /tomat|lasagne|osso buco|bolognese|pizza|bourguignon/.test(t),
+    tomato: /tomat|lasagne|osso buco|bolognese|pizza/.test(t),
+    burgundy: /bourguignon|coq au vin/.test(t),
+    fish: /laks|ørret|torsk|kveite|fisk|scampi|reker|blåskjell|skalldyr|sjøørret|kamskjell/.test(t),
     smoked: /røke|gravet/.test(t),
     fruity: /bringebær|honning|eple|appelsin|calvados|mango|portvin|balsamico|plomme|kirsebær/.test(t),
     apple: /eple|calvados/.test(t),
@@ -1178,10 +1184,13 @@ function styleFit(w, p, tags) {
   const g = String(w.grapes || "").toLowerCase(), tan = sc.Garvestoffer ?? (red ? 8 : 0), body = sc.Fylde ?? 8, sweet = sc.Sødme ?? 0;
   let s = 0, why = "";
   const say = (x) => { if (!why) why = x; };
+  if ((p.spicy || p.asian) && /riesling|gewürz|gewurz|chenin|grüner/.test(g)) s += 2;
   if (p.spicy) { if (white) { s += 4; say(sweet >= 2 ? "Frisk og litt fruktsøt – demper chilien" : "Frisk og ren – tåler krydderet"); } else if (red && tan >= 8) s -= 4; else if (red && tan <= 6) s += 1; if (sweet >= 2 && sweet < 6) s += 1.5; }
   else if (p.asian) { if (white) { s += 2.5; say("Frisk vin til asiatiske smaker"); } if (red && /pinot noir/.test(g) && tan <= 7) s += 1.5; if (red && tan >= 9) s -= 2; }
   if (p.creamy) { if (/chardonnay/.test(g)) { s += 3; say("Chardonnay løfter de kremete smakene"); } else if (white) s += 1.5; if (red && tan >= 9) s -= 1.5; }
-  if (p.tomato && red && /sangiovese|barbera|brunello|nebbiolo|corvina|pinot noir/.test(g)) { s += 3; say(/pinot/.test(g) ? "Burgunder til gryta – en klassiker" : "Italiensk syre som møter tomaten"); }
+  if (p.tomato && p.fish) { if (white || /Rosé/.test(type)) { s += 2; say("Frisk syre som tåler tomaten"); } else if (red) s -= 2; }
+  else if (p.tomato && red && /sangiovese|barbera|brunello|nebbiolo|corvina/.test(g)) { s += 3; say("Italiensk syre som møter tomaten"); }
+  if (p.burgundy && red && /pinot noir/.test(g)) { s += 4; say("Burgunder til gryta – en klassiker"); }
   if (p.smoked && white) { s += 2; say("Frisk syre til røkt og gravet fisk"); }
   if (p.apple && /Sider/.test(type) && sweet < 6) { s += 4; say("Eple møter eple"); }
   else if (p.fruity && red && /pinot noir|grenache|corvina|merlot|barbera/.test(g)) { s += 2; say("Fruktig rødvin til den søtlige sausen"); }
@@ -1220,10 +1229,10 @@ function winesFor(r, n = 3, list = WINES, who = "Du") {
 /* ---------- kjøpsforslag fra Vinmonopolets sortiment ---------- */
 const P_REV = { "Lam og sau": "Lam", "Aperitiff": "Aperitif" };
 const WTYPES = new Set(["Rødvin", "Hvitvin", "Rosévin", "Musserende", "Perlende"]);
-function buyFor(r, n = 3) {
+function buyFor(r, n = 3, seed = r.id) {
   const tags = wineTags(r); if (!REGV || !tags || !tags.length) return [];
   const T = REGV.tabs, bits = tags.map((t) => T.p.indexOf(P_REV[t] || t)).filter((i) => i >= 0); if (!bits.length) return [];
-  const dessert = tags.includes("Dessert"), fishy = tags.includes("Fisk") || tags.includes("Skalldyr");
+  const dessert = tags.includes("Dessert"), fishy = tags.includes("Fisk") || tags.includes("Skalldyr"), prof = dishProfile(r);
   const have = new Set([...WINES.map((w) => String(w.id)), ...myWines().map((w) => String(w.code || ""))]);
   const basis = T.sel.indexOf("Basisutvalget"), tillegg = T.sel.indexOf("Tilleggsutvalget");
   const bands = [[0, 200, "Rimelig"], [200, 350, "Mellomklasse"], [350, 800, "Til fest"]], cand = bands.map(() => []);
@@ -1231,13 +1240,16 @@ function buyFor(r, n = 3) {
     if (!x[9] || !x[2] || x[3] < 70 || x[3] > 75 || have.has(x[0])) continue;
     const cat = T.cat[x[4]]; if (!(WTYPES.has(cat) || (dessert && cat === "Sterkvin"))) continue;
     let hit = 0; bits.forEach((b) => { if ((x[16] >> b) & 1) hit++; }); if (!hit) continue;
-    let sc = hit * 3 + (x[8] === basis ? 3 : x[8] === tillegg ? 1.5 : 0) + (x[10] >= 0 ? 1 : 0);
+    if (dessert && !(cat === "Sterkvin" || x[14] >= 4)) continue;
+    const fit = styleFit({ type: cat, grapes: regGrapes(x, T), scales: [{ k: "Fylde", v: x[11] * 2 }, { k: "Garvestoffer", v: x[13] * 2 }, { k: "Sødme", v: x[14] * 2 }].filter((y) => y.v > 0) }, prof, tags);
+    if (fit.s <= -3) continue;
+    let sc = fit.s * 1.5 + hit * 3 + (x[8] === basis ? 3 : x[8] === tillegg ? 1.5 : 0) + (x[10] >= 0 ? 1 : 0);
     if (fishy && /Hvitvin|Musserende/.test(cat)) sc += 1.5;
     if (dessert && x[14] >= 4) sc += 2;
-    const i = bands.findIndex(([a, b]) => x[2] >= a && x[2] < b); if (i >= 0) cand[i].push({ x, sc });
+    const i = bands.findIndex(([a, b]) => x[2] >= a && x[2] < b); if (i >= 0) cand[i].push({ x, sc, why: fit.s >= 2 ? fit.why : "" });
   }
-  let h = 0; for (const c of String(r.id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  return cand.map((c, i) => { c.sort((a, b) => b.sc - a.sc); const top = c.slice(0, 8); return top.length ? { x: top[h % top.length].x, band: bands[i][2] } : null; }).filter(Boolean).slice(0, n);
+  const h = hashStr(seed);
+  return cand.map((c, i) => { c.sort((a, b) => b.sc - a.sc); const top = c.filter((y) => y.sc >= c[0].sc - 2).slice(0, 8); if (!top.length) return null; const pk = top[h % top.length]; return { x: pk.x, band: bands[i][2], why: pk.why }; }).filter(Boolean).slice(0, n);
 }
 function buyCard({ x, band }) {
   const w = regToWine(x), wished = !!CEL.wish["onske_" + x[0]], where = [w.district || w.country, w.vintage].filter(Boolean).join(" ");
@@ -2435,8 +2447,14 @@ function renderCover() {
   const wkr = weeklyRecipe(); const r = wkr || todays(); if (!r) return;
   const img = $("#coverImg"); img.src = imgSrc(r); img.style.objectPosition = r.fp ? `${r.fp[0]}% ${r.fp[1]}%` : ""; const pl = $("#coverPlate"); if (pl) { pl.src = img.src; pl.style.objectPosition = img.style.objectPosition; } const lowCheck = () => { const cv = $("#cover"); if (cv && img.naturalWidth > 1) cv.classList.toggle("lowres", img.naturalWidth < 1500); }; if (img.complete) lowCheck(); img.onload = lowCheck;
   const d = new Date(); $("#kdate").textContent = d.toLocaleDateString("nb-NO", { weekday: "long", day: "numeric", month: "long" });
-  const wl = winesFor(r, 4) || [], top = wl.filter((x) => wl[0] && x.s >= wl[0].s - 1.5); const w = top.length ? top[hashStr(todayKey() + r.id) % top.length].w : null;
-  $("#dish").innerHTML = `<div><div class="k">${wkr ? "Ukens oppskrift fra Morten" : "Dagens rett"}</div><h2>${esc(r.title)}</h2>${wkr && WEEKLY.msg ? `<p class="wkmsg">${faceSVG(34)}<span>«${esc(WEEKLY.msg)}»</span></p>` : ""}<div class="meta"><span>${icon("clock", 14)}${esc(r.tid || "")}</span><span>${icon("plate", 14)}${esc(r.porsjoner || "")}</span>${w ? `<span>${icon("wine", 14)}${esc(w.name)}</span>` : ""}</div></div>
+  const day = hashStr(todayKey() + r.id), pickTop = (wl) => { const top = (wl || []).filter((x) => x.s >= wl[0].s - 1.5); return top.length ? top[day % top.length] : null; };
+  // Eier: beste vin fra egen kjeller. Venner: egen kjeller hvis noe passer godt. Begge: et forslag fra Vinmonopolet å prøve.
+  const own = CAP.isOwner ? pickTop(winesFor(r, 4)) : pickTop((winesFor(r, 4, myWines(), "Du") || []).filter((x) => x.s >= 8));
+  let buy = null; if (REGV) { const bl = buyFor(r, 3, todayKey() + r.id); buy = bl.find((b) => b.band === "Mellomklasse") || bl[0] || null; } else setTimeout(() => loadReg().then(renderCover).catch(() => {}), 1200);
+  const bw = buy && regToWine(buy.x);
+  const wineLines = (own ? `<button type="button" data-open="${r.id}">${icon("wine", 14)}<span><b>${esc(own.w.name)}</b> <small>· fra ${CAP.isOwner ? "kjelleren" : "kjelleren din"}</small></span></button>` : "")
+    + (bw ? `<button type="button" data-open="${r.id}">${icon("wine", 14)}<span>${own ? "Eller prøv: " : ""}<b>${esc(bw.name)}</b> <small>· ${Math.round(bw.price)} kr · Vinmonopolet</small></span></button>` : "");
+  $("#dish").innerHTML = `<div><div class="k">${wkr ? "Ukens oppskrift fra Morten" : "Dagens rett"}</div><h2>${esc(r.title)}</h2>${wkr && WEEKLY.msg ? `<p class="wkmsg">${faceSVG(34)}<span>«${esc(WEEKLY.msg)}»</span></p>` : ""}<div class="meta"><span>${icon("clock", 14)}${esc(r.tid || "")}</span><span>${icon("plate", 14)}${esc(r.porsjoner || "")}</span></div>${wineLines ? `<div class="cwine">${wineLines}</div>` : ""}</div>
     <div class="acts"><button class="btn small primary" type="button" data-open="${r.id}">Se oppskriften</button><button class="btn small" type="button" data-cook="${r.id}">${icon("play", 14)}Lag den</button></div>`;
   steam.focus = r.fp ? [r.fp[0] / 100, r.fp[1] / 100] : [.65, .55];
 }
@@ -2622,11 +2640,23 @@ function bottleOf(w, h = 96) {
   if (w.si != null && w.si >= 0) { const s = sprite(w.si, h); if (s) return s; }
   return bottleSvg(w.type, h);
 }
+// Vinmonopolet oppgir ikke drue i katalogen – vi gjetter ut fra navn og område (godt nok til å matche mat).
+function regGrapes(r, T) {
+  const red = T.cat[r[4]] === "Rødvin", n = (r[1] + " " + (T.district[r[6]] || "") + " " + (T.sub[r[7]] || "")).toLowerCase();
+  const G = [[/pinot noir|spätburgunder/, "Pinot Noir"], [/riesling/, "Riesling"], [/gew[uü]rz/, "Gewürztraminer"], [/grüner|gruner/, "Grüner Veltliner"], [/chenin|vouvray|savenni/, "Chenin Blanc"], [/sauvignon blanc|sancerre|pouilly-fum/, "Sauvignon Blanc"], [/chardonnay|chablis|meursault|puligny|mâcon|macon|pouilly-fuiss/, "Chardonnay"],
+    [/barbera/, "Barbera"], [/barolo|barbaresco|nebbiolo|langhe|roero/, "Nebbiolo"], [/chianti|brunello|montalcino|montepulciano|sangiovese|morellino/, "Sangiovese"], [/amarone|valpolicella|ripasso/, "Corvina"],
+    [/rioja|ribera|tempranillo|toro\b/, "Tempranillo"], [/châteauneuf|chateauneuf|gigondas|grenache|garnacha|priorat/, "Grenache"], [/syrah|shiraz|crozes|saint-joseph|hermitage|côte-rôtie|cote-rotie|cornas/, "Syrah"],
+    [/malbec|mendoza/, "Malbec"], [/zinfandel|primitivo/, "Zinfandel"], [/cabernet|médoc|medoc|pauillac|margaux|saint-julien|bordeaux|pessac/, "Cabernet Sauvignon"], [/merlot|pomerol|saint-émilion|saint-emilion/, "Merlot"], [/gamay|beaujolais|morgon|fleurie/, "Gamay"]];
+  const hit = G.filter(([re]) => re.test(n)).map(([, g]) => g);
+  if (!hit.length && /bourgogne|burgund|côte de nuits|côte de beaune/.test(n)) hit.push(red ? "Pinot Noir" : "Chardonnay");
+  return hit.join(", ");
+}
 function regToWine(r) {
   const T = REGV.tabs, y = (r[1].match(/\b(19|20)\d{2}\b/) || [])[0];
   return { code: r[0], name: r[1], price: r[2] || null, volume: r[3] ? String(r[3]).replace(/\.0$/, "") + " cl" : null, type: T.cat[r[4]] || null, country: T.country[r[5]] || null,
     district: T.district[r[6]] || null, sub: T.sub[r[7]] || null, vintage: y ? Number(y) : null, style: r[15] >= 0 ? T.st[r[15]] : null,
-    pairing: T.p.filter((_, b) => r[16] >> b & 1).map((p) => PNORM[p] || p), si: r[10], url: "https://www.vinmonopolet.no/p/" + r[0] };
+    pairing: T.p.filter((_, b) => r[16] >> b & 1).map((p) => PNORM[p] || p), si: r[10], url: "https://www.vinmonopolet.no/p/" + r[0],
+    grapes: regGrapes(r, T), scales: [["Fylde", r[11]], ["Friskhet", r[12]], ["Garvestoffer", r[13]], ["Sødme", r[14]]].filter(([, v]) => v > 0).map(([k, v]) => ({ k, v: v * 2 })) };
 }
 // ---------- hvilke viner gjelder for denne brukeren ----------
 const isOwnerCellar = () => !!CAP.isOwner;
