@@ -825,6 +825,15 @@ a.btn { color: inherit; text-decoration: none; }
 .tile-ill::after { content: ""; position: absolute; inset: 1px 1px 50% 1px; border-radius: 14px 14px 40% 40%; background: linear-gradient(rgba(255,255,255,.14), transparent); pointer-events: none; }
 .tile-ill .ill { filter: drop-shadow(0 0 6px rgba(234,165,96,.45)); }
 .img2 { margin: 16px 0 0; } .img2 img { width: 100%; border-radius: 18px; display: block; box-shadow: 0 14px 40px rgba(0,0,0,.45); } .img2 figcaption { font-size: 12.5px; color: var(--muted); margin-top: 6px; text-align: center; }
+.guide h3 { font-family: var(--display); font-weight: 400; font-size: 20px; margin: 20px 0 8px; } .guide p { margin: 0 0 10px; line-height: 1.5; font-size: 14.5px; }
+.guide .g-lead { color: #efe3d4; }
+.g-types { display: grid; gap: 10px; } .g-type { padding: 12px 14px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(160deg, rgba(255,226,190,.07), rgba(255,255,255,.015)); }
+.g-type .g-h { display: flex; gap: 12px; align-items: center; margin-bottom: 6px; } .g-type .g-h svg { flex: none; filter: drop-shadow(0 4px 10px rgba(233,176,79,.35)); }
+.g-type b { display: block; font-family: var(--display); font-weight: 400; font-size: 17px; } .g-type small { color: var(--ember); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+.g-type p { font-size: 13.5px; margin: 0 0 6px; } .g-use em { color: var(--ember); font-style: normal; font-weight: 600; }
+.g-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .g-two > div { padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.03); } .g-two p { font-size: 13px; margin: 4px 0 0; }
+.g-tab { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 4px 0 12px; } .g-tab td { padding: 8px 6px; border-bottom: 1px solid var(--line); } .g-tab td:last-child { color: var(--ember); }
+.g-src { font-size: 12px; }
 /* ---------- serveres som ---------- */
 .servmode { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 2px 0 10px; } .servmode > span { font-size: 12px; color: var(--muted); margin-right: 2px; }
 .servmode .chip { padding: 5px 12px; font-size: 13px; }
@@ -1869,8 +1878,11 @@ const canMode = (r) => ["kat1", "kat2", "kat3", "kat4"].includes(r.chapterId) &&
 function getServ(r) { const si = servInfo(r.porsjoner), v = S.serv[r.id] || si.base, mode = canMode(r) ? (S.smode || {})[r.id] || "middag" : "middag", k = modeK(mode); return { ...si, v, mode, k, fac: (v * k) / si.base }; }
 const TRE = /(\d+(?:,\d+)?)(?:\s*[–-]\s*(\d+(?:,\d+)?))?\s*(minutter|minutt|min\b|timer|time\b|sekunder|sek\b)/gi;
 const RLINK = /\[\[([A-Za-z0-9_-]+)\]\]/g;
-const linkify = (h) => h.replace(RLINK, (m, id) => BY[id] ? `<button type="button" class="rlink" data-open="${id}">${esc(BY[id].title)} ↗</button>` : "");
-const unlink = (t) => String(t).replace(RLINK, (m, id) => (BY[id] ? BY[id].title : ""));
+// Guider (detaljkort) som kan lenkes fra oppskrifter med [[guide:navn]]
+const GUIDES = { honning: "Honningguide" };
+const GLINK = /\[\[guide:([a-z]+)\]\]/g;
+const linkify = (h) => h.replace(GLINK, (m, g) => GUIDES[g] ? `<button type="button" class="rlink" data-guide="${g}">${ill("sparkle", 14)} ${esc(GUIDES[g])} ↗</button>` : "").replace(RLINK, (m, id) => BY[id] ? `<button type="button" class="rlink" data-open="${id}">${esc(BY[id].title)} ↗</button>` : "");
+const unlink = (t) => String(t).replace(GLINK, (m, g) => GUIDES[g] || "").replace(RLINK, (m, id) => (BY[id] ? BY[id].title : ""));
 function stepHtml(t, rid, label) {
   return linkify(esc(t)).replace(TRE, (m, a, b, u) => {
     const unit = u.toLowerCase(); const mult = unit.startsWith("t") ? 3600 : unit.startsWith("sek") ? 1 : 60;
@@ -2701,6 +2713,38 @@ const WSYM = {
   vdots: '<circle cx="12" cy="5.5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="18.5" r="1.3"/>',
 };
 const wsvg = (k) => `<svg viewBox="0 0 24 24">${WSYM[k]}</svg>`;
+/* ---------- honningguide (egne ord, basert på norske honningtyper) ---------- */
+function renderGuide() {
+  const d = $("#drawerBody"); if (!d) return;
+  if (view.guide !== "honning") { d.innerHTML = `<p class="muted">Fant ikke guiden.</p>`; return; }
+  const H = [
+    ["Lys vår- og sommerhonning", "Mild og floral", "#f6dc8c", "#e7b94a", "Mild, lett, blomsteraktig og litt syrlig. Lys gyllen, oftest kremet.", "Dressinger og sauser, sommersalater, pizza med spekeskinke, kraftig hvit geitost og blåmuggost – når du vil ha sødme uten at honningen tar over."],
+    ["Bringebærhonning", "Frisk og syrlig", "#f7d79a", "#e8a777", "Syrlig, floral og rund – nesten perlende. Lys gyllengul med et svakt rosaskjær. Blir fort kremet og smørbar.", "Toast, pannekaker og grøt, yoghurt, frukt og bær, bakte halvfaste oster og desserter som trenger friskhet."],
+    ["Røsslynghonning", "Kraftig og kompleks", "#c9772c", "#7a3a12", "Mørk og bittersøt med toner av kaffe, tre, krydder og plomme. Tykk og geléaktig – blir mer flytende når du rører i den.", "Glasering av ribbe, pinnekjøtt og sprø kylling, wok der oppskriften sier brunt sukker, lam og vilt, høstsalater med rødbeter og nøtter, blåmuggost."],
+    ["Klokkelynghonning", "Intens og aromatisk", "#b8622a", "#6b2a10", "Fruktig, syrlig og floral med hint av lakris og lang ettersmak. Mørk ravfarget og naturlig flytende.", "Dressinger med chili, ingefær eller peanøtt, over pizza, bowls og ost, lam og reinsdyr, bakte rotgrønnsaker og desserter med høstfrukt."],
+  ];
+  const drop = (a, b) => `<svg viewBox="0 0 40 48" width="40" height="48" aria-hidden="true"><defs><radialGradient id="hg${a.slice(1)}" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".25" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient></defs><path d="M20 3C20 3 5 21 5 31a15 15 0 0 0 30 0C35 21 20 3 20 3z" fill="url(#hg${a.slice(1)})"/><path d="M12 28c0-4 3-9 5-12" stroke="#fff" stroke-opacity=".7" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+  d.innerHTML = `<div class="guide">
+    <p class="g-lead">Norsk honning varierer fra lys, mild og søt til mørk, krydret og kompleks – og beskrives ofte nesten som vin: sødme, friskhet, balanse, aroma og ettersmak. Smaken avhenger av hvilke blomster og planter biene har besøkt.</p>
+    <p class="g-lead">Spør deg selv: Skal honningen bare gi <b>sødme</b>, eller også <b>smak og karakter</b>? Ha gjerne tre–fire typer på kjøkkenet.</p>
+    <h3>De fire typene</h3>
+    <div class="g-types">${H.map(([n, k, a, b, smak, bruk]) => `<div class="g-type"><div class="g-h">${drop(a, b)}<span><b>${n}</b><small>${k}</small></span></div><p>${smak}</p><p class="g-use"><em>Bruk til:</em> ${bruk}</p></div>`).join("")}</div>
+    <h3>Lys eller mørk?</h3>
+    <p>Lys honning gir mild smak og ren sødme – fin i bakst. Mørk honning har dypere farge og kraftigere smak, og passer når du vil ha kompleksitet, for eksempel på yoghurt eller i glasering.</p>
+    <h3>Fast eller flytende?</h3>
+    <p>All honning er flytende fra kuben, men krystalliserer før eller siden – derfor er mye norsk honning kremet i butikken. Flytende honning er enklest når du skal ringle over mat eller lage dressing. <b>Tips:</b> Sett kremet honning i vannbad på maks 40 °C for å gjøre den flytende – høyere varme går ut over smaken.</p>
+    <h3>Glasering</h3>
+    <p>Mørk eller aromatisk honning – røsslyng og klokkelyng – gir blank, klissete og smakfull glasur på ribbe, pinnekjøtt, sprø kylling, kyllingvinger og bakte rotgrønnsaker.</p>
+    <h3>Dressinger</h3>
+    <div class="g-two"><div><b>Lys honning</b><p>Grønne salater, sennepsvinaigrette og asiatiske dressinger.</p></div><div><b>Mørk honning</b><p>Høstsalater med rødbeter, plommer og nøtter, salater med ost, og dressinger til lam og vilt.</p></div></div>
+    <h3>Bakst</h3>
+    <p>Honning er søtere enn sukker – bruk ca. <b>10 % mindre</b> honning enn sukker. Fint i boller, rundstykker, julebrød, arme riddere og kaker.</p>
+    <h3>I drikke</h3>
+    <p>Rør honningen ut i varmt vann (under 45 °C) til en sirup – da løser den seg i kalde drikker og holder seg noen uker i kjøleskapet.</p>
+    <table class="g-tab"><tr><td>Mocktails om sommeren</td><td>Lys vår-/sommerhonning</td></tr><tr><td>Mocktails høst og vinter</td><td>Røsslyng eller klokkelyng</td></tr><tr><td>Iste og lemonade</td><td>Lys, mild honning</td></tr><tr><td>Varm melk, chai, kaffe</td><td>Lys honning eller sirup</td></tr><tr><td>Ingefærshots</td><td>Aromatisk honning med friskhet</td></tr></table>
+    <p class="muted g-src">Les alltid produsentens smaksbeskrivelse – den hjelper deg å velge riktig. Kilde: Matprat, «Sett smak på maten med honning».</p>
+  </div>`;
+}
 function webWelcome() {
   const el = document.createElement("div"); el.className = "welcome wweb"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Velkommen");
   const face = `<div style="display:grid;place-items:center">${faceSVG(96)}</div>`;
@@ -3324,13 +3368,13 @@ async function deleteComment(key) {
 function openDrawer(kind) {
   closeDrawer(true);
   view.drawer = kind;
-  const titles = { list: "Handleliste", week: "Ukemeny", chef: "Spør Morten", edit: edit.id ? "Rediger oppskrift" : edit.mine ? "Ny oppskrift – bare for meg" : "Ny oppskrift", send: "Send til Morten", wine: "Vinen", vin: "Vinen din", rcpt: "Les kvittering", om: "Om appen", inbox: "Innboks", stats: "Statistikk", fridge: "Hva har du i kjøleskapet?", weekly: "Ukens oppskrift", meny: "Selskap og menykort", addvin: cv.add.mode === "sok" ? "Søk i Vinmonopolet" : cv.add.mode === "onske" ? "Legg til ønske" : "Legg til vin" };
+  const titles = { list: "Handleliste", week: "Ukemeny", chef: "Spør Morten", edit: edit.id ? "Rediger oppskrift" : edit.mine ? "Ny oppskrift – bare for meg" : "Ny oppskrift", send: "Send til Morten", wine: "Vinen", vin: "Vinen din", rcpt: "Les kvittering", om: "Om appen", inbox: "Innboks", stats: "Statistikk", fridge: "Hva har du i kjøleskapet?", guide: GUIDES[view.guide] || "Guide", weekly: "Ukens oppskrift", meny: "Selskap og menykort", addvin: cv.add.mode === "sok" ? "Søk i Vinmonopolet" : cv.add.mode === "onske" ? "Legg til ønske" : "Legg til vin" };
   const foot = kind === "list" ? `<button class="btn small" type="button" data-lcopy="1">Kopier</button><button class="btn small" type="button" data-ldl="1" ${CAP.dl ? "" : "hidden"}>Last ned</button><button class="btn small" type="button" data-lclean="1">Fjern avkryssede</button><button class="btn small" type="button" data-lclear="1">Tøm listen</button>`
     : kind === "week" ? `<button class="btn small primary" type="button" data-week2list="1">${icon("cart", 15)}Legg uka i handlelisten</button><button class="btn small" type="button" data-wrand="1">${icon("dice", 15)}Fyll tomme dager</button><button class="btn small" type="button" data-wclear="1">Tøm uka</button>`
     : kind === "edit" ? `<button class="btn small primary" type="button" data-esave="1">${icon("check", 15)}Lagre</button><button class="btn small" type="button" data-dclose="1">Avbryt</button>${edit.id && BY[edit.id] && BY[edit.id].edited ? `<button class="btn small" type="button" data-ereset="1">Angre endringene</button>` : ""}${edit.id && BY[edit.id] ? `<button class="btn small danger" type="button" data-edel="1">Slett oppskriften</button>` : ""}`
     : kind === "rcpt" ? `<button class="btn small primary" type="button" data-rcsave="1">${icon("check", 15)}Legg i kjelleren</button><button class="btn small" type="button" data-dclose="1">Avbryt</button>`
     : kind === "om" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button>`
-    : kind === "fridge" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button>`
+    : kind === "fridge" || kind === "guide" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button>`
     : kind === "weekly" ? `<button class="btn small primary" type="button" data-wksave="1">${icon("check", 15)}Legg ut for alle</button>${WEEKLY ? `<button class="btn small" type="button" data-wkclear="1">Fjern ukens oppskrift</button>` : ""}<button class="btn small" type="button" data-dclose="1">Avbryt</button>`
     : kind === "stats" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button><button class="btn small" type="button" data-streload="1">Oppdater</button>`
     : kind === "inbox" ? `<button class="btn small primary" type="button" data-dclose="1">Lukk</button><button class="btn small" type="button" data-inreload="1">Oppdater</button>`
@@ -3346,7 +3390,7 @@ function openDrawer(kind) {
   layer.insertAdjacentHTML("beforeend", `<div class="overlay ${isChef ? "clear" : ""}" data-dclose="1" style="z-index:49"></div><aside class="drawer ${isChef ? "chefpanel" : ""}" id="drawer" role="dialog" aria-modal="true" aria-label="${titles[kind]}"><div class="d-head">${head}<button class="xbtn" type="button" data-dclose="1" aria-label="Lukk">${icon("x", 18)}</button></div><div class="d-body" id="drawerBody"></div><div class="d-foot">${foot}</div></aside>`);
   document.body.classList.toggle("chef-on", isChef);
   lock(true);
-  if (kind === "list") renderList(); else if (kind === "week") renderWeek(); else if (kind === "edit") renderEditor(); else if (kind === "send") renderSend(); else if (kind === "wine") renderWine(); else if (kind === "vin") renderMyWine(); else if (kind === "rcpt") renderReceipt(); else if (kind === "om") renderAbout(); else if (kind === "inbox") renderInbox(); else if (kind === "stats") renderStats(); else if (kind === "fridge") renderFridge(); else if (kind === "weekly") renderWeekly(); else if (kind === "meny") renderMeny(); else if (kind === "addvin") renderAddVin(); else { renderChef(); setTimeout(() => $("#chefq")?.focus(), 50); }
+  if (kind === "list") renderList(); else if (kind === "week") renderWeek(); else if (kind === "edit") renderEditor(); else if (kind === "send") renderSend(); else if (kind === "wine") renderWine(); else if (kind === "vin") renderMyWine(); else if (kind === "rcpt") renderReceipt(); else if (kind === "om") renderAbout(); else if (kind === "inbox") renderInbox(); else if (kind === "stats") renderStats(); else if (kind === "guide") renderGuide(); else if (kind === "fridge") renderFridge(); else if (kind === "weekly") renderWeekly(); else if (kind === "meny") renderMeny(); else if (kind === "addvin") renderAddVin(); else { renderChef(); setTimeout(() => $("#chefq")?.focus(), 50); }
 }
 function closeDrawer(silent) {
   document.querySelectorAll("#drawer, .overlay[data-dclose]").forEach((e) => e.remove());
@@ -3777,6 +3821,7 @@ document.addEventListener("click", (ev) => {
   if (d.sdirect) { sendDirect(); return; }
   if (d.inok) { inboxApprove(d.inok); return; }
   if (d.inno) { inboxReject(d.inno); return; }
+  if (d.guide) { view.guide = d.guide; openDrawer("guide"); return; }
   if (d.fridge) { openDrawer("fridge"); setTimeout(() => $("#fridgeIn")?.focus(), 60); return; }
   if (d.frm) { FRIDGE.items.splice(+d.frm, 1); fridgeSave(); renderFridge(); return; }
   if (d.fclear) { FRIDGE.items = []; fridgeSave(); renderFridge(); return; }
