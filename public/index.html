@@ -2344,6 +2344,8 @@ async function saveWeekly(clear) {
 
 /* ============================== 6) selskapsplanlegger (i menykortet) ============================== */
 const mkPlanBusy = { on: false, msg: "" };
+// Signatur av det tidsplanen bygger på – endres aperitiff, vin eller retter, er planen utdatert
+const mkPlanSig = () => JSON.stringify([mk.apName || "", mk.guests || "", mk.clock || "", mk.date || "", ...mk.courses.map((c) => [c.rid || "", c.wine || ""])]);
 function partyHtml() {
   const g = mk.guests || "";
   const recs = mk.courses.filter((c) => c.rid && BY[c.rid]);
@@ -2352,6 +2354,7 @@ function partyHtml() {
     <div class="row" style="flex-wrap:wrap"><button class="btn small" type="button" data-mkshop="1" ${recs.length ? "" : "disabled"}>${icon("cart", 15)}Handleliste${g ? " for " + esc(g) : ""}</button>${CAP.sample ? `<button class="btn small primary" type="button" data-mkplan="1" ${recs.length && !mkPlanBusy.on ? "" : "disabled"}>${icon("chef", 15)}${mkPlanBusy.on ? "Morten lager plan …" : mk.plan && mk.plan.length ? "Lag ny tidsplan" : "Lag tidsplan med Morten"}</button>` : ""}</div>
     ${!recs.length ? `<small class="muted">Velg retter fra kokeboka over først.</small>` : ""}
     ${mkPlanBusy.msg ? `<p class="status err">${esc(mkPlanBusy.msg)}</p>` : ""}
+    ${mk.plan && mk.plan.length && mk.planSig && mk.planSig !== mkPlanSig() ? `<p class="status">Du har endret menyen eller vinene siden tidsplanen ble laget – trykk «Lag ny tidsplan» for å oppdatere den.</p>` : ""}
     ${mk.plan && mk.plan.length ? `<div class="tplan">${mk.plan.map((p) => `<div class="tl"><b>${esc(p.nar || "")}</b><span>${esc(p.hva || "")}</span></div>`).join("")}</div>` : ""}
   </div>`;
 }
@@ -2363,14 +2366,16 @@ function mkShop() {
 async function mkPlan() {
   if (!CAP.sample || mkPlanBusy.on) return;
   const recs = mk.courses.filter((c) => c.rid && BY[c.rid]).map((c) => `${c.label}: ${recipeText(BY[c.rid])}`).join("\n\n");
+  const drinks = [mk.apName ? `- Aperitiff (serveres når gjestene kommer): ${mk.apName}` : "- Ingen aperitiff valgt", ...mk.courses.filter((c) => c.rid || c.title).map((c) => `- ${c.label || "Rett"} (${c.title || (BY[c.rid] && BY[c.rid].title) || ""}): ${c.wine ? c.wine : "ingen vin valgt"}`)].join("\n");
   mkPlanBusy.on = true; mkPlanBusy.msg = ""; renderMeny();
   try {
     const v = await CAP.sample.json(`Du er Morten, en erfaren hjemmekokk. Lag en praktisk tidsplan på norsk for et middagsselskap.
 Gjester: ${mk.guests || "6"}. Gjestene kommer kl. ${mk.clock || "19:00"}${mk.date ? `, dato ${mk.date}` : ""}.${mk.apName ? ` Aperitiff: ${mk.apName}.` : ""}
+Drikke på menykortet (bruk NØYAKTIG disse navnene, og ikke nevn andre viner eller drikker):\n${drinks}\n
 Menyen (oppskriftene):\n${recs}\n
 Lag 6–10 punkter i riktig rekkefølge: hva som kan gjøres dagen før, og klokkeslett på selve dagen (når ting skal i ovnen, hvile, åpne vin så den får puste, servere hver rett). Kort tekst per punkt.
 Svar med JSON: {"plan":[{"nar":"Dagen før" eller "HH.MM","hva":"kort beskrivelse"}]}`, { modelTier: "default", cache: false });
-    mk.plan = (v && v.plan || []).slice(0, 12).map((p) => ({ nar: String(p.nar || ""), hva: String(p.hva || "") })); mkSave();
+    mk.plan = (v && v.plan || []).slice(0, 12).map((p) => ({ nar: String(p.nar || ""), hva: String(p.hva || "") })); mk.planSig = mkPlanSig(); mkSave();
   } catch (e) { mkPlanBusy.msg = (e && e.text) || "Morten fikk ikke laget planen. Prøv igjen."; }
   mkPlanBusy.on = false; renderMeny();
 }
