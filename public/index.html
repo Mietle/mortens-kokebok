@@ -500,6 +500,9 @@ textarea.note:focus { border-color: rgba(234, 165, 96, .5); }
 .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .weekpick { display: none; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
 .weekpick.open { display: flex; }
+.weekpick .wkc { flex-direction: column; gap: 0; line-height: 1.15; min-width: 54px; }
+.weekpick .wkc small { font-size: 10.5px; letter-spacing: .02em; color: var(--muted); }
+.weekpick .wkc.busy { border-style: dashed; opacity: .78; } .weekpick .wkc.busy small { color: var(--ember); }
 
 /* ---------- matlagingsmodus ---------- */
 .cook { position: fixed; inset: 0; z-index: 60; background: radial-gradient(120% 90% at 50% 0%, #2a1912 0%, #0e0907 70%); display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; padding: calc(env(safe-area-inset-top, 0px) + 14px) max(18px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 16px) max(18px, env(safe-area-inset-left, 0px)); animation: fade .3s; touch-action: pan-y; }
@@ -1955,7 +1958,7 @@ function refreshRecipe() {
         <button class="btn" type="button" data-speakrecipe="1" ${canSpeak() ? "" : "hidden"}>${icon("speak", 17)}<span class="spk">Les opp</span></button>
       </div>
       <div class="mkput" id="mkput" data-rid="${r.id}">${mkPutHtml(r)}</div>
-      <div class="weekpick" id="weekpick">${DAYS.map((d, i) => `<button class="chip" type="button" data-addweek="${i}" aria-pressed="${L().week[i].includes(r.id)}">${d}</button>`).join("")}</div>
+      <div class="weekpick" id="weekpick">${weekChips(r)}</div>
     </div>
     <div class="r-body">
       <div class="ing">
@@ -2165,26 +2168,51 @@ function renderTimers() {
 }
 
 /* ============================== handleliste ============================== */
-const MERGE_RE = /^(\d+(?:,\d+)?)\s+(g|kg|dl|l|liter|ss|ts|ml|fedd|pk|bunt|stilker|kvaster|potte|pose)?\s*(.+)$/i;
+const MERGE_RE = /^(\d+(?:[,.]\d+)?)(?:\s*[–-]\s*\d+(?:[,.]\d+)?)?\s+(g|kg|dl|l|liter|ss|ts|ml|cl|fedd|båt|båter|stk\.?|pk\.?|pakke|boks|bokser|glass|bunt|stilk|stilker|kvaster|potte|pose|klype|neve|skive|skiver)?\s*(.+)$/i;
+// Like varer slås sammen i handlelisten selv om de er skrevet ulikt («2 båter hvitløk», «1 fedd finhakket hvitløk» → Hvitløk)
+const CANON = [
+  [/hvitløk/, "Hvitløk"], [/rødløk/, "Rødløk"], [/sjalott/, "Sjalottløk"], [/vårløk/, "Vårløk"], [/purre/, "Purre"], [/^(gul )?løk\b|\bløk$|\bløk,|\bløk i\b|\bløk \(/, "Løk"],
+  [/gulrot|gulrøtter/, "Gulrot"], [/\b(mandel|bake|små|nye )?poteter?\b/, "Poteter"], [/^(?!.*(hakkede|hermetisk|boks|puré|pure|soltørk|passata|knuste|ketchup)).*(\bcherry|\b)tomat(er)?\b/, "Tomater"],
+  [/sitron(?!gress|saft|skall)/, "Sitron"], [/\blime(?!blad)\b/, "Lime"], [/^(store |små |hele )?egg\b/, "Egg"], [/^(usaltet |romtemperert |kaldt |meierismør |)smør\b/, "Smør"],
+  [/kremfløte/, "Kremfløte"], [/matfløte/, "Matfløte"], [/^(hel|lett|skummet)?melk\b/, "Melk"], [/olivenolje/, "Olivenolje"], [/nøytral olje|rapsolje/, "Nøytral olje"],
+  [/^salt og (kvernet )?pepper/, "Salt og pepper"], [/^(fl[ao]k|maldon)?salt\b/, "Salt"], [/^(kvernet |grovmalt |hvit |sort )?pepper\b/, "Pepper"],
+  [/persille/, "Persille"], [/koriander(?! ?frø)/, "Koriander"], [/\bdill\b/, "Dill"], [/timian/, "Timian"], [/ingefær/, "Ingefær"], [/^sukker\b/, "Sukker"], [/hvetemel/, "Hvetemel"], [/parmesan/, "Parmesan"], [/rømme/, "Rømme"],
+];
+const DESC_RE = /\b(fint|grovt|fin|grov)?\s*(finhakket|hakket|hakkede|knust|knuste|revet|skivet|i båter|i skiver|i terninger|i biter|i strimler|fersk|ferske|frisk|friske|skrelt|skrelte)\b/g;
+const canonOf = (name) => { const t = unlink(name).toLowerCase().replace(/\(.*?\)/g, "").trim(); for (const [re, n] of CANON) if (re.test(t)) return n; return null; };
 let listMode = (() => { try { return localStorage.getItem("mk-listmode") || "samlet"; } catch (e) { return "samlet"; } })();
 function listLines() {
   const lines = [];
   L().list.forEach((it) => {
     const r = BY[it.rid]; if (!r) return; const f = ((it.v || getServ(r).base) * (it.k || 1)) / servInfo(r.porsjoner).base;
-    r.ingredients.forEach(([k, t], i) => { if (k === "I") lines.push({ rid: r.id, i, text: scaleLine(t, f), checked: (it.c || []).includes(i) }); });
+    r.ingredients.forEach(([k, t], i) => { if (k === "I") lines.push({ rid: r.id, i, text: unlink(scaleLine(t, f)), checked: (it.c || []).includes(i) }); });
   });
   return lines;
 }
 function mergedLines() {
   const map = new Map();
   listLines().forEach((l) => {
-    const m = l.text.match(MERGE_RE); let key, q = null, unit = "", name = l.text;
-    if (m) { q = num(m[1]); unit = (m[2] || "").toLowerCase(); name = m[3]; }
-    key = (unit + "|" + name.toLowerCase().replace(/\s+/g, " ")).trim();
-    if (!map.has(key)) map.set(key, { q: 0, hasQ: false, unit, name, refs: [], checked: true, raw: l.text });
-    const e = map.get(key); if (q != null) { e.q += q; e.hasQ = true; } e.refs.push(l); e.checked = e.checked && l.checked;
+    const m = l.text.match(MERGE_RE); let q = null, unit = "", name = l.text;
+    if (m) { q = num(m[1]); unit = (m[2] || "").toLowerCase().replace(/\.$/, ""); name = m[3]; }
+    const canon = canonOf(name);
+    if (/^båt/.test(unit) && canon === "Hvitløk") unit = "fedd";
+    if (/^(stk|båt|båter)$/.test(unit)) unit = unit === "stk" ? "" : unit;
+    const base = name.toLowerCase().replace(/\(.*?\)/g, "").replace(DESC_RE, "").replace(/^\s*(stk\.?|av)\s+/, "").split(",")[0].replace(/\s+/g, " ").trim();
+    const key = canon ? "c|" + canon : "n|" + base;
+    if (!map.has(key)) map.set(key, { canon, units: new Map(), loose: 0, name: canon || name, refs: [], rids: new Set(), checked: true, raw: l.text });
+    const e = map.get(key);
+    if (q != null && !isNaN(q)) e.units.set(unit, (e.units.get(unit) || 0) + q); else e.loose++;
+    e.refs.push(l); e.rids.add(l.rid); e.checked = e.checked && l.checked;
   });
-  return [...map.values()].map((e) => ({ ...e, text: e.hasQ ? `${fmt(e.q)} ${e.unit ? e.unit + " " : ""}${e.name}` : e.refs.length > 1 ? `${e.name} (${e.refs.length} oppskrifter)` : e.raw })).sort((a, b) => Number(a.checked) - Number(b.checked) || a.name.localeCompare(b.name, "nb"));
+  return [...map.values()].map((e) => {
+    const amt = [...e.units].map(([u, q]) => `${fmt(q)}${u ? " " + u : ""}`).join(" + ");
+    let text;
+    if (e.canon && !amt && e.refs.length === 1) text = e.raw;
+    else if (e.canon) text = `${e.canon}${amt ? " – " + amt + (e.loose ? " + litt" : "") : ""}${e.rids.size > 1 ? ` (${e.rids.size} oppskrifter)` : ""}`;
+    else if (e.refs.length === 1) text = e.raw;
+    else text = amt ? `${amt} ${e.name.replace(/\s*\(.*?\)/g, "")}${e.loose ? " + litt" : ""}` : `${e.name} (${e.rids.size} oppskrifter)`;
+    return { ...e, text };
+  }).sort((a, b) => Number(a.checked) - Number(b.checked) || a.name.localeCompare(b.name, "nb"));
 }
 function addToList(rid) {
   const r = BY[rid]; const sv = getServ(r), v = sv.v, k = sv.k; const ex = L().list.find((x) => x.rid === rid);
@@ -2228,11 +2256,33 @@ async function copyText(text) {
 }
 
 /* ============================== ukemeny ============================== */
+const wkFind = { i: -1, q: "", ch: "alle" };
+// dagvelger på oppskriftskortet: dager som allerede har en annen rett vises som opptatt
+function weekChips(r) {
+  return DAYS.map((d, i) => { const w = L().week[i], mine = w.includes(r.id), other = w.filter((id) => id !== r.id && BY[id]);
+    return `<button class="chip wkc${other.length && !mine ? " busy" : ""}" type="button" data-addweek="${i}" aria-pressed="${mine}" title="${other.length ? esc("Står på menyen: " + other.map((id) => BY[id].title).join(", ")) : ""}">${d}${other.length ? `<small>${other.length > 1 ? other.length + " retter" : "opptatt"}</small>` : ""}</button>`; }).join("");
+}
+function wkFindList() {
+  const q = wkFind.q.trim().toLowerCase(), day = L().week[wkFind.i] || [];
+  const list = R.filter((r) => isCourse(r) && (wkFind.ch === "alle" || (wkFind.ch === "forrett" && r.forrett) || r.chapterId === wkFind.ch) && (!q || r.title.toLowerCase().includes(q) || (r.chapter || "").toLowerCase().includes(q)));
+  if (!list.length) return `<p class="muted" style="margin:4px 2px">Ingen retter heter «${esc(wkFind.q)}». Prøv et annet ord${wkFind.ch !== "alle" ? " eller velg «Alle»" : ""}.</p>`;
+  const used = {}; DAYS.forEach((n, i) => L().week[i].forEach((id) => { (used[id] = used[id] || []).push(n.slice(0, 3).toLowerCase()); }));
+  return list.slice(0, 60).map((r) => `<button class="mkpick-row" type="button" data-wkchoose="${r.id}" aria-current="${day.includes(r.id)}"><img src="${imgSrc(r)}" style="${fpos(r)}" alt="" loading="lazy"><span><b>${esc(r.title)}</b><small>${esc(r.chapter || "")}${r.tid ? " · " + esc(r.tid) : ""}${used[r.id] ? " · står på " + esc(used[r.id].join(", ")) : ""}</small></span></button>`).join("");
+}
+function wkFindHtml() {
+  const chs = [["alle", "Alle"], ...(R.some((r) => r.forrett) ? [["forrett", "Forretter"]] : []), ...BOOK.sections.filter((s) => R.some((r) => r.chapterId === s.id && isCourse(r))).map((s) => [s.id, s.name])];
+  return `<div class="mkfind">
+    <input class="input" type="search" id="wkFindQ" placeholder="Søk etter rett, f.eks. lam, laks, suppe …" value="${esc(wkFind.q)}" autocomplete="off" enterkeyhint="search">
+    <div class="chips">${chs.map(([id, n]) => `<button class="chip" type="button" data-wkfch="${id}" aria-pressed="${wkFind.ch === id}">${id === "forrett" ? ill("flutes") : ""}${esc(n)}</button>`).join("")}</div>
+    <div class="mkfind-list" id="wkFindList">${wkFindList()}</div>
+    <button class="btn small" type="button" data-wkfclose="1">Lukk søket</button></div>`;
+}
 function renderWeek() {
   const d = $("#drawerBody"); if (!d) return; const ti = todayIdx();
   d.innerHTML = shareBox() + DAYS.map((name, i) => `<div class="day ${i === ti ? "today" : ""}"><div class="day-h"><b>${name}</b><span>${i === ti ? "I dag" : ""}</span></div>
     <ul>${L().week[i].map((id) => { const r = BY[id]; if (!r) return ""; return `<li><img src="${imgSrc(r)}" alt=""><button class="open" type="button" data-open="${r.id}">${esc(r.title)}</button><button class="xbtn" type="button" data-wrm="${i}:${r.id}" aria-label="Fjern">${icon("x", 14)}</button></li>`; }).join("")}</ul>
-    <select class="select" data-wadd="${i}" aria-label="Legg til rett på ${name}"><option value="">+ Legg til rett</option>${BOOK.sections.map((s) => `<optgroup label="${esc(s.name)}">${s.recipes.map((r) => `<option value="${r.id}">${esc(r.title)}</option>`).join("")}</optgroup>`).join("")}</select></div>`).join("");
+    ${wkFind.i === i ? wkFindHtml() : `<button class="mkpick-empty" type="button" data-wkfind="${i}">${icon("search", 16)}Finn en rett til ${name.toLowerCase()}</button>`}</div>`).join("");
+  const q = $("#wkFindQ"); if (q) q.oninput = () => { wkFind.q = q.value; $("#wkFindList").innerHTML = wkFindList(); };
 }
 
 /* ============================== 1) hva har jeg i kjøleskapet ============================== */
@@ -2274,7 +2324,7 @@ const AISLES = [
   ["Frukt og grønt", 1], ["Brød og bakst", 2], ["Kjøtt", 3], ["Fisk og sjømat", 4], ["Meieri og egg", 5], ["Tørrvarer og krydder", 6], ["Frys", 7], ["Drikke", 8], ["Annet", 9],
 ];
 const AISLE_RE = [
-  [6, /buljong|fond\b|kraft\b|eddik|pulver|sirup|soyasaus|fiskesaus|ketchup|majones|sennep|tomatpuré|hermetisk|hakkede tomater|kokosmelk/],
+  [6, /maisenna|maizena|buljong|fond\b|kraft\b|eddik|pulver|sirup|soyasaus|fiskesaus|ketchup|majones|sennep|tomatpuré|hermetisk|hakkede tomater|kokosmelk/],
   [4, /fisk|laks|torsk|sei\b|hyse|kveite|ørret|reke|scampi|kamskjell|blåskjell|krabbe|hummer|ansjos|tunfisk|skrei|sild|makrell|breiflabb|steinbit/],
   [3, /kjøtt|biff|entrecôte|entrecote|svin|ribbe|skinke|bacon|pølse|kylling|andebryst|\band\b|andelår|lam|kalv|okse|kalkun|karbonade|filet|pinnekjøtt|chorizo|salami|prosciutto|høyrygg|indrefilet|ytrefilet|nakke|bog|lår\b/],
   [5, /melk|fløte|rømme|crème fraîche|creme fraiche|smør|ost\b|ost,|parmesan|mozzarella|feta|mascarpone|yoghurt|egg|kesam|cottage|ricotta|burrata|cheddar|gruyère|brie/],
@@ -3946,7 +3996,7 @@ document.addEventListener("click", (ev) => {
   if (d.mktoggle) { $("#mkput").classList.toggle("open"); $("#weekpick")?.classList.remove("open"); return; }
   if (d.coverbuy) { const [rid, code] = d.coverbuy.split("|"); openRecipe(rid); let n = 0; const find = () => { const c = document.querySelector(`#buySug [data-code="${code}"]`); if (c) { c.classList.add("hl"); c.scrollIntoView({ block: "center", behavior: "smooth" }); } else if (n++ < 30) setTimeout(find, 150); }; setTimeout(find, 300); return; }
   if (d.mkput) { const box = $("#mkput"), r = BY[box.dataset.rid]; mkPut(r.id, d.mkput); box.innerHTML = mkPutHtml(r); return; }
-  if (d.addweek != null) { const i = +d.addweek, id = view.id, w = L().week[i]; const k = w.indexOf(id); k >= 0 ? w.splice(k, 1) : w.push(id); save(); renderKpis(); t.setAttribute("aria-pressed", k < 0); toast(k >= 0 ? `Fjernet fra ${DAYS[i].toLowerCase()}` : `Lagt til på ${DAYS[i].toLowerCase()}`); return; }
+  if (d.addweek != null) { const i = +d.addweek, id = view.id, w = L().week[i]; const k = w.indexOf(id); k >= 0 ? w.splice(k, 1) : w.push(id); save(); renderKpis(); $("#weekpick").innerHTML = weekChips(BY[id]); toast(k >= 0 ? `Fjernet fra ${DAYS[i].toLowerCase()}` : `Lagt til på ${DAYS[i].toLowerCase()}`); return; }
   if (d.chefctx) { chef.ctx = d.chefctx; chef.msgs = []; openDrawer("chef"); return; }
   if (d.chefnoctx) { chef.ctx = null; chef.msgs = []; renderChef(); return; }
   if (d.sugg) { askChef(d.sugg); return; }
@@ -3960,6 +4010,10 @@ document.addEventListener("click", (ev) => {
   if (d.lclean) { L().list.forEach((it) => { const r = BY[it.rid]; const n = r.ingredients.filter(([k]) => k === "I").length; if ((it.c || []).length >= n) it.gone = true; }); L().list = L().list.filter((x) => !x.gone); L().extra = L().extra.filter((x) => !x.c); save(); renderAll(); return; }
   if (d.lclear) { if (t.dataset.armed) { L().list = []; L().extra = []; save(); renderAll(); } else { t.dataset.armed = "1"; t.textContent = "Trykk igjen for å tømme"; setTimeout(() => { if (t.isConnected) { delete t.dataset.armed; t.textContent = "Tøm listen"; } }, 3000); } return; }
   if (d.extraadd) { const v = $("#extraIn").value.trim(); if (v) { L().extra.push({ t: v, c: false }); save(); renderAll(); $("#extraIn")?.focus(); } return; }
+  if (d.wkfind != null) { wkFind.i = +d.wkfind; wkFind.q = ""; wkFind.ch = "alle"; renderWeek(); setTimeout(() => $("#wkFindQ")?.closest(".day")?.scrollIntoView({ block: "start", behavior: "smooth" }), 30); return; }
+  if (d.wkfch) { wkFind.ch = d.wkfch; document.querySelectorAll("[data-wkfch]").forEach((x) => x.setAttribute("aria-pressed", x === t)); $("#wkFindList").innerHTML = wkFindList(); return; }
+  if (d.wkchoose) { const w = L().week[wkFind.i]; if (w && !w.includes(d.wkchoose)) w.push(d.wkchoose); const r = BY[d.wkchoose]; wkFind.i = -1; save(); renderAll(); toast(`${r ? r.title : "Retten"} er lagt til`); return; }
+  if (d.wkfclose) { wkFind.i = -1; renderWeek(); return; }
   if (d.wrm) { const [i, id] = d.wrm.split(":"); L().week[i] = L().week[i].filter((x) => x !== id); save(); renderAll(); return; }
   if (d.week2list) { const ids = [...new Set(Object.values(L().week).flat())]; if (!ids.length) { toast("Ukemenyen er tom"); return; } ids.forEach((id) => { if (!L().list.find((x) => x.rid === id)) L().list.push({ rid: id, v: getServ(BY[id]).v, c: [] }); }); save(); renderAll(); toast(`${ids.length} retter lagt i handlelisten`); return; }
   if (d.wrand) { const mains = R.filter((r) => ["Asiatisk & fritert", "Fisk & sjømat", "Kjøtt & fugl", "Supper"].includes(r.chapter)); const used = new Set(Object.values(L().week).flat()); let n = 0; for (let i = 0; i < 7; i++) if (!L().week[i].length) { const pool = mains.filter((r) => !used.has(r.id)); if (!pool.length) break; const p = pool[Math.floor(Math.random() * pool.length)]; L().week[i].push(p.id); used.add(p.id); n++; } save(); renderAll(); toast(n ? `Fylte ${n} dager med middagsforslag` : "Alle dager har allerede en rett"); return; }
