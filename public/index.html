@@ -856,6 +856,11 @@ a.btn { color: inherit; text-decoration: none; }
 .mkfind .chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; } .mkfind .chips::-webkit-scrollbar { display: none; } .mkfind .chips .chip { flex: none; }
 .mkfind-list { display: grid; gap: 6px; max-height: 330px; overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain; } .mkfind-list::-webkit-scrollbar { display: none; }
 .mkfind-list .mkpick-row { grid-template-columns: 46px minmax(0,1fr); } .mkfind-list .mkpick-row img { width: 46px; height: 46px; }
+.mkpick-row .mkb { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 12px; background: radial-gradient(circle at 50% 70%, rgba(255,226,190,.14), rgba(255,255,255,.02) 70%); overflow: hidden; }
+.mkfind-list .mkpick-row .mkb { width: 46px; height: 46px; }
+.mkpick-row .mkb img { width: auto; height: 64px; max-height: none; object-fit: contain; border-radius: 0; } .mkfind-list .mkpick-row .mkb img { height: 56px; }
+.mkpick-row .mkb img, .mkpick-row .mkb svg { width: auto; filter: drop-shadow(0 3px 6px rgba(0,0,0,.45)); }
+.mkpick-row small .wi { display: inline-flex; vertical-align: -3px; margin-right: 3px; }
 .mkfind-list .mkpick-row[aria-current="true"] { border-color: var(--ember); background: rgba(234,165,96,.1); }
 .mkput { display: none; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 10px; } .mkput.open { display: flex; }
 .mkput .lbl { width: 100%; font-size: 12.5px; color: var(--muted); }
@@ -3470,6 +3475,46 @@ function mkFindHtml(i) {
     <div class="mkfind-list" id="mkFindList">${mkFindList()}</div>
     <button class="btn small" type="button" data-mkfclose="1">Lukk søket</button></div>`;
 }
+/* ---------- vinvelger i menykortet (samme oppsett som rettvelgeren) ---------- */
+const mkWFind = { i: -1, q: "", ch: "passer" };
+const MKW_CH = [["passer", "Passer til retten"], ["alle", "Alle i kjelleren"], ["Rødvin", "Rødvin"], ["Hvitvin", "Hvitvin"], ["Musserende", "Musserende"], ["Rosévin", "Rosé"], ["søt", "Dessert og søt"], ["vmp", "Fra Vinmonopolet"]];
+const mkWName = (w) => w.name + (w.vintage && !String(w.name).includes(String(w.vintage)) ? " " + w.vintage : "");
+function mkWItems(c) {
+  const r = c.rid && BY[c.rid], cel = mkWineList(), q = mkWFind.q.trim().toLowerCase(), ch = mkWFind.ch;
+  let items = [];
+  if (ch === "vmp") items = r ? buyFor(r, 3, todayKey() + r.id).concat(buyFor(r, 3, r.id + "b")).map((y) => ({ key: "v:" + y.x[0], w: regToWine(y.x), src: "Vinmonopolet · " + y.band })) : [];
+  else if (ch === "passer") {
+    const fit = r ? (winesFor(r, 20, cel.map((x) => x.w)) || []) : [];
+    items = fit.map((f) => cel.find((x) => x.w === f.w)).filter(Boolean);
+    if (r) items = items.concat(buyFor(r, 3, todayKey() + r.id).map((y) => ({ key: "v:" + y.x[0], w: regToWine(y.x), src: "Vinmonopolet · " + y.band })));
+  } else items = cel.filter((x) => ch === "alle" || (ch === "søt" ? /Dessert|Sterk|Sider/.test(x.w.type || "") : String(x.w.type || "") === ch));
+  // dropp duplikater
+  const seen = new Set(); items = items.filter((x) => { const k = x.w.code || x.w.id || x.w.name; if (seen.has(k)) return false; seen.add(k); return true; });
+  if (q) items = items.filter((x) => [x.w.name, x.w.district, x.w.sub, x.w.country, x.w.grapes, x.w.type].join(" ").toLowerCase().includes(q));
+  return items;
+}
+function mkWFindList() {
+  const c = mk.courses[mkWFind.i]; if (!c) return "";
+  if ((mkWFind.ch === "vmp" || mkWFind.ch === "passer") && !REGV) { loadReg().then(() => { if (mkWFind.i >= 0 && $("#mkWFindList")) $("#mkWFindList").innerHTML = mkWFindList(); }).catch(() => null); }
+  const items = mkWItems(c); mkWFind.last = items;
+  if (!items.length) return `<p class="muted" style="margin:4px 2px">${mkWFind.q ? `Ingen viner passer «${esc(mkWFind.q)}».` : !c.rid && (mkWFind.ch === "passer" || mkWFind.ch === "vmp") ? "Velg en rett først, så finner jeg vin som passer." : mkWFind.ch === "vmp" && !REGV ? "Henter Vinmonopolets utvalg …" : "Ingen viner her ennå."} Prøv et annet filter.</p>`;
+  return items.slice(0, 60).map((x, n) => { const w = x.w, where = w.sub || w.district || w.country || "";
+    return `<button class="mkpick-row" type="button" data-mkwchoose="${n}" aria-current="${c.wine === mkWName(w)}"><span class="mkb">${bottleOf(w, 44)}</span><span><b>${esc(mkWName(w))}</b><small><span class="wi">${ill(wineIc(w.type), 14)}</span>${esc([w.type, where].filter(Boolean).join(" · "))}${w.price ? " · " + Math.round(w.price) + " kr" : ""} · ${esc(x.src)}</small></span></button>`; }).join("");
+}
+function mkWFindHtml(i) {
+  return `<div class="mkfind">
+    <input class="input" type="search" id="mkWFindQ" placeholder="Søk etter vin, drue eller område …" value="${esc(mkWFind.q)}" autocomplete="off" enterkeyhint="search">
+    <div class="chips">${MKW_CH.map(([id, n]) => `<button class="chip" type="button" data-mkwch="${id}" aria-pressed="${mkWFind.ch === id}">${id === "passer" ? ill("sparkle") : id === "vmp" ? ill("cart") : ""}${esc(n)}</button>`).join("")}</div>
+    <div class="mkfind-list" id="mkWFindList">${mkWFindList()}</div>
+    <button class="btn small" type="button" data-mkwclose="1">Lukk vinvelgeren</button></div>`;
+}
+function mkCourseWine(c, i) {
+  if (mkWFind.i === i) return mkWFindHtml(i);
+  if (!c.wine) return `<button class="mkpick-empty" type="button" data-mkwfind="${i}">${ill("wineglass", 18)}Velg vin til retten</button>`;
+  const all = mkWineList().map((x) => x.w), w = all.find((y) => mkWName(y) === c.wine || y.name === c.wine);
+  const pic = w ? bottleOf(w, 50) : bottleSvg(c.wtype === "red" ? "Rødvin" : c.wtype === "sweet" ? "Dessertvin" : "Hvitvin", 50);
+  return `<button class="mkpick-row" type="button" data-mkwfind="${i}"><span class="mkb">${pic}</span><span><b>${esc(c.wine)}</b><small>${esc(c.wdesc || "Valgt vin")}</small></span><span class="go">Bytt</span></button>`;
+}
 function mkCourseRecipe(c, i) {
   if (mkFind.i === i) return mkFindHtml(i);
   const r = c.rid && BY[c.rid];
@@ -3591,7 +3636,7 @@ function renderMeny() {
       ${mkCourseRecipe(c, i)}
       <input class="input" data-mkc="${i}" data-k="title" value="${esc(c.title)}" placeholder="Navn på retten">
       <textarea class="input" rows="2" data-mkc="${i}" data-k="desc" placeholder="Beskrivelse: tilbehør og smaker">${esc(c.desc)}</textarea>
-      <select class="select" data-mkw="${i}" aria-label="Velg vin"><option value="">${c.wine ? "Bytt vin …" : "Velg vin fra kjelleren …"}</option>${wineOpts}</select>
+      ${mkCourseWine(c, i)}
       <input class="input" data-mkc="${i}" data-k="wine" value="${esc(c.wine)}" placeholder="Vin (eller skriv inn selv)">
       <input class="input" data-mkc="${i}" data-k="wdesc" value="${esc(c.wdesc)}" placeholder="Drue · område · smak"></div>`).join("")}
     <datalist id="mkLabels">${MK_LABELS.map((l) => `<option value="${l}">`).join("")}</datalist>
@@ -3601,6 +3646,7 @@ function renderMeny() {
   </div>`;
   d.oninput = (e) => {
     const t = e.target;
+    if (t.id === "mkWFindQ") { mkWFind.q = t.value; $("#mkWFindList").innerHTML = mkWFindList(); return; }
     if (t.id === "mkFindQ") { mkFind.q = t.value; $("#mkFindList").innerHTML = mkFindList(); return; }
     if (t.dataset.mkf) { mk[t.dataset.mkf] = t.value; mkSave(); }
     else if (t.dataset.mkc) { mk.courses[+t.dataset.mkc][t.dataset.k] = t.value; mkSave(); }
@@ -3615,9 +3661,13 @@ function renderMeny() {
     const b = e.target.closest("button"); if (!b) return;
     if (b.dataset.apsug) { mkAp.open = !mkAp.open; if (mkAp.open && !REGV) { mkAp.loading = true; loadReg().catch(() => null).then(() => { mkAp.loading = false; if (view.drawer === "meny") renderMeny(); }); } renderMeny(); return; }
     if (b.dataset.apset) { const x = (mkAp.last || [])[+b.dataset.apset]; if (x) { mk.apName = x.name; mk.apDesc = x.desc.replace(/\s*·\s*fås i dagligvare$/, "").replace(/\s*–\s*hjemmelaget$/, ""); mkAp.open = false; mkSave(); renderMeny(); toast("Aperitiff valgt"); } return; }
-    if (b.dataset.mkfind) { const i = +b.dataset.mkfind, c = mk.courses[i]; mkFind.i = i; mkFind.q = ""; mkFind.ch = c.label === "Dessert" ? "kat8" : /forrett|mellomrett/i.test(c.label || "") ? "forrett" : "alle"; renderMeny(); setTimeout(() => { const q = $("#mkFindQ"); if (q) { q.scrollIntoView({ block: "start", behavior: "smooth" }); if (matchMedia("(hover: hover)").matches) q.focus(); } }, 40); return; }
+    if (b.dataset.mkfind) { const i = +b.dataset.mkfind, c = mk.courses[i]; mkWFind.i = -1; mkFind.i = i; mkFind.q = ""; mkFind.ch = c.label === "Dessert" ? "kat8" : /forrett|mellomrett/i.test(c.label || "") ? "forrett" : "alle"; renderMeny(); setTimeout(() => { const q = $("#mkFindQ"); if (q) { q.scrollIntoView({ block: "start", behavior: "smooth" }); if (matchMedia("(hover: hover)").matches) q.focus(); } }, 40); return; }
     if (b.dataset.mkfch) { mkFind.ch = b.dataset.mkfch; d.querySelectorAll("[data-mkfch]").forEach((x) => x.setAttribute("aria-pressed", x === b)); $("#mkFindList").innerHTML = mkFindList(); return; }
     if (b.dataset.mkchoose) { const c = mk.courses[mkFind.i], r = BY[b.dataset.mkchoose]; if (c && r) mkSetCourse(c, r); const i = mkFind.i; mkFind.i = -1; mkSave(); renderMeny(); setTimeout(() => d.querySelectorAll(".mkc")[i + 1]?.scrollIntoView({ block: "nearest" }), 40); return; }
+    if (b.dataset.mkwfind) { const i = +b.dataset.mkwfind; mkWFind.i = i; mkWFind.q = ""; mkWFind.ch = mk.courses[i].rid ? "passer" : "alle"; mkFind.i = -1; renderMeny(); setTimeout(() => d.querySelectorAll(".mkc")[i + 1]?.querySelector("#mkWFindQ")?.scrollIntoView({ block: "center", behavior: "smooth" }), 30); return; }
+    if (b.dataset.mkwch) { mkWFind.ch = b.dataset.mkwch; d.querySelectorAll("[data-mkwch]").forEach((x) => x.setAttribute("aria-pressed", x === b)); $("#mkWFindList").innerHTML = mkWFindList(); return; }
+    if (b.dataset.mkwchoose) { const x = (mkWFind.last || [])[+b.dataset.mkwchoose], c = mk.courses[mkWFind.i]; if (x && c) { c.wine = mkWName(x.w); c.wdesc = mkWineDesc(x.w); c.wtype = mkWineType(x.w.type); } const i = mkWFind.i; mkWFind.i = -1; mkSave(); renderMeny(); setTimeout(() => d.querySelectorAll(".mkc")[i + 1]?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 30); return; }
+    if (b.dataset.mkwclose) { mkWFind.i = -1; renderMeny(); return; }
     if (b.dataset.mkfclose) { mkFind.i = -1; renderMeny(); return; }
     if (b.dataset.mkadd) { mk.courses.push({ label: "", rid: "", title: "", desc: "", wine: "", wdesc: "", wtype: "" }); mkSave(); renderMeny(); }
     else if (b.dataset.mkdel) { mk.courses.splice(+b.dataset.mkdel, 1); mkFind.i = -1; mkSave(); renderMeny(); }
