@@ -500,7 +500,7 @@ textarea.note:focus { border-color: rgba(234, 165, 96, .5); }
 .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .weekpick { display: none; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
 .weekpick.open { display: flex; }
-.weekpick .wkc { flex-direction: column; gap: 0; line-height: 1.15; min-width: 54px; }
+.weekpick .wkc { flex-direction: column; justify-content: center; gap: 0; line-height: 1.15; min-width: 54px; height: auto; min-height: 36px; padding-block: 6px; }
 .weekpick .wkc small { font-size: 10.5px; letter-spacing: .02em; color: var(--muted); }
 .weekpick .wkc.busy { border-style: dashed; opacity: .78; } .weekpick .wkc.busy small { color: var(--ember); }
 
@@ -3992,8 +3992,8 @@ document.addEventListener("click", (ev) => {
   if (d.voice) { toggleVoice("cook"); return; }
   if (d.chefmic) { voice.base = ($("#chefq")?.value || "") ? $("#chefq").value + " " : ""; toggleVoice("chef"); return; }
   if (d.addlist) { addToList(d.addlist); return; }
-  if (d.weektoggle) { $("#weekpick").classList.toggle("open"); $("#mkput")?.classList.remove("open"); return; }
-  if (d.mktoggle) { $("#mkput").classList.toggle("open"); $("#weekpick")?.classList.remove("open"); return; }
+  if (d.weektoggle) { const w = $("#weekpick"); w.classList.toggle("open"); $("#mkput")?.classList.remove("open"); if (w.classList.contains("open")) setTimeout(() => w.scrollIntoView({ block: "center", behavior: "smooth" }), 30); return; }
+  if (d.mktoggle) { const m = $("#mkput"); m.classList.toggle("open"); $("#weekpick")?.classList.remove("open"); if (m.classList.contains("open")) setTimeout(() => m.scrollIntoView({ block: "center", behavior: "smooth" }), 30); return; }
   if (d.coverbuy) { const [rid, code] = d.coverbuy.split("|"); openRecipe(rid); let n = 0; const find = () => { const c = document.querySelector(`#buySug [data-code="${code}"]`); if (c) { c.classList.add("hl"); c.scrollIntoView({ block: "center", behavior: "smooth" }); } else if (n++ < 30) setTimeout(find, 150); }; setTimeout(find, 300); return; }
   if (d.mkput) { const box = $("#mkput"), r = BY[box.dataset.rid]; mkPut(r.id, d.mkput); box.innerHTML = mkPutHtml(r); return; }
   if (d.addweek != null) { const i = +d.addweek, id = view.id, w = L().week[i]; const k = w.indexOf(id); k >= 0 ? w.splice(k, 1) : w.push(id); save(); renderKpis(); $("#weekpick").innerHTML = weekChips(BY[id]); toast(k >= 0 ? `Fjernet fra ${DAYS[i].toLowerCase()}` : `Lagt til på ${DAYS[i].toLowerCase()}`); return; }
